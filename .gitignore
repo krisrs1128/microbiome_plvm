@@ -1,6 +1,6 @@
 template/*
-src/sims/nmf/data/*
-src/sims/nmf/*.json
+src/sim/nmf/data/*
+src/sim/nmf/*.json
 doc/*.aux
 doc/*.log
 doc/*.pdf
