@@ -12,6 +12,7 @@ library("data.table")
 library("jsonlite")
 library("ggplot2")
 library("nmfSim")
+library("plyr")
 library("dplyr")
 
 ## ---- theta-reshape ----
@@ -20,7 +21,7 @@ base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 nmf_dir <- file.path(base_dir, "src", "sim", "nmf")
 fits_dir <- file.path(nmf_dir, "fits")
 figure_dir <- file.path(base_dir, "doc", "figure")
-dir.create(file.path(figure_dir, recursive = TRUE))
+dir.create(figure_dir, recursive = TRUE)
 
 fits <- list.files(fits_dir, "fit-*", full.names = TRUE)
 expers <- fromJSON(
@@ -83,7 +84,7 @@ ggsave(file.path(figure_dir, "visualizethetashist-1.png"), p)
 ## ---- visualizebetas ----
 beta_fits <- reshape_all_samples(
   fits,
-  file.path(base_dir, "config.json"),
+  file.path(nmf_dir, "config.json"),
   "beta",
   c("v", "k")
 )
