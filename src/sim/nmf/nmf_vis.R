@@ -58,7 +58,7 @@ plot_opts <- list(
   "mean_col" = "#e34a33",
   "x_lim" = c(0, 4),
   "y_lim" = c(0, 5),
-  "text_size" = 2,
+  "text_size" = 4,
   "panel_border" = 0.1
 )
 
@@ -145,7 +145,7 @@ plot_opts$group <- "v"
 
 ## ---- visualizezinfbetas ----
 theta_plots <- scores_contours(zinf_data, plot_opts)
-p <- theta_plots$grouped  + 
+p <- theta_plots$grouped  +
   facet_grid(inference ~ zero_inf_prob + method) +
   labs(
     "x" = expression(beta[1]),
