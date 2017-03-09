@@ -1,4 +1,6 @@
 template/*
+src/sim/nmf/fits/*
+src/sim/nmf/*.json
 doc/*.aux
 doc/*.log
 doc/*.pdf
