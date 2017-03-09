@@ -1,5 +1,5 @@
 template/*
-src/sim/nmf/data/*
+src/sim/nmf/fits/*
 src/sim/nmf/*.json
 doc/*.aux
 doc/*.log
