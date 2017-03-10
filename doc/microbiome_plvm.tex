@@ -10,7 +10,7 @@ accepted for publication November 1, 2010}
 \begin{document}
 
 % Title of paper
-\title{Latent Variable Modeling for the Microbiome} 
+\title{Latent Variable Modeling for the Microbiome}
 
 \author{
   KRIS SANKARAN$^\ast$, SUSAN HOLMES\\[4pt]
@@ -74,6 +74,90 @@ idea of transferring these techniques to the microbiome is not new, though its
 appropriateness and usefulness has only been explored in relatively limited
 settings \cite{shafiei2015biomico, chen2012estimating, holmes2012dirichlet,
   chen2013variable}.
+
+\subsection{Latent Dirichlet Allocation}
+
+Latent Dirichlet Allocation (LDA) is a generalization of multinomial mixture
+modeling applicable to count matrices. We adopt the usual topic modeling
+terminology, where each document is summarized by a vector of term counts.
+Suppose there are $D$ documents across $V$ terms, and that these documents are
+assumed mixtures of $K$ underlying topics, where a topic is defined as a
+distribution over words.
+
+Let $\theta_{d} \in \simplex^{K}$ represent the $d^{th}$ topic's mixture over the
+$K$ underlying topics. Represent the term in the $n_{th}$ word of this document
+by $w_{dn}$, and the associated topic by $z_{dn}$. Suppose the $k^{th}$ topic
+places weight $\beta_{vk}$ on the $v^{th}$ term, so that $\beta_{\cdot k} \in
+\simplex^{V}$. Then, the generative mechanism is
+
+\begin{align*}
+w_{dn} \vert \left(\beta_{\cdot k}\right)_{k = 1}^{K}, z_{dn} &\sim \Cat\left(\beta_{\cdot z_{dn}}\right) \\
+z_{dn} \vert \theta_{d} &\sim \Cat\left(\theta_{d}\right) \\
+\theta_{d} &\sim \Dir\left(\alpha\right) \\
+\beta_{\cdot k} &\sim \Dir\left(\gamma\right).
+\end{align*}
+
+
+In the microbiome application, we will find a formulation that marginalizes over
+the $z_{dn}$ more convenient. Indeed, a strict analogy between text modeling and
+microbiome analysis would consider each living microbe a word $w_{dn}$, while
+what we are more interested in are counts of species across samples.
+Writing $n_{dv} = \sum_{n = 1}^{N_{d}} \indic{w_{dn} = v}$, we can write the
+marginal distribution as
+
+\begin{align*}
+n_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\sim \Mult\left(n_{d\ast}, \beta \theta_{d}\right) \\
+\beta_{\cdot k} &\sim \Dir\left(\gamma\right), k = 1, \dots, K \\
+\theta_{d} &\sim \Dir\left(\alpha\right), d = 1, \dots D
+\end{align*}
+
+\subsection{Dynamic Unigram Model}
+
+While LDA imagines samples being mixtures of fundamental topics on the
+$V$-dimensional simplex, the Dynamic Unigram Model identifies a sequence of
+samples over time with a curve along this simplex \cite{blei2006dynamic}. To
+enforce smoothness in probabilities over over time, a random walk is used is
+passed through a softmax function. That is, define,
+
+\begin{align*}
+n_{d\cdot} \vert \mu_{t\left(d\right)}  &\sim \Mult\left(\sum_{v} n_{dv}, S\left(\mu_{t\left(d\right)}\right)\right) \\
+\mu_{t} \vert \mu_{t - 1} &\sim \Gsn\left(\mu_{t - 1}, \sigma^{2}I_{V}\right) \\
+\mu_{0} &\sim \Gsn\left(0, \sigma^{2}I_{v}\right).
+\end{align*}
+where $S$ is the multilogit link
+\begin{align*}
+\left[S\left(\mu\right)\right]_{v} = \frac{\exp{mu_{v}}}{\sum_{v^{\prime}} \exp{\mu_{v^{\prime}}}}.
+\end{align*}
+
+\subsection{Nonnegative Matrix Factorization}
+
+In LDA, count matrices are modeled by sampling from a multinomials with total
+counts coming from the total number of words in each document and probabilities
+coming from the rows of $\Theta B^{T}$ where $\Theta = \begin{pmatrix}\theta_{1}
+  \\ \vdots \\ \theta_{D} \end{pmatrix} \in \left(\simplex^{K -
+  1}\right)_{\downarrow \times D}$ and $B = \begin{pmatrix} \beta_{\cdot 1}
+  \dots \beta_{\cdot K} \end{pmatrix} \in \left(\simplex^{V -
+  1}\right)_{\rightarrow \times K}$ are $D \times K$ and $V \times K$ matrices
+representing document and topic distributions, respectively.
+
+
+To generalize this idea, it is is possible to model the nonnegative matrix $N$
+by the product of low rank matrices, $N \approx \Theta B^{T}$, where now the
+only constraints on $\Theta$ and $B$ are that $\Theta \in \reals_{+}^{D \times
+  K}$ and $B \in \reals_{+}^{V \times K}$. This is the starting point for a
+variety of algorithms in the Nonnegative Matrix Factorization (NMF) literature
+\cite{wang2013nonnegative, berry2007algorithms, lee2001algorithms}
+
+Here, we will consider a Gamma-Poisson factorization model (GaP)
+\cite{kucukelbir2015automatic, @canny2004gap} which is proposes the hierarchical
+model
+\begin{align*}
+N &\sim \Poi\left(\Theta B^{T}\right) \\
+\Theta &\sim \Gam\left(a_{0} 1_{D \times K}, b_{0} 1_{D \times K}\right) \\
+B &\sim \Gam\left(c_{0} 1_{V \times K}, d_{0} 1_{V \times K} \right),
+\end{align*}
+where mean that each entry in these matrices is sampled independently, with
+parameters given by the corresponding entry in the parameter matrix.
 
 \section{Simulation Study}
 \section{Data Analysis}
