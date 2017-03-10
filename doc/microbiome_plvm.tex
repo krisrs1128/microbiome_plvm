@@ -1,16 +1,17 @@
 \documentclass[oupdraft]{bio}
+% \usepackage[colorlinks=true, urlcolor=citecolor, linkcolor=citecolor, citecolor=citecolor]{hyperref}
 \usepackage{url}
-%% \usepackage[colorlinks=true, urlcolor=citecolor, linkcolor=citecolor, citecolor=citecolor]{hyperref}
 
 % Add history information for the article if required
-%%\history{Received March 20, 2017}
+\history{Received August 1, 2010;
+revised October 1, 2010;
+accepted for publication November 1, 2010}
 
 \begin{document}
 
 % Title of paper
 \title{Latent Variable Modeling for the Microbiome} 
 
-% List of authors, with corresponding author marked by asterisk
 \author{
   KRIS SANKARAN$^\ast$, SUSAN HOLMES\\[4pt]
   % Author addresses
@@ -63,8 +64,16 @@ of known biological information. For example, it is scientifically meaningful
 when a collection of evolutionarily related microbes change in sync with one
 another.
 
-
 \section{Methods}
+
+We now review a few of the statistical modeling techniques that we believe can
+be useful building blocks when performing microbiome analysis. Many of these
+techniques have been borrowed from text analysis, thinking of the samples by
+microbes matrix as a biological analog of the usual document-term matrix. The
+idea of transferring these techniques to the microbiome is not new, though its
+appropriateness and usefulness has only been explored to a relatively limited
+extent \cite{shafiei2015biomico, chen2012estimating, holmes2012dirichlet,
+  chen2013variable}.
 
 \section{Simulation Study}
 \section{Data Analysis}
@@ -85,19 +94,11 @@ Supplementary material is available online at
 \bibliographystyle{biorefs}
 \bibliography{refs}
 
-\begin{figure}
-  \centering
-  \includegraphics{figure/betacontours1-1}
+\begin{figure}[!p]
+  \centering\includegraphics{figure/betacontours1-1}
   \caption{Different inferenece algorithms for LDA produce different uncertainty
     assessments in small sample sizes, but become comparable as more data arrives.}
   \label{fig:lda_contours}
 \end{figure}
 
-\begin{figure}
-  \centering
-  \includegraphics{figure/visualizezinfthetas-1}
-  \caption{Zero inflation poses problems for NMF, even when accounted for in the likelihood. The deterioration is most dramatic when applying VB.}
-\end{figure}
-
 \end{document}
-
