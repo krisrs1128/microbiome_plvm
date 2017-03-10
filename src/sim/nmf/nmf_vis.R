@@ -14,6 +14,7 @@ library("ggplot2")
 library("nmfSim")
 library("plyr")
 library("dplyr")
+dev.new(width = 4, height = 2)
 
 ## ---- theta-reshape ----
 ## extract theta information from the fits
