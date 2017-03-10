@@ -71,7 +71,7 @@
 \ProcessOptions
 
 \RequirePackage{amsthm,multirow,amsmath,fancybox,amssymb}
-\RequirePackage[dvips]{graphicx}
+\RequirePackage{graphicx}
 \RequirePackage{lastpage}
 
 \renewcommand\normalsize{%
