@@ -18,10 +18,11 @@ library("rstan")
 library("ggplot2")
 library("ggscaffold")
 library("ldaSim")
-base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
-lda_dir <- file.path(base_dir, "src", "sim", "lda")
+dev.new(width = 4, height = 2)
 
 ## ---- paths ----
+base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
+lda_dir <- file.path(base_dir, "src", "sim", "lda")
 output_path <- file.path(lda_dir, "fits")
 metadata <- fread(file.path(output_path, "metadata.csv")) %>%
   unique()
