@@ -57,14 +57,14 @@ for (i in seq_along(unique_V)) {
 }
 
 ## ---- betacontours1 ----
-ggsave(file.path(base_dir, "doc", "figure/betacontours1-1.pdf", p[[1]])
+ggsave(file.path(base_dir, "doc", "figure/betacontours1-1.pdf"), p[[1]])
 
 ## ---- betacontours2 ----
-ggsave(file.path(base_dir, "doc", "figure/betacontours2-1.pdf", p[[2]])
+ggsave(file.path(base_dir, "doc", "figure/betacontours2-1.pdf"), p[[2]])
 
 ## ---- betahistograms ----
 p <- error_histograms(mcombined, c("V + method", "D + N"))
-ggsave(file.path(base_dir, "doc", "figure/betahistograms-1.pdf", p)
+ggsave(file.path(base_dir, "doc", "figure/betahistograms-1.pdf"), p)
 
 ## ---- beta-boxplots-object ----
 p <- list()
@@ -76,10 +76,10 @@ for (i in seq_along(unique_V)) {
 }
 
 ## ---- betaboxplot1 ----
-ggsave(file.path(base_dir, "doc", "figure/betaboxplot1-1.pdf", p[[1]])
+ggsave(file.path(base_dir, "doc", "figure/betaboxplot1-1.pdf"), p[[1]])
 
 ## ---- betaboxplot2 ----
-ggsave(file.path(base_dir, "doc", "figure/betaboxplot2-1.pdf", p[[2]])
+ggsave(file.path(base_dir, "doc", "figure/betaboxplot2-1.pdf"), p[[2]])
 
 ## ---- theta-samples ----
 theta <- get_truth_data(metadata, "theta", "i") %>%
@@ -115,11 +115,11 @@ for (i in seq_along(unique_D)) {
 }
 
 ## ---- thetaboxplot1 ----
-ggsave(file.path(base_dir, "doc", "figure/thetaboxplot1-1.pdf", p[[1]])
+ggsave(file.path(base_dir, "doc", "figure/thetaboxplot1-1.pdf"), p[[1]])
 
 ## ---- thetaboxplot2 ----
-ggsave(file.path(base_dir, "doc", "figure/thetaboxplot2-1.pdf", p[[2]])
+ggsave(file.path(base_dir, "doc", "figure/thetaboxplot2-1.pdf"), p[[2]])
 
 ## ---- thetahistograms ----
 p <- error_histograms(mcombined, c("D + method", "V + N"))
-ggsave(file.path(base_dir, "doc", "figure/thetahistograms-1.pdf", p)
+ggsave(file.path(base_dir, "doc", "figure/thetahistograms-1.pdf"), p)
