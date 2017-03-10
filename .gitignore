@@ -1,6 +1,9 @@
 template/*
 src/sim/nmf/fits/*
 src/sim/nmf/*.json
+src/sim/lda/fits/*
+src/sim/lda/pipeline/*.json
 doc/*.aux
 doc/*.log
 doc/*.pdf
+doc/figure/*
