@@ -1,5 +1,5 @@
 \documentclass[oupdraft]{bio}
-% \usepackage[colorlinks=true, urlcolor=citecolor, linkcolor=citecolor, citecolor=citecolor]{hyperref}
+% \usepackage[colorlinks=true, urlcolor=citepcolor, linkcolor=citepcolor, citepcolor=citepcolor]{hyperref}
 \usepackage{url}
 
 % Add history information for the article if required
@@ -53,9 +53,9 @@ accepted for publication November 1, 2010}
 
 Microbiome studies attempt to characterize variation in microbial
 abundance profiles across different experimental conditions
-\cite{human2012structure}. For example, a study may attempt to describe differences
+\citep{human2012structure}. For example, a study may attempt to describe differences
 in microbial commuities between diseased and healthy states or after
-deliberately induced perturbations \cite{dethlefsen2011incomplete}.
+deliberately induced perturbations \citep{dethlefsen2011incomplete}.
 
 In the process, there tend to be two complementary difficulties. First, the data
 are often high dimensional, measured over several hundreds or thousands of
@@ -73,7 +73,7 @@ techniques have been borrowed from text analysis, thinking of the samples by
 microbes matrix as a biological analog of the usual document-term matrix. The
 idea of transferring these techniques to the microbiome is not new, though its
 appropriateness and usefulness has only been explored in relatively limited
-settings \cite{shafiei2015biomico, chen2012estimating, holmes2012dirichlet,
+settings \citep{shafiei2015biomico, chen2012estimating, holmes2012dirichlet,
   chen2013variable}.
 
 \subsection{Latent Dirichlet Allocation}
@@ -116,7 +116,7 @@ n_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\sim \Mult\left(n_{d\ast}, \bet
 
 While LDA imagines samples being mixtures of fundamental topics on the
 $V$-dimensional simplex, the Dynamic Unigram Model identifies a sequence of
-samples over time with a curve along this simplex \cite{blei2006dynamic}. To
+samples over time with a curve along this simplex \citep{blei2006dynamic}. To
 enforce smoothness in probabilities over over time, a random walk is used is
 passed through a softmax function. That is, define,
 
@@ -147,10 +147,10 @@ by the product of low rank matrices, $N \approx \Theta B^{T}$, where now the
 only constraints on $\Theta$ and $B$ are that $\Theta \in \reals_{+}^{D \times
   K}$ and $B \in \reals_{+}^{V \times K}$. This is the starting point for a
 variety of algorithms in the Nonnegative Matrix Factorization (NMF) literature
-\cite{wang2013nonnegative, berry2007algorithms, lee2001algorithms}
+\citep{wang2013nonnegative, berry2007algorithms, lee2001algorithms}
 
 Here, we will consider a Gamma-Poisson factorization model (GaP)
-\cite{kucukelbir2015automatic, canny2004gap} which is proposes the hierarchical
+\citep{kucukelbir2015automatic, canny2004gap} which is proposes the hierarchical
 model
 \begin{align*}
 N &\sim \Poi\left(\Theta B^{T}\right) \\
@@ -161,6 +161,27 @@ where mean that each entry in these matrices is sampled independently, with
 parameters given by the corresponding entry in the parameter matrix.
 
 \section{Simulation Study}
+
+It can be liberating to have easy access to such a variety of modeling
+strategies for any given microbiome analysis problem. However, with this
+increased flexibility comes the difficulty of determining when to use what
+methods. To build some intuition about estimation accuracy across combinations
+of data settings and model types, we conduct some simulation studies. These are
+meant to complement the model-checking that should follow parametric analysis --
+since we know the truth in simulations, it is easier to develop more definitive
+guidelines.
+
+More specifically, our plan is to divide our analysis into one simulation
+generating data from the true LDA model and one drawing from either the NMF or
+Z-NMF models. In both, we vary the sample size and dimension. For data simulated
+under LDA, we perform inference of the true model using either Gibbs sampling,
+Variational Bayes, or the bootstrap, while for the NMF example, we focus on
+Gibbs sampling and Variational Bayes. The only misspecification we consider is a
+failure to account for zero inflation when the true data were generated
+according to the Z-NMF model -- though not pursued here, it could be interesting
+to study robustness of study conclusions to misspecification in the number of
+clusters or deliberate contamination.
+
 \section{Data Analysis}
 
 \section{Discussion}
