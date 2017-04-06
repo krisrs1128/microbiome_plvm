@@ -53,9 +53,9 @@ accepted for publication November 1, 2010}
 
 Microbiome studies attempt to characterize variation in microbial
 abundance profiles across different experimental conditions
-\cite{human2012structure}. For example, a study may attempt to describe differences
+\citep{human2012structure}. For example, a study may attempt to describe differences
 in microbial commuities between diseased and healthy states or after
-deliberately induced perturbations \cite{dethlefsen2011incomplete}.
+deliberately induced perturbations \citep{dethlefsen2011incomplete}.
 
 In the process, there tend to be two complementary difficulties. First, the data
 are often high dimensional, measured over several hundreds or thousands of
@@ -73,7 +73,7 @@ techniques have been borrowed from text analysis, thinking of the samples by
 microbes matrix as a biological analog of the usual document-term matrix. The
 idea of transferring these techniques to the microbiome is not new, though its
 appropriateness and usefulness has only been explored in relatively limited
-settings \cite{shafiei2015biomico, chen2012estimating, holmes2012dirichlet,
+settings \citep{shafiei2015biomico, chen2012estimating, holmes2012dirichlet,
   chen2013variable}.
 
 \subsection{Latent Dirichlet Allocation}
@@ -116,7 +116,7 @@ n_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\sim \Mult\left(n_{d\ast}, \bet
 
 While LDA imagines samples being mixtures of fundamental topics on the
 $V$-dimensional simplex, the Dynamic Unigram Model identifies a sequence of
-samples over time with a curve along this simplex \cite{blei2006dynamic}. To
+samples over time with a curve along this simplex \citep{blei2006dynamic}. To
 enforce smoothness in probabilities over over time, a random walk is used is
 passed through a softmax function. That is, define,
 
@@ -147,10 +147,10 @@ by the product of low rank matrices, $N \approx \Theta B^{T}$, where now the
 only constraints on $\Theta$ and $B$ are that $\Theta \in \reals_{+}^{D \times
   K}$ and $B \in \reals_{+}^{V \times K}$. This is the starting point for a
 variety of algorithms in the Nonnegative Matrix Factorization (NMF) literature
-\cite{wang2013nonnegative, berry2007algorithms, lee2001algorithms}
+\citep{wang2013nonnegative, berry2007algorithms, lee2001algorithms}
 
 Here, we will consider a Gamma-Poisson factorization model (GaP)
-\cite{kucukelbir2015automatic, canny2004gap} which is proposes the hierarchical
+\citep{kucukelbir2015automatic, canny2004gap} which is proposes the hierarchical
 model
 \begin{align*}
 N &\sim \Poi\left(\Theta B^{T}\right) \\
@@ -161,9 +161,161 @@ where mean that each entry in these matrices is sampled independently, with
 parameters given by the corresponding entry in the parameter matrix.
 
 \section{Simulation Study}
+
+It can be liberating to have easy access to such a variety of modeling
+strategies for any given microbiome analysis problem. However, with this
+increased flexibility comes the difficulty of determining when to use what
+methods. To build some intuition about estimation accuracy across combinations
+of data settings and model types, we conduct some simulation studies. These are
+meant to complement the model-checking that should follow parametric analysis --
+since we know the truth in simulations, it is easier to develop more definitive
+guidelines.
+
+More specifically, our plan is to divide our analysis into one simulation
+generating data from the true LDA model and one drawing from either the NMF or
+Z-NMF models. In both, we vary the sample size and dimension. For data simulated
+under LDA, we perform model estimation using either MCMC sampling, Variational
+Bayes, or a bootstrapping procedure we describe below, while for the NMF
+example, we focus on MCMC sampling and Variational Bayes. The only
+misspecification we consider is a failure to account for zero inflation when the
+true data were generated according to the Z-NMF model -- though not pursued
+here, it could be interesting to study robustness of study conclusions to
+misspecification in the number of topics or deliberate contamination.
+
+For the LDA experiment, we vary the number of samples $D \in \{20, 100\}$, the
+number of features $V \in \{10, 50\}$, and the total word count per document $N
+\in \{20, 50, 100\}$. On the other hand, we fix the number of topics to $K = 2$
+and the Dirichlet hyperparameter to $\alpha_{0} = \gamma_{0} = 1$. For each
+simulated data set, we perform estimation using Variational Bayes, MCMC
+sampling, and a parameteric bootstrap-after-VB procedure. In more detail, this
+last parametric bootstrap procedure fits VB to the original data, simulates $B =
+?$ (todo how many bootstrap replicates?) new data sets $X^{\ast}_{b}$ according
+to the LDA model using VB-estimated parameters $\{\hat{\theta}^{\ast}_{b},
+\hat{\beta}^{\ast}_{b}\}$, and re-estimates parameters
+$\{\hat{\theta}^{\ast\ast}_{b}, \hat{\beta}^{\ast\ast}_{b}\}$ on each simulated data
+set, again using VB. The motivation for this procedure is the desire to strike
+an easily-parallelizable compromise between MCMC Sampling, which can be time
+consuming but has reliable uncertainty estimates, and Variational Bayes, which
+is fast, but can underestimate uncertainty.
+
+Figure \ref{fig:lda_contours} displays the true and posterior $\beta_{k}$ for
+the experiments with $V = 10$ features, while other simulation characteristics
+are varied. Each panel represents a single experimental configuration, with two
+axes associated with the two underlying topics. Each black number $v$ is the
+true value of feature $v$ across topics: $\left(\beta_{v1}, \beta_{v2}\right)$.
+The shaded clouds are sampled posteriors, while the orange labels give posterior
+means. Across rows, different inferential procedures are compared The top row of
+column labels refers to the total count $N$ within each sample, while the second
+refers to the number of samples $D$. The analogous figure when $V = 50$ is
+provided in the supplemental material.
+
+As expected, when $D$ increases, the posterior for $\beta$, whose dimension does
+not increase with $D$, begins to concentrate around its true value. Consistent
+with earlier findings, the VB posteriors are generally lower variance and more
+elliptical than the true MCMC sampled posteriors. The bootstrap samples seem
+somewhere between the VB and MCMC sampled distributions in terms of variablity
+within each feature. As the number of samples or number of words within samples
+increases, the three methods become indistinguishable. Interestingly, when $D$
+and $N$ are small ($N = D = 20$), VB appears more accurate than either the MCMC
+or bootstrapping approaches, whose posterior means all lie along the diagonal,
+corresponding to topics that both reflect the global marginal feature counts
+across samples. This effect is especially pronounced in the case $V = 50$.
+
+For the NMF experiment, we vary the number of features $V$ between $\{75, 125\}$
+and zero-inflation probability $p_{0} \in \{0, 0.2\}$. We keep the number of samples
+$D$ fixed at $100$ and latent factors $K$ fixed at 2. Unlike LDA, the total
+count within each sample is random. Further, in light of the discussion above,
+we omit the bootstrap-after-VB estimation technique. Figure
+\ref{fig:zinf_thetas} summarizes the estimation error across regimes. The first
+row of column names gives $p_{0}$, and the second gives the assumed model: GaP
+for the Gamma-Poisson model and Z-GaP for the zero-inflated Gamma-Poisson.
+Within each panel, we display histograms of the errors\footnote{We use a
+  square-root transformation to ensure the figures are not dominated by very
+  large errors.}, $\sqrt{\hat{theta_{dk}}} - \sqrt{\theta_{dk}}$, where color
+encodes the latent factor $k$.
+
+Here, the improved concentration in the high-dimensional ($V = 125$) regime is
+more readily apparent. Further, the superiority of gibbs sampling in the
+lower-dimensional ($V = 75$) case is still noticeable in the fact that the gibbs
+histogram is somewhat narrower in the center. However, while there seems to be
+less mass in the tails for the Gibbs histogram, the tails themselves are just as
+wide as in the Variational Bayes histogram. 
+
+The most noticeable difference across these panels is that Variational Bayes
+seems to perform substantially worse when zero-inflation is present, especially
+when zero-inflation is not taken into account. Surprisingly, Gibbs Sampling
+seems only slightly worse in this situation. Further, the case in which
+zero-inflation is not explicitly modeled does not seem to do worse than the case
+it is.
+
 \section{Data Analysis}
 
+In applying probabilistic methods to microbiome data analysis, we concentrate on
+two questions,
+
+1. Do these models fit well to the raw or preprocessed data, and what techniques
+are available for evaluating model fit?
+2. Supposing these models fit well, do they lend themselves to informative
+summaries of the original data?
+
+To begin to develop answers to these questions, we reanalyze the data of
+\cite{dethlefsen2011incomplete}, a study of microbial dynamics in response to
+antibiotic treatment. This study monitored the microbiomes of three patients
+over ten months, with two antibiotics time courses introduced in between, in
+order to study the effect antiobiotic perturbations within the context of
+natural long term dynamics. The study concluded that antibiotics cause
+substantial changes in short-term community composition, with certain species
+being substantially more resilient than others, and that in one patient,
+long-term effects could be observed. The purpose our case study is to compare
+these conclusions with those obtained through unsupervised probabilistic models.
+
+In light of the fact that variational in microbial signatures tends to be
+dominated by between individual effects, we choose to study one individual at a
+time. In this report, we focus on Subject F, who had been reported to exhibit
+incomplete recovery of the pre-antibiotic microbial community. Further, we
+filter to only those microbes present in at least 45\% of samples. This reduces
+the dimensionality from 2582 to 354.
+
+In this case study, we focus on LDA\footnote{We set $K = 4$, based on the
+  heuristic that a large $K$ would be less meaningful, considering there are
+  only 56 samples.} and the dynamic unigram model. A similar study using GaP and
+Z-GaP is omitted for brevity. Throughout, we apply Variational Bayes, though in
+light of the simulation study, we exercise caution when interpreting estimated
+uncertainties.
+
+Note that we view the fitted probabilities on a logit scale -- for a raw vector
+of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right)$, we plot
+$g\left(\mathbf{p}\right) := \left(\log p_{1} - \bar{\log \mathbf{p}}, \dots,
+\log p_{K} - \bar{\log \mathbf{p}}\right)$, which are like log-odds, but
+centered according to the average log probability, rather than any reference
+class.
+
+The fitted parameter values are summarized in Figures
+\@ref(fig:antibiotics_lda_theta), \@ref(fig:antibiotics_lda_beta).
+In figure \ref{fig:antibiotics_lda_theta} the rows represent topics, the
+$x$-axis represents time, and the $y$-axis gives the fitted probabilties on a
+logit scale, but centered according to the average log probability, rather than
+any reference class, $g\left(\mathbf{p}\right) = \left(\log p_{1} - \bar{\log
+  \mathbf{p}}, \dots, \log p_{K} - \bar{\log \mathbf{p}}\right)$. The boxplots
+reflect posterior quantiles.
+
+This figure draws attention to the two antibiotic time courses, which took place
+between times 12-23 and 41-51. Topic 1 becomes depressed during the time
+courses, but recovers during the interim, suggesting that it summarizes the
+"ordinary" microbial community structure. Topic 2 seems to represent those
+microbes that were present initially but are eliminated during the first time
+course, though there is a hint of a recovery at the very end of sampling. This
+topic seems most closely related to the finding reported in
+\cite{dethlefsen2011incomplete} that Subject F experienced long-term antibiotic
+effects on microbial community composition. Topics 3 and 4 both seem to be
+overrepresented during the time courses. Topic 4 is elevated immediately after
+the cleanout, in contrast, topic 3 seems to become elevatd more gradually.
+Further, topic 3 appears to be more common in the samples across all timepoints,
+including those unassociated with the time courses. Across all topics, we find
+that uncertainty is typically smaller for parameters with larger values.
+
 \section{Discussion}
+
 
 \section{Software}
 
@@ -190,5 +342,14 @@ Supplementary material is available online at
   \centering\includegraphics{figure/visualizezinfthetashist-1}
   \caption{Zero inflation poses problems for NMF, even when accounted for in the likelihood. The deterioration is most dramatic when applying VB.}
   \label{fig:zinf_thetas}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering\includegraphics{figure/antibiotics_theta_boxplot}
+  \caption{Boxplots of approximate posteriors for estimated mixture memberships,
+    and their evolution over time, suggests a strong effect of the first
+    antibiotic treatment, and long term effects, at least for microbes within
+    one topic.}
+  \label{fig:antibiotics_lda_theta}
 \end{figure}
 \end{document}
