@@ -51,18 +51,18 @@ accepted for publication November 1, 2010}
 
 \section{Introduction}
 
-Microbiome studies attempt to characterize variation in microbial
+Microbiome studies attempt to characterize variation in bacterial
 abundance profiles across different experimental conditions
 \citep{human2012structure}. For example, a study may attempt to describe differences
-in microbial commuities between diseased and healthy states or after
+in bacterial commuities between diseased and healthy states or after
 deliberately induced perturbations \citep{dethlefsen2011incomplete}.
 
 In the process, there tend to be two complementary difficulties. First, the data
 are often high dimensional, measured over several hundreds or thousands of
-microbes. Studying patterns at the level of individual microbes is typically
-infeasible. Second, it can be important to study microbial abundances in context
+bacteria. Studying patterns at the level of individual bacteria is typically
+infeasible. Second, it can be important to study bacterial abundances in context
 of known biological information. For example, it is scientifically meaningful
-when a collection of evolutionarily related microbes change in sync with one
+when a collection of evolutionarily related bacteria change in sync with one
 another.
 
 \section{Methods}
@@ -70,7 +70,7 @@ another.
 We now review a few of the statistical modeling techniques that we believe can
 be useful building blocks when performing microbiome analysis. Many of these
 techniques have been borrowed from text analysis, thinking of the samples by
-microbes matrix as a biological analog of the usual document-term matrix. The
+bacteria matrix as a biological analog of the usual document-term matrix. The
 idea of transferring these techniques to the microbiome is not new, though its
 appropriateness and usefulness has only been explored in relatively limited
 settings \citep{shafiei2015biomico, chen2012estimating, holmes2012dirichlet,
@@ -101,7 +101,7 @@ z_{dn} \vert \theta_{d} &\sim \Mult\left(1, \theta_{d}\right) \\
 
 In the microbiome application, we will find a formulation that marginalizes over
 the $z_{dn}$ more convenient. Indeed, a strict analogy between text modeling and
-microbiome analysis would consider each living microbe a word $w_{dn}$, while
+microbiome analysis would consider each bacteria a word $w_{dn}$, while
 what we are more interested in are counts of species across samples.
 Writing $n_{dv} = \sum_{n = 1}^{N_{d}} \indic{w_{dn} = v}$, we can write the
 marginal distribution as
@@ -260,7 +260,7 @@ summaries of the original data?
 \end{enumerate}
 
 To begin to develop answers to these questions, we reanalyze the data of
-\cite{dethlefsen2011incomplete}, a study of microbial dynamics in response to
+\citep{dethlefsen2011incomplete}, a study of bacterial dynamics in response to
 antibiotic treatment. This study monitored the microbiomes of three patients
 over ten months, with two antibiotics time courses introduced in between, in
 order to study the effect antiobiotic perturbations within the context of
@@ -270,11 +270,11 @@ being substantially more resilient than others, and that in one patient,
 long-term effects could be observed. The purpose our case study is to compare
 these conclusions with those obtained through unsupervised probabilistic models.
 
-In light of the fact that variational in microbial signatures tends to be
+In light of the fact that variational in bacterial signatures tends to be
 dominated by between individual effects, we choose to study one individual at a
 time. In this report, we focus on Subject F, who had been reported to exhibit
-incomplete recovery of the pre-antibiotic microbial community. Further, we
-filter to only those microbes present in at least 45\% of samples. This reduces
+incomplete recovery of the pre-antibiotic bacterial community. Further, we
+filter to only those bacteria present in at least 45\% of samples. This reduces
 the dimensionality from 2582 to 354.
 
 In this case study, we focus on LDA\footnote{We set $K = 4$, based on the
@@ -303,19 +303,45 @@ any reference class, $g\left(\mathbf{p}\right) = \left(\log p_{1} - \overline{\l
 provide posterior quantiles for each $\theta_{ik}$.
 
 This figure draws attention to the two antibiotic time courses, which took place
-between times 12-23 and 41-51. Topic 1 becomes depressed during the time
-courses, but recovers during the interim, suggesting that it summarizes the
-"ordinary" microbial community structure. Topic 2 seems to represent those
-microbes that were present initially but are eliminated during the first time
-course, though there is a hint of a recovery at the very end of sampling. This
-topic seems most closely related to the finding reported in
-\cite{dethlefsen2011incomplete} that Subject F experienced long-term antibiotic
-effects on microbial community composition. Topics 3 and 4 both seem to be
-overrepresented during the time courses. Topic 4 is elevated immediately after
-the cleanout, in contrast, topic 3 seems to become elevatd more gradually.
-Further, topic 3 appears to be more common in the samples across all timepoints,
-including those unassociated with the time courses. Across all topics, we find
-that uncertainty is typically smaller for parameters with larger values.
+between days 12-23 and 41-51. Topic 1 becomes depressed during the time courses,
+but recovers during the interim, suggesting that it reflects typical bacterial
+community structure. Topic 2 seems to represent those bacteria that were present
+initially but are eliminated during the first time course, though there is a
+hint of a recovery at the end of sampling. This topic seems most closely related
+to the finding reported in \citep{dethlefsen2011incomplete} that Subject F
+experienced long-term antibiotic effects on bacterial community composition.
+Topics 3 and 4 both seem to be overrepresented during the antibiotic treatments.
+Topic 4 is elevated immediately after the cleanout, in contrast, topic 3 seems
+to become elevated more gradually. Further, topic 3 appears to be more common in
+the samples across all timepoints, including those unassociated with the time
+courses. Across all topics, we find that uncertainty is typically smaller for
+parameters with larger values.
+
+To interpret these topics in terms of their bacterial composition, we study the
+estimated topic distributions $\beta_{\cdot k}$. This is displayed in Figure
+\ref{fig:antibiotics_lda_beta}. The four rows correspond to the $K = 4$
+estimated topics. Each boxplot within a row is associated with posterior samples
+for a single bacterium. Different colors identify different taxonomic families,
+and within these families, bacteria are sorted according to evolutionary
+relatedness. We have hidden outliers from the posterior sampling, because they
+inflate the $y$-axis range and make the figure harder to read.
+
+Considering the mixture probabilities in Figure \ref{fig:antibiotics_lda_theta},
+those bacteria with large probabilities in the third and fourth rows in Figure
+\ref{fig:antibiotics_lda_beta} constitute a large fraction of the samples taken
+during antibiotic time courses, reflecting those increasing rapidly and
+gradually at those points, respectively. This could be due to these bacteria
+thriving during the regimen or other bacteria being more negatively impacted --
+viewing the raw data directly supports the latter scenario. These distributions
+are relatively more concentrated on a small subset of bacteria with high
+probabilities, reflected by the drop in logitted probabilities far below zero.
+This corresponds to a decrease in community diversity during antibiotic time
+courses.
+
+We also note ``bumps'' of neighboring bacteria with similarly elevated topic
+probabilities. It is encouraging that, even without specifying smoothness along
+the tree in the prior for the $\beta_{\cdot k}$s, such smoothness emerges in the
+fitted model.
 
 \subsection{Dynamic Unigram Model}
 
@@ -357,10 +383,10 @@ Supplementary material is available online at
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics{figure/antibiotics_theta_boxplot}
+  \centering\includegraphics{figure/antibiotics_lda_theta}
   \caption{Boxplots of approximate posteriors for estimated mixture memberships,
     and their evolution over time, suggests a strong effect of the first
-    antibiotic treatment, and long term effects, at least for microbes within
+    antibiotic treatment, and long term effects, at least for bacteria within
     one topic.}
   \label{fig:antibiotics_lda_theta}
 \end{figure}
