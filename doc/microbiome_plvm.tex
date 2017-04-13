@@ -92,8 +92,8 @@ places weight $\beta_{vk}$ on the $v^{th}$ term, so that $\beta_{\cdot k} \in
 \simplex^{V}$. Then, the generative mechanism is
 
 \begin{align*}
-w_{dn} \vert \left(\beta_{\cdot k}\right)_{k = 1}^{K}, z_{dn} &\sim \Cat\left(\beta_{\cdot z_{dn}}\right) \\
-z_{dn} \vert \theta_{d} &\sim \Cat\left(\theta_{d}\right) \\
+w_{dn} \vert \left(\beta_{\cdot k}\right)_{k = 1}^{K}, z_{dn} &\sim \Mult\left(1, \beta_{\cdot z_{dn}}\right) \\
+z_{dn} \vert \theta_{d} &\sim \Mult\left(1, \theta_{d}\right) \\
 \theta_{d} &\sim \Dir\left(\alpha\right) \\
 \beta_{\cdot k} &\sim \Dir\left(\gamma\right).
 \end{align*}
@@ -127,7 +127,7 @@ n_{d\cdot} \vert \mu_{t\left(d\right)}  &\sim \Mult\left(\sum_{v} n_{dv}, S\left
 \end{align*}
 where $S$ is the multilogit link
 \begin{align*}
-\left[S\left(\mu\right)\right]_{v} = \frac{\exp{mu_{v}}}{\sum_{v^{\prime}} \exp{\mu_{v^{\prime}}}}.
+\left[S\left(\mu\right)\right]_{v} = \frac{\exp{\mu_{v}}}{\sum_{v^{\prime}} \exp{\mu_{v^{\prime}}}}.
 \end{align*}
 
 \subsection{Nonnegative Matrix Factorization}
@@ -231,7 +231,7 @@ row of column names gives $p_{0}$, and the second gives the assumed model: GaP
 for the Gamma-Poisson model and Z-GaP for the zero-inflated Gamma-Poisson.
 Within each panel, we display histograms of the errors\footnote{We use a
   square-root transformation to ensure the figures are not dominated by very
-  large errors.}, $\sqrt{\hat{theta_{dk}}} - \sqrt{\theta_{dk}}$, where color
+  large errors.}, $\sqrt{\hat{\theta}_{dk}} - \sqrt{\theta_{dk}}$, where color
 encodes the latent factor $k$.
 
 Here, the improved concentration in the high-dimensional ($V = 125$) regime is
@@ -239,7 +239,7 @@ more readily apparent. Further, the superiority of gibbs sampling in the
 lower-dimensional ($V = 75$) case is still noticeable in the fact that the gibbs
 histogram is somewhat narrower in the center. However, while there seems to be
 less mass in the tails for the Gibbs histogram, the tails themselves are just as
-wide as in the Variational Bayes histogram. 
+wide as in the Variational Bayes histogram.
 
 The most noticeable difference across these panels is that Variational Bayes
 seems to perform substantially worse when zero-inflation is present, especially
@@ -252,11 +252,12 @@ it is.
 
 In applying probabilistic methods to microbiome data analysis, we concentrate on
 two questions,
-
-1. Do these models fit well to the raw or preprocessed data, and what techniques
+\begin{enumerate}
+\item Do these models fit well to the raw or preprocessed data, and what techniques
 are available for evaluating model fit?
-2. Supposing these models fit well, do they lend themselves to informative
+\item Supposing these models fit well, do they lend themselves to informative
 summaries of the original data?
+\end{enumerate}
 
 To begin to develop answers to these questions, we reanalyze the data of
 \cite{dethlefsen2011incomplete}, a study of microbial dynamics in response to
@@ -285,19 +286,21 @@ uncertainties.
 
 Note that we view the fitted probabilities on a logit scale -- for a raw vector
 of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right)$, we plot
-$g\left(\mathbf{p}\right) := \left(\log p_{1} - \bar{\log \mathbf{p}}, \dots,
-\log p_{K} - \bar{\log \mathbf{p}}\right)$, which are like log-odds, but
-centered according to the average log probability, rather than any reference
+$g\left(\mathbf{p}\right) := \left(\log p_{1} - \overline{\log \mathbf{p}}, \dots,
+\log p_{K} - \overline{\log \mathbf{p}}\right)$, which are similar to log-odds,
+but centered according to the average log probability, rather than any reference
 class.
 
+\subsection{Latent Dirichlet Allocation}
+
 The fitted parameter values are summarized in Figures
-\@ref(fig:antibiotics_lda_theta), \@ref(fig:antibiotics_lda_beta).
-In figure \ref{fig:antibiotics_lda_theta} the rows represent topics, the
+\ref{fig:antibiotics_lda_theta}, \ref{fig:antibiotics_lda_beta}.
+In Figure \ref{fig:antibiotics_lda_theta} the rows represent topics, the
 $x$-axis represents time, and the $y$-axis gives the fitted probabilties on a
 logit scale, but centered according to the average log probability, rather than
-any reference class, $g\left(\mathbf{p}\right) = \left(\log p_{1} - \bar{\log
-  \mathbf{p}}, \dots, \log p_{K} - \bar{\log \mathbf{p}}\right)$. The boxplots
-reflect posterior quantiles.
+any reference class, $g\left(\mathbf{p}\right) = \left(\log p_{1} - \overline{\log
+  \mathbf{p}}, \dots, \log p_{K} - \overline{\log \mathbf{p}}\right)$. The boxplots
+provide posterior quantiles for each $\theta_{ik}$.
 
 This figure draws attention to the two antibiotic time courses, which took place
 between times 12-23 and 41-51. Topic 1 becomes depressed during the time
@@ -313,6 +316,14 @@ the cleanout, in contrast, topic 3 seems to become elevatd more gradually.
 Further, topic 3 appears to be more common in the samples across all timepoints,
 including those unassociated with the time courses. Across all topics, we find
 that uncertainty is typically smaller for parameters with larger values.
+
+\subsection{Dynamic Unigram Model}
+
+While we can interpret the LDA-estimated $\hat{\theta}_{i}$ according to their
+temporal context, this information was never directly provided to the algorithm.
+In contrast, we now apply the Dynamic Unigram Model to the same data, which
+explicitly models temporal evolution, but not latent mixture structure. Our
+primary results are displayed in Figure \ref{fig:antibiotics_unigram_theta}. 
 
 \section{Discussion}
 
@@ -340,7 +351,8 @@ Supplementary material is available online at
 
 \begin{figure}[!p]
   \centering\includegraphics{figure/visualizezinfthetashist-1}
-  \caption{Zero inflation poses problems for NMF, even when accounted for in the likelihood. The deterioration is most dramatic when applying VB.}
+  \caption{Zero inflation poses problems for NMF, even when accounted for in the
+    likelihood. The deterioration is most dramatic when applying VB.}
   \label{fig:zinf_thetas}
 \end{figure}
 
@@ -352,4 +364,19 @@ Supplementary material is available online at
     one topic.}
   \label{fig:antibiotics_lda_theta}
 \end{figure}
+
+\begin{figure}[!p]
+  \centering\includegraphics{figure/antibiotics_lda_beta}
+  \caption{Each boxplot describes an approximate posterior for one $\beta_{vk}$.
+    In light of Figure \ref{fig:antibiotics_lda_theta}, this guides the
+    interpretation of which bacterial taxa are more or less prevalent during
+    antibiotic treaments.}
+  \label{fig:antibiotics_lda_beta}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[scale=1]{figure/antibiotics_unigram_mu}
+  \caption{\label{fig:antibiotics_unigram_boxplot} } \end{figure}
+
 \end{document}
