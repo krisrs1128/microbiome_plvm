@@ -160,6 +160,30 @@ B &\sim \Gam\left(c_{0} 1_{V \times K}, d_{0} 1_{V \times K} \right),
 where mean that each entry in these matrices is sampled independently, with
 parameters given by the corresponding entry in the parameter matrix.
 
+\subsection{Posterior Predictive Checks}
+
+Model assessment is important for qualifying interpretations, and can further
+guide refinements in subsequent analysis. Indeed, part of the appeal of
+probabilistic modeling is the ease with which models can be adapted to better
+describe the data of interest. Here, we describe model asssessment via posterior
+predictive checks \citep{rubin1984bayesianly, gelman2013pilosophy}. In this
+approach, some statistics $T_{k}\left(x\right)$ of the data are defined which,
+in some sense, ``characterize'' the data. Ideally, data $x^{\ast}$ simulated
+from the fitted model have similar values of these statistics,
+$T_{k}\left(x^{\ast}\right) \approx T_{k}\left(x\right)$.
+
+More precisely, simulate data $x_{1}^{\ast}, \dots x_{S}^{\ast}$ from the
+marginal $p\left(x^{\ast}\right) = \int p\left(x^{\ast} \vert \theta\right)
+\hat{p}\left(\theta \vert x \right)d\theta$, where $x$ is the original data and
+$\hat{p}\left(\theta \vert x\right)$ is an estimate computed from posterior
+samples. For each of these simulated data sets, the characterizing statistics
+$T_{k}\left(x_{s}\right)$ are computed. Graphically comparing the true data
+$T_{k}\left(x\right)$ with the histogram of model-fit simulated
+$T_{k}\left(x^{\ast}\right)$ suggests ways in which the posited model fits
+(observed $T_{k}\left(x\right)$ lying in the bulk of the
+$T_{k}\left(x^{\ast}_{s}\right)$) or fails to fit ($T_{k}\left(x\right)$ far
+from the bulk of $T_{k}\left(x^{\ast}_{s}\right)$) the data well.
+
 \section{Simulation Study}
 
 It can be liberating to have easy access to such a variety of modeling
@@ -349,9 +373,38 @@ While we can interpret the LDA-estimated $\hat{\theta}_{i}$ according to their
 temporal context, this information was never directly provided to the algorithm.
 In contrast, we now apply the Dynamic Unigram Model to the same data, which
 explicitly models temporal evolution, but not latent mixture structure. Our
-primary results are displayed in Figure \ref{fig:antibiotics_unigram_theta}. 
+primary results are displayed in Figure \ref{fig:antibiotics_unigram_theta}.
+
+Each row in this figure is interpreted similarly to a row in
+\ref{fig:antibiotics_lda_beta}, except now they correspond to estimated
+proportions over time $\mu_{t}$ rather than transformed topics
+$g\left(\beta_{k}\right)$. In particular, only four of the 54 total timepoints
+is displayed, highlighting a time window around the first antibiotic time
+course. Such a display implicitly assumes a relatively smooth interpolation
+between timepoints.
+
+This analysis yields conclusions similar to those obtained through LDA, though
+reaching them requires somewhat more effort. For example, on day 10, most
+$\mu_{tv}$'s have most quantiles larger than zero, and few are positioned
+substantially higher than the bulk. This is consistent with higher community
+diversity before the antibiotic time course. On the other hand, at time 15, one
+day after the time course began, most species have quantiles lower than zero,
+while a few are positioned much larger than the rest. This corresponds to a less
+diverse community, whose membership is concentrated on those species with
+outlying boxplots. This decrease in diversity seems most profound at time 20; by
+time 25, during the interim, much of the community seems to have recovered.
+
+Further, we continue to see differential recovery across bacteria, though the
+effect is not as obvious as in LDA, where this effect was captured by topics.
+For example, many subintervals of Lachnospiraceae seem to return to their
+pre-antibiotics levels, while the Ruminococceae continue to have low values of
+$\mu_{tv}$.
+
+\subsection{Posterior Checks}
 
 \section{Discussion}
+
+
 
 
 \section{Software}
@@ -403,6 +456,7 @@ Supplementary material is available online at
 \begin{figure}[!p]
   \centering
   \includegraphics[scale=1]{figure/antibiotics_unigram_mu}
-  \caption{Each boxplot refers to one $\mu_{vt}$. The rows are a subset of times $t$ around the first antibiotic time course. This view provides one way of smoothing abundance time series, to see how different species respond to antibiotic treatment. \label{fig:antibiotics_unigram_boxplot} } \end{figure}
+  \caption{Each boxplot refers to one $\mu_{vt}$. The rows are a subset of times $t$ around the first antibiotic time course. This view provides one way of smoothing abundance time series, to see how different species respond to antibiotic treatment. \label{fig:antibiotics_unigram_theta} }
+\end{figure}
 
 \end{document}
