@@ -51,14 +51,14 @@ accepted for publication November 1, 2010}
 
 \section{Introduction}
 
-Microbiome studies attempt to characterize variation in bacterial
-abundance profiles across different experimental conditions
-\citep{human2012structure}. For example, a study may attempt to describe differences
-in bacterial commuities between diseased and healthy states or after
-deliberately induced perturbations \citep{dethlefsen2011incomplete}.
+Microbiome studies attempt to characterize variation in bacterial abundance
+profiles across different experimental conditions \citep{human2012structure}.
+For example, a study may attempt to describe differences in bacterial
+communities between diseased and healthy states or after deliberately induced
+perturbations \citep{dethlefsen2011incomplete}.
 
 In the process, there tend to be two complementary difficulties. First, the data
-are often high dimensional, measured over several hundreds or thousands of
+are often high-dimensional, measured over several hundreds or thousands of
 bacteria. Studying patterns at the level of individual bacteria is typically
 infeasible. Second, it can be important to study bacterial abundances in context
 of known biological information. For example, it is scientifically meaningful
@@ -117,7 +117,7 @@ n_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\sim \Mult\left(n_{d\ast}, \bet
 While LDA imagines samples being mixtures of fundamental topics on the
 $V$-dimensional simplex, the Dynamic Unigram Model identifies a sequence of
 samples over time with a curve along this simplex \citep{blei2006dynamic}. To
-enforce smoothness in probabilities over over time, a random walk is used is
+enforce smoothness in probabilities over time, a random walk is used is
 passed through a softmax function. That is, define,
 
 \begin{align*}
@@ -131,6 +131,7 @@ where $S$ is the multilogit link
 \end{align*}
 
 \subsection{Nonnegative Matrix Factorization}
+\label{sec:nmf}
 
 In LDA, count matrices are modeled by sampling from a multinomials with total
 counts coming from the total number of words in each document and probabilities
@@ -142,7 +143,7 @@ coming from the rows of $\Theta B^{T}$ where $\Theta = \begin{pmatrix}\theta_{1}
 representing document and topic distributions, respectively.
 
 
-To generalize this idea, it is is possible to model the nonnegative matrix $N$
+To generalize this idea, it is possible to model the nonnegative matrix $N$
 by the product of low rank matrices, $N \approx \Theta B^{T}$, where now the
 only constraints on $\Theta$ and $B$ are that $\Theta \in \reals_{+}^{D \times
   K}$ and $B \in \reals_{+}^{V \times K}$. This is the starting point for a
@@ -159,6 +160,31 @@ B &\sim \Gam\left(c_{0} 1_{V \times K}, d_{0} 1_{V \times K} \right),
 \end{align*}
 where mean that each entry in these matrices is sampled independently, with
 parameters given by the corresponding entry in the parameter matrix.
+
+\subsection{Posterior Predictive Checks}
+
+Model assessment is important for qualifying interpretations, and can further
+guide refinements in subsequent analysis. Indeed, part of the appeal of
+probabilistic modeling is the ease with which models can be adapted to better
+describe the data of interest. Here, we describe model assessment via posterior
+predictive checks \citep{rubin1984bayesianly, gelman2013philosophy}. In this
+approach, some statistics $T_{k}\left(x\right)$ of the data are defined which,
+in some sense, ``characterize'' the data. Ideally, data $x^{\ast}$ simulated
+from the fitted model have similar values of these statistics,
+$T_{k}\left(x^{\ast}\right) \approx T_{k}\left(x\right)$.
+
+More precisely, simulate data $x_{1}^{\ast}, \dots x_{S}^{\ast}$ from the
+posterior predictive $p\left(x^{\ast}\vert x\right) \approx \int p\left(x^{\ast}
+\vert \theta\right) \hat{p}\left(\theta \vert x \right)d\theta$, where $x$ is
+the original data and $\hat{p}\left(\theta \vert x\right)$ is an estimate
+computed from posterior samples. For each of these simulated data sets, the
+characterizing statistics $T_{k}\left(x_{s}\right)$ are computed. Graphically
+comparing the true data $T_{k}\left(x\right)$ with the histogram of model-fit
+simulated $T_{k}\left(x^{\ast}\right)$ suggests ways in which the posited model
+fits -- the case where the observed $T_{k}\left(x\right)$ lie in the bulk of the
+$T_{k}\left(x^{\ast}_{s}\right)$ -- or fails to fit -- the case where
+$T_{k}\left(x\right)$ lie far from the bulk of $T_{k}\left(x^{\ast}_{s}\right)$
+-- the data well.
 
 \section{Simulation Study}
 
@@ -187,16 +213,16 @@ number of features $V \in \{10, 50\}$, and the total word count per document $N
 \in \{20, 50, 100\}$. On the other hand, we fix the number of topics to $K = 2$
 and the Dirichlet hyperparameter to $\alpha_{0} = \gamma_{0} = 1$. For each
 simulated data set, we perform estimation using Variational Bayes, MCMC
-sampling, and a parameteric bootstrap-after-VB procedure. In more detail, this
+sampling, and a parametric bootstrap-after-VB procedure. In more detail, this
 last parametric bootstrap procedure fits VB to the original data, simulates $B =
-?$ (todo how many bootstrap replicates?) new data sets $X^{\ast}_{b}$ according
-to the LDA model using VB-estimated parameters $\{\hat{\theta}^{\ast}_{b},
-\hat{\beta}^{\ast}_{b}\}$, and re-estimates parameters
-$\{\hat{\theta}^{\ast\ast}_{b}, \hat{\beta}^{\ast\ast}_{b}\}$ on each simulated data
-set, again using VB. The motivation for this procedure is the desire to strike
-an easily-parallelizable compromise between MCMC Sampling, which can be time
-consuming but has reliable uncertainty estimates, and Variational Bayes, which
-is fast, but can underestimate uncertainty.
+500$ new data sets $X^{\ast}_{b}$ according to the LDA model using VB-estimated
+parameters $\{\hat{\theta}^{\ast}_{b}, \hat{\beta}^{\ast}_{b}\}$, and
+re-estimates parameters $\{\hat{\theta}^{\ast\ast}_{b},
+\hat{\beta}^{\ast\ast}_{b}\}$ on each simulated data set, again using VB. The
+motivation for this procedure is the desire to strike an easily-parallelizable
+compromise between MCMC Sampling, which can be time consuming but has reliable
+uncertainty estimates, and Variational Bayes, which is fast, but can
+underestimate uncertainty.
 
 Figure \ref{fig:lda_contours} displays the true and posterior $\beta_{k}$ for
 the experiments with $V = 10$ features, while other simulation characteristics
@@ -213,7 +239,7 @@ As expected, when $D$ increases, the posterior for $\beta$, whose dimension does
 not increase with $D$, begins to concentrate around its true value. Consistent
 with earlier findings, the VB posteriors are generally lower variance and more
 elliptical than the true MCMC sampled posteriors. The bootstrap samples seem
-somewhere between the VB and MCMC sampled distributions in terms of variablity
+somewhere between the VB and MCMC sampled distributions in terms of variability
 within each feature. As the number of samples or number of words within samples
 increases, the three methods become indistinguishable. Interestingly, when $D$
 and $N$ are small ($N = D = 20$), VB appears more accurate than either the MCMC
@@ -235,8 +261,8 @@ Within each panel, we display histograms of the errors\footnote{We use a
 encodes the latent factor $k$.
 
 Here, the improved concentration in the high-dimensional ($V = 125$) regime is
-more readily apparent. Further, the superiority of gibbs sampling in the
-lower-dimensional ($V = 75$) case is still noticeable in the fact that the gibbs
+more readily apparent. Further, the superiority of MCMC in the
+lower-dimensional ($V = 75$) case is still noticeable in the fact that the MCMC
 histogram is somewhat narrower in the center. However, while there seems to be
 less mass in the tails for the Gibbs histogram, the tails themselves are just as
 wide as in the Variational Bayes histogram.
@@ -263,17 +289,17 @@ To begin to develop answers to these questions, we reanalyze the data of
 \citep{dethlefsen2011incomplete}, a study of bacterial dynamics in response to
 antibiotic treatment. This study monitored the microbiomes of three patients
 over ten months, with two antibiotics time courses introduced in between, in
-order to study the effect antiobiotic perturbations within the context of
+order to study the effect antibiotic perturbations within the context of
 natural long term dynamics. The study concluded that antibiotics cause
 substantial changes in short-term community composition, with certain species
 being substantially more resilient than others, and that in one patient,
 long-term effects could be observed. The purpose our case study is to compare
 these conclusions with those obtained through unsupervised probabilistic models.
 
-In light of the fact that variational in bacterial signatures tends to be
+In light of the fact that variation in bacterial signatures tends to be
 dominated by between individual effects, we choose to study one individual at a
 time. In this report, we focus on Subject F, who had been reported to exhibit
-incomplete recovery of the pre-antibiotic bacterial community. Further, we
+incomplete recovery of the pre-antibiotic treatment bacterial community. Further, we
 filter to only those bacteria present in at least 45\% of samples. This reduces
 the dimensionality from 2582 to 354.
 
@@ -292,11 +318,12 @@ but centered according to the average log probability, rather than any reference
 class.
 
 \subsection{Latent Dirichlet Allocation}
+\label{sec:antibiotics_lda}
 
 The fitted parameter values are summarized in Figures
 \ref{fig:antibiotics_lda_theta}, \ref{fig:antibiotics_lda_beta}.
 In Figure \ref{fig:antibiotics_lda_theta} the rows represent topics, the
-$x$-axis represents time, and the $y$-axis gives the fitted probabilties on a
+$x$-axis represents time, and the $y$-axis gives the fitted probabilities on a
 logit scale, but centered according to the average log probability, rather than
 any reference class, $g\left(\mathbf{p}\right) = \left(\log p_{1} - \overline{\log
   \mathbf{p}}, \dots, \log p_{K} - \overline{\log \mathbf{p}}\right)$. The boxplots
@@ -349,10 +376,105 @@ While we can interpret the LDA-estimated $\hat{\theta}_{i}$ according to their
 temporal context, this information was never directly provided to the algorithm.
 In contrast, we now apply the Dynamic Unigram Model to the same data, which
 explicitly models temporal evolution, but not latent mixture structure. Our
-primary results are displayed in Figure \ref{fig:antibiotics_unigram_theta}. 
+primary results are displayed in Figure \ref{fig:antibiotics_unigram_theta}.
+
+Each row in this figure is interpreted similarly to a row in
+\ref{fig:antibiotics_lda_beta}, except now they correspond to estimated
+proportions over time $\mu_{t}$ rather than transformed topics
+$g\left(\beta_{k}\right)$. In particular, only four of the 54 total timepoints
+is displayed, highlighting a time window around the first antibiotic time
+course. Such a display implicitly assumes a relatively smooth interpolation
+between timepoints.
+
+This analysis yields conclusions similar to those obtained through LDA, though
+reaching them requires somewhat more effort. For example, on day 10, most
+$\mu_{tv}$'s have most quantiles larger than zero, and few are positioned
+substantially higher than the bulk. This is consistent with higher community
+diversity before the antibiotic time course. On the other hand, at time 15, one
+day after the time course began, most species have quantiles lower than zero,
+while a few are positioned much larger than the rest. This corresponds to a less
+diverse community, whose membership is concentrated on those species with
+outlying boxplots. This decrease in diversity seems most profound at time 20; by
+time 25, during the interim, much of the community seems to have recovered.
+
+Further, we continue to see differential recovery across bacteria, though the
+effect is not as obvious as in LDA, where this effect was captured by topics.
+For example, many subintervals of Lachnospiraceae seem to return to their
+pre-antibiotics levels, while the Ruminococceae continue to have low values of
+$\mu_{tv}$.
+
+\subsection{Posterior Checks}
+
+In Figure \ref{fig:antibiotics_lda_posterior_ts}, we plot observed time series
+for randomly selected bacteria and contrast them with samples from the posterior
+predictive according to the four topic LDA model of
+section \label{sec:antibiotics_lda}. Each subpanel corresponds to a single RSV.
+The blue lines represent observed time series. Note that the $y$-axis scales
+vary, as some RSVs are much more abundant than others. Each black dot is a
+timepoint from a posterior predictive simulated time series.
+
+Generally, the posterior predictive time series are on the appropriate scale
+with approximately the correct shape. However, we observe two substantial types
+of departures between simulated and observed data. First, for series with larger
+counts, the posterior predictive tends to oversmooth. For example, the drop to 0
+in RSV 54 is not captured in any posterior predictive samples. Similar
+oversmoothing is visible in RSVs 177, 207, and 263. A more startling departure
+occurs in the second half of series 207. Here, the posterior predictive places
+most mass on the event that the bacterial time series rebounds to its initial
+abundance when in reality the species vanishes during the second antibiotic time
+course, never to return. A potential explanation for LDA's failure to capture
+this pattern is that not many initially highly abundant RSVs disappear after the
+second time course, and hence they are not captured by the global LDA summary.
+This suggests a technique for highlighting outlier RSVs: we can look at the
+average discrepancy between observed series and their posterior predictive
+samples.
+
+An alternative posterior predictive check compares PCA scores and loadings in
+the true and posterior predictive data. Our motivation is that many microbiome
+studies base their findings on views generated by PCA, so it would be desirable
+if our probabilistic summaries typically agree with the reductions produced by
+PCA.
+
+Figure \ref{fig:antibiotics_lda_posterior_evals} gives the PCA eigenvalues
+between the true and posterior predictive samples, after having
+$\asinh$-transformed both. The associated scores and loadings figures are
+available as Supplementary Figures \ref{fig:} and \ref{fig:}. The posterior
+predictive samples have comparable top four eigenvalues, but rapidly drop-off
+between the fourth and fifth eigenvalues. On the other hand, the observed data
+have a more steady decline. This is likely a consequence of using $K = 4$ topics
+in the LDA model, which would be consistent with the matrix factorization view
+of LDA described in section \ref{sec:nmf}. In light of these scree plots, it may
+be safe to increase $K$ in follow-up analysis, as long as topics remain
+interpretable.
 
 \section{Discussion}
 
+We have described the utility of a probabilistic modeling perspective in the
+analysis of microbiome data. We have provided a detailed implementation of benchmark
+analysis approaches, along with exploratory visualization of fitted parameters
+and model assessment through posterior predictive checks. Through simulation, we
+have established heuristics for determining the appropriateness of applying
+different models and inference mechanisms in alternative data regimes. On a real
+microbiome data analysis problem, we have characterized the advantages and
+limitations of multiple probabilistic modeling techniques. Rather than focusing
+on any single model, like most earlier work, we have emphasized the practice of
+contrasting, critiquing, and learning from multiple alternatives. Throughout, we
+have emphasized both insights in terms of estimated parameters, as well as
+uncertainty, in the form of full approximate posterior distributions.
+
+Microbiome studies are a source of richly structured, high-dimensional data,
+coupled with novel scientific problem formulations. For example, in the
+antibiotics data set described here, we have already encountered structure in
+the form of zero-inflated counts, time series with changepoints, and a priori
+known phylogenetic relationships between features. More modern microbiome
+studies tend to collect more samples as well as multiple sources of -- spectral
+and genomic, in addition bacterial abundance data, for example -- per sample.
+Further, the scientific investigation revolved around a combination of
+ecological community characterization and medically-relevant identification of
+treatment effects. We believe we have only begun to see the potential for
+probabilistic methods to guide careful scientific reasoning -- which emphasizes
+both insights and the degree of uncertainty about them -- in these richly
+structured scenarios.
 
 \section{Software}
 
@@ -370,7 +492,7 @@ Supplementary material is available online at
 
 \begin{figure}[!p]
   \centering\includegraphics{figure/betacontours1-1}
-  \caption{Different inferenece algorithms for LDA produce different uncertainty
+  \caption{Different inference algorithms for LDA produce different uncertainty
     assessments in small sample sizes, but become comparable as more data arrives.}
   \label{fig:lda_contours}
 \end{figure}
@@ -378,7 +500,7 @@ Supplementary material is available online at
 \begin{figure}[!p]
   \centering\includegraphics{figure/visualizezinfthetashist-1}
   \caption{Zero inflation poses problems for NMF, even when accounted for in the
-    likelihood. The deterioration is most dramatic when applying VB.}
+    likelihood. The deterioration is most dramatic when applying Variational Bayes.}
   \label{fig:zinf_thetas}
 \end{figure}
 
@@ -396,13 +518,36 @@ Supplementary material is available online at
   \caption{Each boxplot describes an approximate posterior for one $\beta_{vk}$.
     In light of Figure \ref{fig:antibiotics_lda_theta}, this guides the
     interpretation of which bacterial taxa are more or less prevalent during
-    antibiotic treaments.}
+    antibiotic treatments.}
   \label{fig:antibiotics_lda_beta}
 \end{figure}
 
 \begin{figure}[!p]
   \centering
   \includegraphics[scale=1]{figure/antibiotics_unigram_mu}
-  \caption{\label{fig:antibiotics_unigram_boxplot} } \end{figure}
+  \caption{Each boxplot refers to one $\mu_{vt}$. The rows are a subset of times
+    $t$ around the first antibiotic time course. This view provides one way of
+    smoothing abundance time series, to see how different species respond to
+    antibiotic treatment. \label{fig:antibiotics_unigram_theta} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[scale=0.1]{figure/lda-histogram-check.pdf}
+  \caption{As a posterior predictive check, we compute eigenvalues of data
+    simulated from the fitted LDA model. The boxplots summarize the posterior
+    predictive, while the blue points represent observed data eigenvalues. Note
+    that the $y$-axis is on a log scale. Evidently, the four-topic model
+    effectively creates a rank-four approximation of the original
+    data. \label{fig:antibiotics_lda_posterior_evals}}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[scale=0.1]{figure/lda-time-series-check.pdf}
+  \caption{We can visualize the simulated time series for randomly chosen RSVs
+    and compare them with the observed ones, as a posterior check.
+    \label{fig:antibiotics_lda_posterior_ts}}
+\end{figure}
 
 \end{document}
