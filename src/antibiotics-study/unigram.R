@@ -97,7 +97,7 @@ mu_hat <- mu_hat %>%
 group_order <- sort(table(taxa$Taxon_5), decreasing = TRUE)
 mu_hat$Taxon_5 <- factor(mu_hat$Taxon_5, levels = names(group_order))
 mu_hat$rsv <- factor(
-  taxa[mu_hat$rsv_ix]$rsv,
+  taxa[mu_hat$rsv_ix, ]$rsv,
   levels = rownames(tax_table(abt))
 )
 
@@ -161,9 +161,8 @@ p <- ggboxplot(
 ggsave("../../doc/figure/antibiotics_unigram_mu.pdf", p, width = 6, height = 3.5)
 
 ## ---- posterior-checks ----
-reshaped_data <- posterior_checks_input(
+checks_data <- posterior_checks_input(
   x,
-  samples$n_sim,
-  "../../data/figure-input/checks_unigram_"
+  samples$x_sim,
+  "../../data/figure-input/unigram"
 )
-counts_data_checker(reshaped_data, "../../doc/figure/unigram_post_checks")

@@ -227,9 +227,8 @@ p <- ggboxplot(
 ggsave("../../doc/figure/visualize_lda_beta-1.pdf", p, width = 6, height = 3.5)
 
 ## ---- posterior-checks ----
-reshaped_data <- posterior_checks_input(
+checks_data <- posterior_checks_input(
   x,
-  samples$n_sim,
-  "../../data/figure-input/checks_lda_"
+  samples$x_sim,
+  "../../data/figure-input/lda"
 )
-counts_data_checker(reshaped_data, "../../doc/figure/lda_post_checks")
