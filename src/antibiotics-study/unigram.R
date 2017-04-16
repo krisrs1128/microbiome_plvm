@@ -18,11 +18,9 @@ library("treelapse")
 library("feather")
 library("ggscaffold")
 source("./posterior_checks.R")
+dir.create("../../data/fits/", recursive = TRUE)
+dir.create("../../doc/figure/", recursive = TRUE)
 set.seed(11242016)
-
- theme_set(
-  min_theme(list(text_size = 8, subtitle_size = 12))
-)
 
 softmax <- function(x) {
   exp(x) / sum(exp(x))

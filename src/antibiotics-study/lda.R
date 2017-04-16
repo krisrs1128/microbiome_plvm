@@ -19,10 +19,10 @@ library("RColorBrewer")
 library("ggscaffold")
 library("feather")
 source("./posterior_checks.R")
+dir.create("../../data/fits/", recursive = TRUE)
+dir.create("../../doc/figure/", recursive = TRUE)
 set.seed(11242016)
-theme_set(min_theme())
 
-# Code Block -------------------------------------------------------------------
 ## ---- get-data ----
 data(abt)
 abt <- abt %>%
@@ -225,4 +225,4 @@ p <- ggboxplot(
 ggsave("../../doc/figure/visualize_lda_beta-1.pdf", p, width = 6, height = 3.5)
 
 ## ---- posterior-checks ----
-counts_data_checker(x, samples$n_sim, "lda_post_checks")
+counts_data_checker(x, samples$n_sim, "../../doc/figure/lda_post_checks")
