@@ -25,3 +25,4 @@ RUN Rscript -e "source('http://bioconductor.org/biocLite.R'); biocLite('phyloseq
 
 COPY README.md /home/
 COPY src/ /home/src/
+COPY data/antibiotics-study/abt.rda /home/data/antibiotics-study/abt.rda
