@@ -57,7 +57,7 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
   quantiles_comp <- m_sim %>%
     group_by(iteration) %>%
     do(
-      data.frame(
+      data_frame(
         type = "sim",
         q_ix = q_probs,
         q = quantile(asinh(.$sim_value), q_probs)
@@ -70,7 +70,7 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
       alpha = 0.1, position = position_jitter(h = 0.005),
     ) +
     geom_step(
-      data = data.frame(
+      data = data_frame(
         q_ix = q_probs,
         q = quantile(asinh(mx$truth), q_probs)
       ),
@@ -125,7 +125,10 @@ scores_summary <- function(data_list, supp_cols) {
   aligned_scores <- procrustes(true_scores, scores)$Yrot
   dimnames(aligned_scores) <- NULL
 
-  data.frame(aligned_scores, supp_cols)
+  cbind(
+    as_data_frame(aligned_scores),
+    as_data_frame(supp_cols)
+  )
 }
 
 loadings_summary <- function(data_list, supp_cols) {
@@ -139,12 +142,19 @@ loadings_summary <- function(data_list, supp_cols) {
   aligned_loadings <- procrustes(true_loadings, loadings)$Yrot
   dimnames(aligned_loadings) <- NULL
 
-  data.frame(aligned_loadings, supp_cols)
+  cbind(
+    as_data_frame(aligned_loadings),
+    as_data_frame(supp_cols)
+  )
 }
 
 evals_summary <- function(data_list, supp_cols) {
   evals <- princomp(scale(data_list$x_sim, scale = FALSE))$sdev
-  data.frame(evals, supp_cols)
+
+  cbind(
+    as_data_frame(evals),
+    as_data_frame(supp_cols)
+  )
 }
 
 sample_summary_fun <- function(x, x_sim, summary_fun, data_opts) {
@@ -171,7 +181,7 @@ sample_summary_fun <- function(x, x_sim, summary_fun, data_opts) {
     stat_list[[i]]$row_ix <- seq_len(nrow(stat_list[[i]]))
   }
 
-  rbindlist(stat_list)
+  do.call(rbind, stat_list)
 }
 
 summary_contours <- function(summary_data, plot_opts) {
@@ -194,51 +204,32 @@ summary_contours <- function(summary_data, plot_opts) {
     )
 }
 
-counts_data_checker <- function(x, x_sim, output_dir = ".") {
-  ## ---- posterior-data ----
+posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
   m_sim <- x_sim %>%
     melt(
       varnames = c("iteration", "sample", "rsv"),
       value.name = "sim_value"
     ) %>%
-    as.data.table()
+    as_data_frame()
 
   mx <- x %>%
     melt(
       varnames = c("sample", "rsv"),
       value.name = "truth"
     ) %>%
-    as.data.table()
-
-  all_plots <- list()
-  all_plots[["hists"]] <- compare_histograms(mx, m_sim)
-  all_plots[["quantiles"]] <- compare_quantiles(mx, m_sim)
-  all_plots[["margins"]] <- compare_margins(mx, m_sim, "rsv")
+    as_data_frame()
 
   mx_samples <- mx
   mx_samples$sample_id  <- sample_names(abt)[mx_samples$sample]
   mx_samples <- mx_samples %>%
     left_join(
-      data.frame(
+      cbind(
         sample_id = sample_names(abt),
-        sample_data(abt)
+        as_data_frame(sample_data(abt))
       )
     ) %>%
     filter(rsv %in% sample(seq_len(ntaxa(abt)), 12)) %>%
     left_join(m_sim)
-
-  all_plots[["ts"]] <- ggplot() +
-    geom_point(
-      data = mx_samples,
-      aes(x = time, y = asinh(sim_value), group = interaction(iteration, rsv)),
-      alpha = 0.01, size = 0.1
-    ) +
-    geom_line(
-      data = mx_samples %>% filter(iteration == 1),
-      aes(x = time, y = asinh(truth), group = rsv),
-      size = 0.5, col = "#79B5B7"
-    ) +
-    facet_wrap(~rsv, scales = "free", ncol = 4)
 
   scores_data <- sample_summary_fun(
     asinh(t(x)),
@@ -261,6 +252,49 @@ counts_data_checker <- function(x, x_sim, output_dir = ".") {
     list()
   )
 
+  input_data <- list(
+    "m_sim" = m_sim,
+    "mx" = mx,
+    "mx_samples" = mx_samples,
+    "scores_data" = scores_data,
+    "loadings_data" = loadings_data,
+    "evals_data" = evals_data
+  )
+
+  if (!is.null(file_basename)) {
+    for (i in seq_along(reshaped_data)) {
+      write_feather(
+        reshaped_data[[i]],
+        sprintf(
+          "%s_%s.feather",
+          file_basename,
+          names(reshaped_data[i])
+        )
+      )
+    }
+  }
+  input_data
+}
+
+counts_data_checker <- function(input_data, output_dir = ".") {
+  all_plots <- list()
+  all_plots[["hists"]] <- compare_histograms(input_data$mx, input_data$m_sim)
+  all_plots[["quantiles"]] <- compare_quantiles(input_data$mx, input_data$m_sim)
+  all_plots[["margins"]] <- compare_margins(input_data$mx, input_data$m_sim, "rsv")
+
+  all_plots[["ts"]] <- ggplot() +
+    geom_point(
+      data = input_data$mx_samples,
+      aes(x = time, y = asinh(sim_value), group = interaction(iteration, rsv)),
+      alpha = 0.01, size = 0.1
+    ) +
+    geom_line(
+      data = input_data$mx_samples %>% filter(iteration == 1),
+      aes(x = time, y = asinh(truth), group = rsv),
+      size = 0.5, col = "#79B5B7"
+    ) +
+    facet_wrap(~rsv, scales = "free", ncol = 4)
+
   plot_opts <- list(
     "x" = "X1",
     "y" = "X2",
@@ -268,22 +302,22 @@ counts_data_checker <- function(x, x_sim, output_dir = ".") {
     "h" = 1.5
   )
 
-  all_plots[["scores"]] <- summary_contours(scores_data, plot_opts) +
+  all_plots[["scores"]] <- summary_contours(input_data$scores_data, plot_opts) +
     coord_fixed(0.5)
 
   plot_opts$h <- 0.01
-  all_plots[["loadings"]] <- summary_contours(loadings_data, plot_opts) +
+  all_plots[["loadings"]] <- summary_contours(input_data$loadings_data, plot_opts) +
     coord_fixed(0.5)
 
   all_plots[["evals"]] <- ggplot() +
     geom_boxplot(
-      data = evals_data %>%
+      data = input_data$evals_data %>%
         filter(type == "sim"),
       aes(x = as.factor(row_ix), y = evals),
       outlier.size = 0.1, size = 0.1
     ) +
     geom_point(
-      data = evals_data %>%
+      data = input_data$evals_data %>%
         filter(type == "true"),
       aes(x = as.factor(row_ix), y = evals),
       col = "#79B5B7", size = 0.9
@@ -306,4 +340,7 @@ counts_data_checker <- function(x, x_sim, output_dir = ".") {
     )
   }
   all_plots
+}
+
+combined_figures <- function(input_data) {
 }
