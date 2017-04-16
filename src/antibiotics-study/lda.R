@@ -14,7 +14,6 @@ library("plyr")
 library("dplyr")
 library("ggplot2")
 library("phyloseq")
-library("treelapse")
 library("RColorBrewer")
 library("ggscaffold")
 library("feather")
@@ -24,7 +23,7 @@ dir.create("../../doc/figure/", recursive = TRUE)
 set.seed(11242016)
 
 ## ---- get-data ----
-data(abt)
+abt <- get(load("../../data/antibiotics-study/abt.rda"))
 abt <- abt %>%
   filter_taxa(function(x) sum(x != 0) > .45 * nsamples(abt), prune = TRUE) %>%
   subset_samples(ind == "F")
