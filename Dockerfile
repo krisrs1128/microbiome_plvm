@@ -19,5 +19,9 @@ RUN Rscript -e "install.packages('viridis')"
 RUN Rscript -e "install.packages('rstan')"
 RUN Rscript -e "install.packages('devtools')"
 RUN Rscript -e "devtools::install_github('krisrs1128/ggscaffold')"
+RUN Rscript -e "devtools::install_github('krisrs1128/nmfSim')"
+RUN Rscript -e "devtools::install_github('krisrs1128/boot_expers/ldaSim')"
 
 COPY README.md /home/
+COPY doc/figure/ /home/doc/figure/
+COPY src/ /home/src/
