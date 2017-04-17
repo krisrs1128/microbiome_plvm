@@ -23,5 +23,6 @@ cd $MICROBIOME_PLVM_DIR
 cd $MICROBIOME_PLVM_DIR/src/antibiotics-study
 Rscript lda.R
 Rscript unigram.R
+Rscript posterior_checks.R
 
 cd $MICROBIOME_PLVM_DIR
