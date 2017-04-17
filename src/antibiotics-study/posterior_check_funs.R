@@ -185,8 +185,9 @@ sample_summary_fun <- function(x, x_sim, summary_fun, data_opts) {
 }
 
 summary_contours <- function(summary_data, plot_opts) {
+  summary_data$method[summary_data$type == "true"] <- "truth"
   ggcontours(
-    summary_data,
+    summary_data %>% filter(type != "true"),
     plot_opts
   ) +
     geom_text(
@@ -194,14 +195,16 @@ summary_contours <- function(summary_data, plot_opts) {
         filter(type != "true") %>%
         group_by(row_ix, method) %>%
         summarise(V1 = mean(V1), V2 = mean(V2)),
-      aes(x = V1, y = V2, label = row_ix),
+      aes(x = V1, y = V2, label = row_ix, col = method),
       size = 4
     ) +
     geom_text(
       data = summary_data %>% filter(type == "true"),
       aes(x = V1, y = V2, label = row_ix),
       col = "#79B5B7", size = 4
-    )
+    ) +
+    scale_color_manual(values = wes_palette("Moonrise3", 3), guide = FALSE) +
+    facet_grid(method ~ .)
 }
 
 posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
@@ -300,7 +303,9 @@ counts_data_checker <- function(input_data, output_dir = ".") {
     "x" = "V1",
     "y" = "V2",
     "group" = "row_ix",
-    "col" = "method",
+    "fill" = "method",
+    "fill_type" = "category",
+    "fill_cols" = c("#85D4E3", "#F4B5BD", "#9C964A"),
     "h" = 1.5
   )
 
