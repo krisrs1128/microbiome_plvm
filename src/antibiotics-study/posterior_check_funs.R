@@ -34,7 +34,7 @@ compare_histograms <- function(mx, m_sim, n_vis = 4) {
   ggplot(hist_data) +
     geom_histogram(aes(x = asinh(value), fill = method), position = "dodge", bins = 100) +
     facet_grid(iteration ~ .) +
-    scale_fill_brewer(palette = "Set1") +
+    scale_fill_manual(values = wes_palette("Moonrise3", 3)) +
     theme(
       panel.border = element_rect(fill = "transparent", size = 0.5)
     )
@@ -54,7 +54,7 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
   }
 
   quantiles_comp <- m_sim %>%
-    group_by(iteration) %>%
+    group_by(iteration, method) %>%
     do(
       data_frame(
         type = "sim",
@@ -65,7 +65,7 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
 
   ggplot(quantiles_comp) +
     geom_step(
-      aes(x = q, y = q_ix, group = iteration),
+      aes(x = q, y = q_ix, col = method, group = iteration),
       alpha = 0.1, position = position_jitter(h = 0.005),
     ) +
     geom_step(
@@ -73,37 +73,38 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
         q_ix = q_probs,
         q = quantile(asinh(mx$truth), q_probs)
       ),
-      aes(x = q, y = q_ix),
-      col = "#79B5B7",
+      aes(x = q, y = q_ix, col = method),
       size = 0.5
     ) +
+    scale_color_manual(values = wes_palette("Moonrise3", 3))
     labs(
       "x" = "x",
       "y" = "Pr(asinh(count) < x)"
     )
 }
 
-compare_margins <- function(mx, m_sim, group_col) {
+compare_margins <- function(mx, m_sim) {
   group_totals <- mx %>%
-    group_by_(group_col) %>%
+    filter(method == "lda") %>%
+    group_by(rsv) %>%
     summarise(group_total = sum(asinh(truth)))
   group_totals$rank <- rank(group_totals$group_total)
 
   sim_group_totals <- m_sim %>%
-    group_by_("iteration", group_col) %>%
+    group_by(iteration, method, rsv) %>%
     summarise(sim_total = sum(asinh(sim_value))) %>%
     left_join(group_totals)
 
   ggplot() +
     geom_boxplot(
       data = sim_group_totals,
-      aes(y = as.factor(rank), x = sim_total),
+      aes(y = as.factor(rank), x = sim_total, fill = method, col = method),
       alpha = 0.1, size = 0.1
     ) +
     geom_step(
-      data = sim_group_totals %>% filter(iteration == 1),
+      data = group_totals,
       aes(y = rank, x = group_total),
-      col = "#79B5B7"
+      col = "#9C964A"
     ) +
     labs(
       "x" = "x",
@@ -279,7 +280,7 @@ counts_data_checker <- function(input_data, output_dir = ".") {
   all_plots <- list()
   all_plots[["hists"]] <- compare_histograms(input_data$mx, input_data$m_sim)
   all_plots[["quantiles"]] <- compare_quantiles(input_data$mx, input_data$m_sim)
-  all_plots[["margins"]] <- compare_margins(input_data$mx, input_data$m_sim, "rsv")
+  all_plots[["margins"]] <- compare_margins(input_data$mx, input_data$m_sim)
 
   all_plots[["ts"]] <- ggplot() +
     geom_point(
