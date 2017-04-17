@@ -33,7 +33,7 @@ compare_histograms <- function(mx, m_sim, n_vis = 4) {
   ggplot(hist_data) +
     geom_histogram(aes(x = asinh(value), fill = method), position = "dodge", bins = 100) +
     facet_grid(iteration ~ .) +
-    scale_fill_manual(values = c("#86B8B1", "#F0D8A8", "#FA2A00")) +
+    scale_fill_manual(values = c("#86B8B1", "#E5BB67", "#FA2A00")) +
   theme(
       panel.border = element_rect(fill = "transparent", size = 0.5)
     )
@@ -75,7 +75,7 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
       aes(x = q, y = q_ix), col = "#FA2A00",
       size = 0.5
     ) +
-    scale_color_manual(values = c("#86B8B1", "#F0D8A8")) +
+    scale_color_manual(values = c("#86B8B1", "#E5BB67")) +
     guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1))) +
     labs(
       "x" = "x",
@@ -298,7 +298,7 @@ posterior_checks_plots <- function(input_data) {
       aes(x = time, y = asinh(truth), group = rsv),
       size = 0.4, col = "#FA2A00"
     ) +
-    scale_color_manual(values = c("#86B8B1", "#F0D8A8")) +
+    scale_color_manual(values = c("#86B8B1", "#E5BB67")) +
     labs(x = "time", y = "asinh(abundance)") +
     guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1))) +
     facet_wrap(~rsv, scales = "free", ncol = 6) +
@@ -310,7 +310,7 @@ posterior_checks_plots <- function(input_data) {
     "group" = "row_ix",
     "fill" = "method",
     "fill_type" = "category",
-    "fill_cols" = c("#86B8B1","#F0D8A8"),
+    "fill_cols" = c("#86B8B1","#E5BB67"),
     "h" = 1.5
   )
 
@@ -324,25 +324,26 @@ posterior_checks_plots <- function(input_data) {
   all_plots[["evals"]] <- ggplot() +
     geom_point(
       data = input_data$evals_data %>%
+        filter(type == "sim"),
+      aes(x = as.factor(row_ix), y = log(value, 10), col = method),
+      alpha = 0.05, size = 0.05, position = position_jitter(h = 0, w = 0.25)
+    ) +
+    geom_point(
+      data = input_data$evals_data %>%
         filter(type == "true"),
-      aes(x = as.factor(row_ix), y = value),
+      aes(x = as.factor(row_ix), y = log(value, 10)),
       col = "#FA2A00", size = 0.9
     ) +
-    geom_boxplot(
-      data = input_data$evals_data %>%
-        filter(type == "sim"),
-      aes(x = as.factor(row_ix), y = value, fill = method, outlier.color = method),
-      outlier.size = 0.1, size = 0.1
-    ) +
-    ylim(0, 11) +
-    scale_y_log10() +
-    scale_fill_manual(values = c("#86B8B1", "#F0D8A8")) +
-  theme(
-      axis.text.x = element_blank()
+    ylim(log(0.25, 10), log(11, 10)) +
+    scale_color_manual(values = c("#86B8B1", "#E5BB67")) +
+    guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1), ncol = 1)) +
+    theme(
+      axis.text.x = element_blank(),
+      legend.position = "bottom"
     ) +
     labs(
       "x" = expression(i),
-      "y" = expression(log(lambda[i]))
+      "y" = expression(log[10](lambda[i]))
     )
 
   all_plots
