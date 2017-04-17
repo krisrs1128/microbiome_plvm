@@ -11,6 +11,7 @@ library("ggplot2")
 library("feather")
 library("tidyr")
 source("./posterior_check_funs.R")
+theme_set(ggscaffold::min_theme())
 set.seed(11242016)
 
 ## ---- read-reshape ----
@@ -26,7 +27,6 @@ input_types <- data_frame(
   separate(basename, c("method", "data"), "-")
 
 data_types <- unique(input_types$data)
-
 merged_data <- list()
 for (i in seq_along(data_types)) {
   cur_ix <- which(input_types$data == data_types[i])

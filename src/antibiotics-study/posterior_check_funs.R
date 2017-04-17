@@ -75,7 +75,7 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
       aes(x = q, y = q_ix, col = "#85D4E3"),
       size = 0.5
     ) +
-    scale_color_manual(values = wes_palette("Moonrise3", 3)) + 
+    scale_color_manual(values = wes_palette("Moonrise3", 3)) +
     labs(
       "x" = "x",
       "y" = "Pr(asinh(count) < x)"
