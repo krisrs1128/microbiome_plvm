@@ -38,5 +38,8 @@ for (i in seq_along(data_types)) {
 }
 
 ## ---- plot ----
-input_data <- merged_data
-
+p <- posterior_checks_plots(
+  merged_data,
+  "../../doc/figure/",
+  width = 5, height = 3
+)

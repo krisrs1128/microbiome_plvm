@@ -204,7 +204,7 @@ summary_contours <- function(summary_data, plot_opts) {
       col = "#79B5B7", size = 4
     ) +
     scale_color_manual(values = wes_palette("Moonrise3", 3), guide = FALSE) +
-    facet_grid(method ~ .)
+    facet_grid(. ~ method)
 }
 
 posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
@@ -279,7 +279,7 @@ posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
   input_data
 }
 
-counts_data_checker <- function(input_data, output_dir = ".") {
+posterior_checks_plots <- function(input_data, output_dir = ".", ...) {
   all_plots <- list()
   all_plots[["hists"]] <- compare_histograms(input_data$mx, input_data$m_sim)
   all_plots[["quantiles"]] <- compare_quantiles(input_data$mx, input_data$m_sim)
@@ -345,7 +345,8 @@ counts_data_checker <- function(input_data, output_dir = ".") {
     dir.create(output_dir, recursive = TRUE)
     ggsave(
       file = sprintf("%s/figure-%s.png", output_dir, names(all_plots)[i]),
-      all_plots[[i]]
+      all_plots[[i]],
+      ...
     )
   }
   all_plots
