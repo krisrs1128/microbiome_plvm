@@ -72,10 +72,10 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
         q_ix = q_probs,
         q = quantile(asinh(mx$truth), q_probs)
       ),
-      aes(x = q, y = q_ix, col = method),
+      aes(x = q, y = q_ix, col = "#85D4E3"),
       size = 0.5
     ) +
-    scale_color_manual(values = wes_palette("Moonrise3", 3))
+    scale_color_manual(values = wes_palette("Moonrise3", 3)) + 
     labs(
       "x" = "x",
       "y" = "Pr(asinh(count) < x)"
@@ -184,6 +184,7 @@ sample_summary_fun <- function(x, x_sim, summary_fun, data_opts) {
 }
 
 summary_contours <- function(summary_data, plot_opts) {
+  library("ggscaffold")
   summary_data$method[summary_data$type == "true"] <- "truth"
   ggcontours(
     summary_data %>% filter(type != "true"),
@@ -200,7 +201,7 @@ summary_contours <- function(summary_data, plot_opts) {
     geom_text(
       data = summary_data %>% filter(type == "true"),
       aes(x = V1, y = V2, label = row_ix),
-      col = "#79B5B7", size = 4
+      col = "#85D4E3", size = 4
     ) +
     scale_color_manual(values = wes_palette("Moonrise3", 3), guide = FALSE) +
     facet_grid(. ~ method)
@@ -279,6 +280,7 @@ posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
 }
 
 posterior_checks_plots <- function(input_data, output_dir = ".", ...) {
+  library("wesanderson")
   all_plots <- list()
   all_plots[["hists"]] <- compare_histograms(input_data$mx, input_data$m_sim)
   all_plots[["quantiles"]] <- compare_quantiles(input_data$mx, input_data$m_sim)
@@ -293,10 +295,11 @@ posterior_checks_plots <- function(input_data, output_dir = ".", ...) {
     geom_line(
       data = input_data$mx_samples %>% filter(iteration == 1),
       aes(x = time, y = asinh(truth), group = rsv),
-      size = 0.5, col = "#79B5B7"
+      size = 0.5, col = "#85D4E3"
     ) +
-    scale_color_brewer(palette = "Set1") +
-    facet_wrap(~rsv, scales = "free", ncol = 4)
+    scale_color_manual(values = wes_palette("Moonrise3", 3)) +
+    labs(x = "time", y = "asinh(abundance)") +
+    facet_wrap(~rsv, scales = "free", ncol = 6)
 
   plot_opts <- list(
     "x" = "V1",
@@ -304,7 +307,7 @@ posterior_checks_plots <- function(input_data, output_dir = ".", ...) {
     "group" = "row_ix",
     "fill" = "method",
     "fill_type" = "category",
-    "fill_cols" = c("#85D4E3", "#F4B5BD", "#9C964A"),
+    "fill_cols" = wes_palette("Moonrise3", 3),
     "h" = 1.5
   )
 
@@ -320,7 +323,7 @@ posterior_checks_plots <- function(input_data, output_dir = ".", ...) {
       data = input_data$evals_data %>%
         filter(type == "true"),
       aes(x = as.factor(row_ix), y = value),
-      col = "#79B5B7", size = 0.9
+      col = "#85D4E3", size = 0.9
     ) +
     geom_boxplot(
       data = input_data$evals_data %>%
@@ -341,6 +344,7 @@ posterior_checks_plots <- function(input_data, output_dir = ".", ...) {
     )
 
   for (i in seq_along(all_plots)) {
+    cat(sprintf("saving %s\n", names(all_plots)[i]))
     dir.create(output_dir, recursive = TRUE)
     ggsave(
       file = sprintf("%s/figure-%s.png", output_dir, names(all_plots)[i]),
