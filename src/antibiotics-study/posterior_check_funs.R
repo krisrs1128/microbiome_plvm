@@ -317,26 +317,28 @@ counts_data_checker <- function(input_data, output_dir = ".") {
     coord_fixed(0.5)
 
   all_plots[["evals"]] <- ggplot() +
-    geom_boxplot(
-      data = input_data$evals_data %>%
-        filter(type == "sim"),
-      aes(x = as.factor(row_ix), y = evals),
-      outlier.size = 0.1, size = 0.1
-    ) +
     geom_point(
       data = input_data$evals_data %>%
         filter(type == "true"),
-      aes(x = as.factor(row_ix), y = evals),
+      aes(x = as.factor(row_ix), y = value),
       col = "#79B5B7", size = 0.9
+    ) +
+    geom_boxplot(
+      data = input_data$evals_data %>%
+        filter(type == "sim"),
+      aes(x = as.factor(row_ix), y = value, col = method, fill = method),
+      outlier.size = 0.1, size = 0.1
     ) +
     ylim(0, 11) +
     scale_y_log10() +
+    scale_color_manual(values = wes_palette("Moonrise3", 3), guide = FALSE) +
+    scale_fill_manual(values = wes_palette("Moonrise3", 3)) +
     theme(
       axis.text.x = element_blank()
     ) +
     labs(
       "x" = "Index",
-      "y" = "Eigenvalue"
+      "y" = "log(Eigenvalue)"
     )
 
   for (i in seq_along(all_plots)) {
