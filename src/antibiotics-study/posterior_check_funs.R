@@ -33,10 +33,11 @@ compare_histograms <- function(mx, m_sim, n_vis = 4) {
   ggplot(hist_data) +
     geom_histogram(aes(x = asinh(value), fill = method), position = "dodge", bins = 100) +
     facet_grid(iteration ~ .) +
-    scale_fill_manual(values = c("#86B8B1", "#E5BB67", "#FA2A00")) +
+    scale_fill_manual(values = c("#86B8B1", "#000000" "#E5BB67")) +
   theme(
-      panel.border = element_rect(fill = "transparent", size = 0.5)
-    )
+    panel.border = element_rect(fill = "transparent", size = 0.5),
+    legend.position = "bottom"
+  )
 }
 
 #' Plot quantiles of true vs. simulated data
@@ -72,7 +73,7 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
         q_ix = q_probs,
         q = quantile(asinh(mx$truth), q_probs)
       ),
-      aes(x = q, y = q_ix), col = "#FA2A00",
+      aes(x = q, y = q_ix), col = "#000000",
       size = 0.5
     ) +
     scale_color_manual(values = c("#86B8B1", "#E5BB67")) +
@@ -80,7 +81,8 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
     labs(
       "x" = "x",
       "y" = "Pr(asinh(count) < x)"
-    )
+    ) +
+    theme(legend.position = "bottom")
 }
 
 compare_margins <- function(mx, m_sim) {
@@ -202,9 +204,9 @@ summary_contours <- function(summary_data, plot_opts) {
     geom_text(
       data = summary_data %>% filter(type == "true"),
       aes(x = V1, y = V2, label = row_ix),
-      col = "#FA2A00", size = 1
+      col = "#000000", size = 1
     ) +
-    scale_color_manual(values = c("#86B8B1", "#FA2A00"), guide = FALSE) +
+    scale_color_manual(values = c("#86B8B1", "#000000"), guide = FALSE) +
     facet_grid(. ~ method)
 }
 
@@ -296,12 +298,12 @@ posterior_checks_plots <- function(input_data) {
     geom_line(
       data = input_data$mx_samples %>% filter(iteration == 1),
       aes(x = time, y = asinh(truth), group = rsv),
-      size = 0.4, col = "#FA2A00"
+      size = 0.4, col = "#000000"
     ) +
     scale_color_manual(values = c("#86B8B1", "#E5BB67")) +
     labs(x = "time", y = "asinh(abundance)") +
-    guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1))) +
-    facet_wrap(~rsv, scales = "free", ncol = 6) +
+    guides(colour = guide_legend(nrow = 2, override.aes = list(alpha = 1, size = 1))) +
+    facet_wrap(~rsv, scales = "free", ncol = 3) +
     theme(legend.position = "bottom")
 
   plot_opts <- list(
@@ -311,7 +313,8 @@ posterior_checks_plots <- function(input_data) {
     "fill" = "method",
     "fill_type" = "category",
     "fill_cols" = c("#86B8B1","#E5BB67"),
-    "h" = 1.5
+    "h" = 1.5,
+    "theme_opts" = list("text_size" = 10, "subtitle_size" = 11)
   )
 
   all_plots[["scores"]] <- summary_contours(input_data$scores_data, plot_opts) +
@@ -332,7 +335,7 @@ posterior_checks_plots <- function(input_data) {
       data = input_data$evals_data %>%
         filter(type == "true"),
       aes(x = as.factor(row_ix), y = log(value, 10)),
-      col = "#FA2A00", size = 0.9
+      col = "#000000", size = 0.9
     ) +
     ylim(log(0.25, 10), log(11, 10)) +
     scale_color_manual(values = c("#86B8B1", "#E5BB67")) +
