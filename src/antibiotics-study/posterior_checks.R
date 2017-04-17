@@ -10,6 +10,7 @@ library("dplyr")
 library("ggplot2")
 library("feather")
 library("tidyr")
+source("./posterior_check_funs.R")
 set.seed(11242016)
 
 ## ---- read-reshape ----

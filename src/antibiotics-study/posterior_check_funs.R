@@ -27,7 +27,6 @@ compare_histograms <- function(mx, m_sim, n_vis = 4) {
     m_sim %>%
       filter(iteration %in% round(seq(1, iter_max, length.out = n_vis))) %>%
       rename(value = sim_value)
-    )
   )
 
   ## make histograms
