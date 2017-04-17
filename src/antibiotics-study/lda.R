@@ -8,7 +8,6 @@
 
 ## ---- setup ----
 library("rstan")
-library("data.table")
 library("reshape2")
 library("plyr")
 library("dplyr")
@@ -17,8 +16,9 @@ library("phyloseq")
 library("RColorBrewer")
 library("ggscaffold")
 library("feather")
-source("./posterior_checks.R")
+source("./posterior_check_funs.R")
 dir.create("../../data/fits/", recursive = TRUE)
+dir.create("../../data/figure-input/", recursive = TRUE)
 dir.create("../../doc/figure/", recursive = TRUE)
 set.seed(11242016)
 
@@ -47,7 +47,7 @@ rownames(releveled_sample_data) <- abt %>%
 sample_data(abt) <- releveled_sample_data
 
 ## ---- histograms ---
-transformed_counts <- data.frame(
+transformed_counts <- data_frame(
   count = c(get_taxa(abt), asinh(get_taxa(abt))),
   transformation = c(
     rep("original", ntaxa(abt) * nsamples(abt)),
@@ -114,11 +114,14 @@ for (i in seq_len(n_iter)) {
 }
 
 beta_hat <- beta_logit %>%
-  melt() %>%
-  setnames(c("iterations", "topic", "rsv_ix", "beta_logit"))
+  melt(
+    varnames = c("iterations", "topic", "rsv_ix"),
+    value.name = "beta_logit"
+  ) %>%
+  as_data_frame()
 
 beta_hat$rsv <- rownames(tax_table(abt))[beta_hat$rsv_ix]
-taxa <- data.table(tax_table(abt)@.Data)
+taxa <- as_data_frame(tax_table(abt)@.Data)
 taxa$rsv <- rownames(tax_table(abt))
 taxa$Taxon_5[which(taxa$Taxon_5 == "")] <- taxa$Taxon_4[which(taxa$Taxon_5 == "")]
 
@@ -183,7 +186,7 @@ p <- ggplot(theta_hat) +
     size = 0.1,
     notchwidth = 0.1
   ) +
-scale_y_continuous(breaks = scales::pretty_breaks(3)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(3)) +
   min_theme(list(border_size = 0.7, text_size = 10, subtitle_size = 11)) +
   facet_grid(topic ~ condition, scales = "free_x", space = "free_x") +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
@@ -224,4 +227,8 @@ p <- ggboxplot(
 ggsave("../../doc/figure/visualize_lda_beta-1.pdf", p, width = 6, height = 3.5)
 
 ## ---- posterior-checks ----
-counts_data_checker(x, samples$n_sim, "../../doc/figure/lda_post_checks")
+checks_data <- posterior_checks_input(
+  x,
+  samples$x_sim,
+  "../../data/figure-input/lda"
+)

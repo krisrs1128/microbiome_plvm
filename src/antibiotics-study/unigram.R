@@ -7,7 +7,6 @@
 
 ## ---- setup ----
 library("rstan")
-library("data.table")
 library("reshape2")
 library("plyr")
 library("dplyr")
@@ -16,7 +15,7 @@ library("RColorBrewer")
 library("phyloseq")
 library("feather")
 library("ggscaffold")
-source("./posterior_checks.R")
+source("./posterior_check_funs.R")
 dir.create("../../data/fits/", recursive = TRUE)
 dir.create("../../doc/figure/", recursive = TRUE)
 set.seed(11242016)
@@ -56,9 +55,9 @@ samples <- rstan::extract(stan_fit)
 rm(stan_fit)
 
 ## ---- prepare-mu ----
-taxa <- data.table(
+taxa <- cbind(
   rsv = rownames(tax_table(abt)),
-  tax_table(abt)@.Data
+  as_data_frame(tax_table(abt)@.Data)
 )
 taxa$Taxon_5[which(taxa$Taxon_5 == "")] <- taxa$Taxon_4[which(taxa$Taxon_5 == "")]
 taxa$Taxon_5 <- taxa$Taxon_5 %>%
@@ -98,7 +97,7 @@ mu_hat <- mu_hat %>%
 group_order <- sort(table(taxa$Taxon_5), decreasing = TRUE)
 mu_hat$Taxon_5 <- factor(mu_hat$Taxon_5, levels = names(group_order))
 mu_hat$rsv <- factor(
-  taxa[mu_hat$rsv_ix]$rsv,
+  taxa[mu_hat$rsv_ix, ]$rsv,
   levels = rownames(tax_table(abt))
 )
 
@@ -162,4 +161,8 @@ p <- ggboxplot(
 ggsave("../../doc/figure/antibiotics_unigram_mu.pdf", p, width = 6, height = 3.5)
 
 ## ---- posterior-checks ----
-counts_data_checker(x, samples$x_sim, "../../doc/figure/unigram_post_checks")
+checks_data <- posterior_checks_input(
+  x,
+  samples$x_sim,
+  "../../data/figure-input/unigram"
+)
