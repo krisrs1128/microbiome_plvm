@@ -10,30 +10,27 @@
 
 ## ---- libraries-boot-expers ----
 library("feather")
-library("data.table")
+library("readr")
 library("plyr")
 library("dplyr")
 library("tidyr")
-library("rstan")
 library("ggplot2")
-library("ggscaffold")
 library("ldaSim")
-dev.new(width = 4, height = 2)
 
 ## ---- paths ----
 base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 lda_dir <- file.path(base_dir, "src", "sim", "lda")
 output_path <- file.path(lda_dir, "fits")
-metadata <- fread(file.path(output_path, "metadata.csv")) %>%
-  unique()
+metadata <- read_csv(file.path(output_path, "metadata.csv")) %>%
+  unique() %>%
+  mutate(file = file.path(lda_dir, "pipeline", file))
 
 ## ---- beta-samples ----
 beta <- get_truth_data(metadata, "beta") %>%
   rename(variable = v)
 combined <- get_samples(metadata, "beta", c("iteration", "k", "variable")) %>%
   full_join(get_bootstraps(metadata, "beta")) %>%
-  left_join(beta) %>%
-  setDT()
+  left_join(beta)
 
 ## ---- beta-alignment ----
 mcombined <- melt_reshaped_samples(combined)
@@ -58,5 +55,13 @@ for (i in seq_along(unique_V)) {
 }
 
 ## ---- betacontours1 ----
-ggsave(file.path(base_dir, "doc", "figure/betacontours1-1.pdf"), p[[1]])
+p[[1]] <- p[[1]] +
+  labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
+  facet_grid(N + D ~ method)
 
+ggsave(
+  file.path(base_dir, "doc", "figure/betacontours1-1.pdf"),
+  p[[1]],
+  width = 5,
+  height = 3
+)

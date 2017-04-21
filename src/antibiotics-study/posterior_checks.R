@@ -8,9 +8,11 @@
 library("plyr")
 library("dplyr")
 library("ggplot2")
+library("scales")
 library("feather")
 library("tidyr")
 source("./posterior_check_funs.R")
+theme_set(ggscaffold::min_theme(list(text_size = 10, subtitle_size = 11)))
 set.seed(11242016)
 
 ## ---- read-reshape ----
@@ -26,7 +28,6 @@ input_types <- data_frame(
   separate(basename, c("method", "data"), "-")
 
 data_types <- unique(input_types$data)
-
 merged_data <- list()
 for (i in seq_along(data_types)) {
   cur_ix <- which(input_types$data == data_types[i])
@@ -39,8 +40,15 @@ for (i in seq_along(data_types)) {
 }
 
 ## ---- plot ----
-p <- posterior_checks_plots(
-  merged_data,
-  "../../doc/figure/",
-  width = 5, height = 3
-)
+p <- posterior_checks_plots(merged_data)
+
+output_dir <- "../../doc/figure/"
+dir.create(output_dir, recursive = TRUE)
+
+ggsave(sprintf("%s/posterior_check_hists.png", output_dir), p[["hists"]], width = 6, height = 3.5)
+ggsave(sprintf("%s/posterior_check_quantiles.png", output_dir), p[["quantiles"]], width = 4.5, height = 2.2)
+ggsave(sprintf("%s/posterior_check_margins.png", output_dir), p[["margins"]], width = 6, height = 3.5)
+ggsave(sprintf("%s/posterior_check_ts.png", output_dir), p[["ts"]], width = 6, height = 4)
+ggsave(sprintf("%s/posterior_check_scores.png", output_dir), p[["scores"]], width = 5, height = 2.9)
+ggsave(sprintf("%s/posterior_check_loadings.png", output_dir), p[["loadings"]], width = 2, height = 3.5)
+ggsave(sprintf("%s/posterior_check_evals.png", output_dir), p[["evals"]], width = 6, height = 3.5)

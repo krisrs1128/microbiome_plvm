@@ -33,10 +33,11 @@ compare_histograms <- function(mx, m_sim, n_vis = 4) {
   ggplot(hist_data) +
     geom_histogram(aes(x = asinh(value), fill = method), position = "dodge", bins = 100) +
     facet_grid(iteration ~ .) +
-    scale_fill_manual(values = wes_palette("Moonrise3", 3)) +
-    theme(
-      panel.border = element_rect(fill = "transparent", size = 0.5)
-    )
+    scale_fill_manual(values = c("#86B8B1", "#000000", "#b186b8")) +
+  theme(
+    panel.border = element_rect(fill = "transparent", size = 0.5),
+    legend.position = "bottom"
+  )
 }
 
 #' Plot quantiles of true vs. simulated data
@@ -72,14 +73,16 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
         q_ix = q_probs,
         q = quantile(asinh(mx$truth), q_probs)
       ),
-      aes(x = q, y = q_ix, col = method),
+      aes(x = q, y = q_ix), col = "#000000",
       size = 0.5
     ) +
-    scale_color_manual(values = wes_palette("Moonrise3", 3))
+    scale_color_manual(values = c("#86B8B1", "#b186b8")) +
+    guides(colour = guide_legend(nrow = 2, override.aes = list(alpha = 1, size = 2))) +
     labs(
       "x" = "x",
       "y" = "Pr(asinh(count) < x)"
-    )
+    ) +
+    theme(legend.key.width = unit(0.25, "in"))
 }
 
 compare_margins <- function(mx, m_sim) {
@@ -183,27 +186,28 @@ sample_summary_fun <- function(x, x_sim, summary_fun, data_opts) {
   do.call(rbind, stat_list)
 }
 
-summary_contours <- function(summary_data, plot_opts) {
-  summary_data$method[summary_data$type == "true"] <- "truth"
+summary_contours <- function(summary_data, plot_opts, text_size = 3) {
+  library("ggscaffold")
   ggcontours(
     summary_data %>% filter(type != "true"),
     plot_opts
   ) +
-    geom_text(
-      data = summary_data %>%
-        filter(type != "true") %>%
-        group_by(row_ix, method) %>%
-        summarise(V1 = mean(V1), V2 = mean(V2)),
-      aes(x = V1, y = V2, label = row_ix, col = method),
-      size = 4
-    ) +
-    geom_text(
-      data = summary_data %>% filter(type == "true"),
-      aes(x = V1, y = V2, label = row_ix),
-      col = "#79B5B7", size = 4
-    ) +
-    scale_color_manual(values = wes_palette("Moonrise3", 3), guide = FALSE) +
-    facet_grid(. ~ method)
+  geom_text(
+    data = summary_data %>% filter(type == "true"),
+    aes(x = V1, y = V2, label = row_ix),
+    col = "#000000", size = text_size, alpha = 0.9
+  ) +
+  geom_text(
+    data = summary_data %>%
+      filter(type != "true") %>%
+      group_by(row_ix, method) %>%
+      summarise(V1 = mean(V1), V2 = mean(V2)),
+    aes(x = V1, y = V2, label = row_ix, col = method),
+    size = text_size
+  ) +
+  scale_color_manual(values = c("#3d6862", "#714678"), guide = FALSE) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1), ncol = 1)) +
+  facet_grid(method ~ .)
 }
 
 posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
@@ -278,7 +282,8 @@ posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
   input_data
 }
 
-posterior_checks_plots <- function(input_data, output_dir = ".", ...) {
+posterior_checks_plots <- function(input_data) {
+  library("ggplot2")
   all_plots <- list()
   all_plots[["hists"]] <- compare_histograms(input_data$mx, input_data$m_sim)
   all_plots[["quantiles"]] <- compare_quantiles(input_data$mx, input_data$m_sim)
@@ -293,10 +298,12 @@ posterior_checks_plots <- function(input_data, output_dir = ".", ...) {
     geom_line(
       data = input_data$mx_samples %>% filter(iteration == 1),
       aes(x = time, y = asinh(truth), group = rsv),
-      size = 0.5, col = "#79B5B7"
+      size = 0.4, col = "#000000"
     ) +
-    scale_color_brewer(palette = "Set1") +
-    facet_wrap(~rsv, scales = "free", ncol = 4)
+    scale_color_manual(values = c("#86B8B1", "#b186b8")) +
+    labs(x = "time", y = "asinh(abundance)") +
+    guides(colour = guide_legend(nrow = 2, override.aes = list(alpha = 1, size = 2))) +
+    facet_wrap(~rsv, scales = "free", ncol = 3)
 
   plot_opts <- list(
     "x" = "V1",
@@ -304,49 +311,45 @@ posterior_checks_plots <- function(input_data, output_dir = ".", ...) {
     "group" = "row_ix",
     "fill" = "method",
     "fill_type" = "category",
-    "fill_cols" = c("#85D4E3", "#F4B5BD", "#9C964A"),
-    "h" = 1.5
+    "fill_colors" = c("#86B8B1","#b186b8"),
+    "h" = 2.5,
+    "theme_opts" = list("text_size" = 10, "subtitle_size" = 11, "key_width" = 1,
+                        "border_size" = 1)
   )
 
-  all_plots[["scores"]] <- summary_contours(input_data$scores_data, plot_opts) +
-    coord_fixed(0.5)
+  all_plots[["scores"]] <- summary_contours(input_data$scores_data, plot_opts, 2.3) +
+    labs(x = "Axis 1", y = "Axis 2") +
+    coord_fixed(0.8)
 
   plot_opts$h <- 0.01
-  all_plots[["loadings"]] <- summary_contours(input_data$loadings_data, plot_opts) +
-    coord_fixed(0.5)
+  plot_opts$theme_opts$legend_position <- "none"
+  all_plots[["loadings"]] <- summary_contours(input_data$loadings_data, plot_opts, 2.3) +
+    scale_x_continuous(breaks = c(0.05, 0, 0.05)) +
+    labs(x = "Axis 1", y = "Axis 2") +
+    coord_fixed(0.4)
 
   all_plots[["evals"]] <- ggplot() +
+   geom_point(
+      data = input_data$evals_data %>%
+        filter(type == "sim"),
+      aes(x = as.factor(row_ix), y = log(value, 10), col = method),
+      alpha = 0.05, size = 0.05, position = position_jitter(h = 0, w = 0.25)
+    ) +
     geom_point(
       data = input_data$evals_data %>%
         filter(type == "true"),
-      aes(x = as.factor(row_ix), y = value),
-      col = "#79B5B7", size = 0.9
+      aes(x = as.factor(row_ix), y = log(value, 10)),
+      col = "#000000", size = 0.9
     ) +
-    geom_boxplot(
-      data = input_data$evals_data %>%
-        filter(type == "sim"),
-      aes(x = as.factor(row_ix), y = value, col = method, fill = method),
-      outlier.size = 0.1, size = 0.1
-    ) +
-    ylim(0, 11) +
-    scale_y_log10() +
-    scale_color_manual(values = wes_palette("Moonrise3", 3), guide = FALSE) +
-    scale_fill_manual(values = wes_palette("Moonrise3", 3)) +
-    theme(
-      axis.text.x = element_blank()
-    ) +
+    ylim(log(0.25, 10), log(11, 10)) +
+    scale_color_manual(values = c("#86B8B1", "#b186b8")) +
+    scale_y_continuous(breaks = pretty_breaks(n = 2)) +
+    guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1), ncol = 1)) +
+    theme(axis.text.x = element_blank()) +
     labs(
-      "x" = "Index",
-      "y" = "log(Eigenvalue)"
+      "x" = expression(i),
+      "y" = expression(log[10](lambda[i]))
     )
 
-  for (i in seq_along(all_plots)) {
-    dir.create(output_dir, recursive = TRUE)
-    ggsave(
-      file = sprintf("%s/figure-%s.png", output_dir, names(all_plots)[i]),
-      all_plots[[i]],
-      ...
-    )
-  }
   all_plots
 }
