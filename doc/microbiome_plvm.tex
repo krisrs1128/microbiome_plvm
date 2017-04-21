@@ -62,7 +62,8 @@ accepted for publication November 1, 2010}
     simulations and case studies are available publicly.
   }
   {
-    Microbiome; Microbial ecology; Latent Dirichlet Allocation; Nonnegative Matrix Factorization; Posterior predictive checks; Bayesian data analysis
+    Microbiome; Microbial ecology; Latent Dirichlet Allocation; Nonnegative
+    Matrix Factorization; Posterior predictive checks; Bayesian data analysis
   }
 \end{abstract}
 
@@ -583,21 +584,29 @@ Supplementary material is available online at
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=0.3]{figure/posterior_check_quantiles}
-  \caption{\label{fig:antibiotics_posterior_quantiles} }
+  \includegraphics[scale=0.2]{figure/posterior_check_quantiles}
+  \caption{As a posterior check, we compare the observed with simulated overall
+    data quantiles. The black, blue, and purple lines represent the observed
+    data, posterior samples from LDA, and posterior samples from the Dynamic
+    Unigram Model. From this view, we see that the LDA model tends to
+    underestimate the overall number of zeros in the data, while the Dynamic
+    Unigram Model matches the observed quantiles almost
+    exactly. \label{fig:antibiotics_posterior_quantiles} }
 \end{figure}
 
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=0.3]{figure/posterior_check_scores}
-  \caption{\label{fig:antibiotics_posterior_scores} }
-\end{figure}
-
-\begin{figure}[!p]
-  \centering
-  \includegraphics[scale=0.3]{figure/posterior_check_loadings}
-  \caption{\label{fig:antibiotics_poterior_loadings} }
+  \includegraphics[scale=0.15]{figure/posterior_check_loadings}
+  \includegraphics[scale=0.15]{figure/posterior_check_scores}
+  \caption{The eigenvalues displayed in Figure
+    \ref{fig:antibiotics_posterior_evals} correspond to PCAs computed on
+    posterior samples, which are aligned and overlaid here. The left pair of
+    panels give loadings for each timepoint, while the right pair provide scores
+    for each RSV. The individual posterior samples have been smoothed into
+    contours, while the posterior means are displayed as shaded text. The
+    observed data PCA results, after alignment with posterior samples, are
+    displayed as black text. \label{fig:antibiotics_posterior_pca} }
 \end{figure}
 
 \end{document}
