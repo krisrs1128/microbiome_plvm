@@ -77,18 +77,18 @@ perturbations \citep{dethlefsen2011incomplete}.
 In the process, there tend to be two complementary difficulties. First, the data
 are often high-dimensional, measured over several hundreds or thousands of
 bacteria. Studying patterns at the level of individual bacteria is typically
-infeasible. Second, it can be important to study bacterial abundances in context
-of known biological information. For example, it is scientifically meaningful
-when a collection of evolutionarily related bacteria change in sync with one
-another.
+uninformative. Second, it can be important to study bacterial abundances in context
+of existing biological knowledge. For example, it is scientifically meaningful
+when a collection of evolutionarily related bacteria have similar abundance
+profiles.
 
 \section{Methods}
 
 We now review a few of the statistical modeling techniques that we believe can
 be useful building blocks when performing microbiome analysis. Many of these
-techniques have been borrowed from text analysis, thinking of the samples by
-bacteria matrix as a biological analog of the usual document-term matrix. The
-idea of transferring these techniques to the microbiome is not new, though its
+techniques have been borrowed from text analysis, thinking of the bacterial
+counts matrix as a biological analog of the usual document-term matrix. The idea
+of transferring these techniques to the microbiome is not new, though its
 appropriateness and usefulness has only been explored in relatively limited
 settings \citep{shafiei2015biomico, chen2012estimating, holmes2012dirichlet,
   chen2013variable}.
@@ -107,36 +107,32 @@ $K$ underlying topics. Represent the term in the $n_{th}$ word of this document
 by $w_{dn}$, and the associated topic by $z_{dn}$. Suppose the $k^{th}$ topic
 places weight $\beta_{vk}$ on the $v^{th}$ term, so that $\beta_{\cdot k} \in
 \simplex^{V}$. Then, the generative mechanism is
-
 \begin{align*}
 w_{dn} \vert \left(\beta_{\cdot k}\right)_{k = 1}^{K}, z_{dn} &\sim \Mult\left(1, \beta_{\cdot z_{dn}}\right) \\
 z_{dn} \vert \theta_{d} &\sim \Mult\left(1, \theta_{d}\right) \\
 \theta_{d} &\sim \Dir\left(\alpha\right) \\
 \beta_{\cdot k} &\sim \Dir\left(\gamma\right).
 \end{align*}
-
-
-In the microbiome application, we will find a formulation that marginalizes over
+In microbiome applications, we will find a formulation that marginalizes over
 the $z_{dn}$ more convenient. Indeed, a strict analogy between text modeling and
-microbiome analysis would consider each bacteria a word $w_{dn}$, while
-what we are more interested in are counts of species across samples.
-Writing $n_{dv} = \sum_{n = 1}^{N_{d}} \indic{w_{dn} = v}$, we can write the
-marginal distribution as
-
+microbiome analysis would consider each bacteria a word $w_{dn}$, and we are
+more interested in are counts of species across samples. Setting $n_{dv} =
+\sum_{n = 1}^{N_{d}} \indic{w_{dn} = v}$, we can write the marginal distribution
+as
 \begin{align*}
 n_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\sim \Mult\left(n_{d\ast}, \beta \theta_{d}\right) \\
 \beta_{\cdot k} &\sim \Dir\left(\gamma\right), k = 1, \dots, K \\
-\theta_{d} &\sim \Dir\left(\alpha\right), d = 1, \dots D
+\theta_{d} &\sim \Dir\left(\alpha\right), d = 1, \dots D.
 \end{align*}
 
 \subsection{Dynamic Unigram Model}
 
-While LDA imagines samples being mixtures of fundamental topics on the
-$V$-dimensional simplex, the Dynamic Unigram Model identifies a sequence of
-samples over time with a curve along this simplex \citep{blei2006dynamic}. To
-enforce smoothness in probabilities over time, a random walk is used is
-passed through a softmax function. That is, define,
-
+Geometrically, while LDA identifies samples with points in the convex hull of
+$K$ topics on the $V$-dimensional simplex, the Dynamic Unigram Model relates teh
+change of samples over time with a continuous curve on this $V$-dimensional
+simplex \citep{blei2006dynamic}. This curve reflects the gradual evolution of
+probabilities over time, and is implemented by passing a random walk through a
+multilogit link. That is the Dynamic Unigram Model posits the generative model
 \begin{align*}
 n_{d\cdot} \vert \mu_{t\left(d\right)}  &\sim \Mult\left(\sum_{v} n_{dv}, S\left(\mu_{t\left(d\right)}\right)\right) \\
 \mu_{t} \vert \mu_{t - 1} &\sim \Gsn\left(\mu_{t - 1}, \sigma^{2}I_{V}\right) \\
@@ -144,8 +140,9 @@ n_{d\cdot} \vert \mu_{t\left(d\right)}  &\sim \Mult\left(\sum_{v} n_{dv}, S\left
 \end{align*}
 where $S$ is the multilogit link
 \begin{align*}
-\left[S\left(\mu\right)\right]_{v} = \frac{\exp{\mu_{v}}}{\sum_{v^{\prime}} \exp{\mu_{v^{\prime}}}}.
+\left[S\left(\mu\right)\right]_{v} = \frac{\exp{\mu_{v}}}{\sum_{v^{\prime}} \exp{\mu_{v^{\prime}}}},
 \end{align*}
+and $t\left(d\right)$ maps document $d$ to the time it was sampled.
 
 \subsection{Nonnegative Matrix Factorization}
 \label{sec:nmf}
