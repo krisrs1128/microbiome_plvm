@@ -33,7 +33,7 @@ compare_histograms <- function(mx, m_sim, n_vis = 4) {
   ggplot(hist_data) +
     geom_histogram(aes(x = asinh(value), fill = method), position = "dodge", bins = 100) +
     facet_grid(iteration ~ .) +
-    scale_fill_manual(values = c("#86B8B1", "#000000" "#E5BB67")) +
+    scale_fill_manual(values = c("#86B8B1", "#000000", "#b186b8")) +
   theme(
     panel.border = element_rect(fill = "transparent", size = 0.5),
     legend.position = "bottom"
@@ -76,13 +76,13 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
       aes(x = q, y = q_ix), col = "#000000",
       size = 0.5
     ) +
-    scale_color_manual(values = c("#86B8B1", "#E5BB67")) +
-    guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1))) +
+    scale_color_manual(values = c("#86B8B1", "#b186b8")) +
+    guides(colour = guide_legend(nrow = 2, override.aes = list(alpha = 1, size = 2))) +
     labs(
       "x" = "x",
       "y" = "Pr(asinh(count) < x)"
     ) +
-    theme(legend.position = "bottom")
+    theme(legend.key.width = unit(0.25, "in"))
 }
 
 compare_margins <- function(mx, m_sim) {
@@ -186,28 +186,28 @@ sample_summary_fun <- function(x, x_sim, summary_fun, data_opts) {
   do.call(rbind, stat_list)
 }
 
-summary_contours <- function(summary_data, plot_opts) {
+summary_contours <- function(summary_data, plot_opts, text_size = 3) {
   library("ggscaffold")
-  summary_data$method[summary_data$type == "true"] <- "truth"
   ggcontours(
     summary_data %>% filter(type != "true"),
     plot_opts
   ) +
-    geom_text(
-      data = summary_data %>%
-        filter(type != "true") %>%
-        group_by(row_ix, method) %>%
-        summarise(V1 = mean(V1), V2 = mean(V2)),
-      aes(x = V1, y = V2, label = row_ix, col = method),
-      size = 1
-    ) +
-    geom_text(
-      data = summary_data %>% filter(type == "true"),
-      aes(x = V1, y = V2, label = row_ix),
-      col = "#000000", size = 1
-    ) +
-    scale_color_manual(values = c("#86B8B1", "#000000"), guide = FALSE) +
-    facet_grid(. ~ method)
+  geom_text(
+    data = summary_data %>% filter(type == "true"),
+    aes(x = V1, y = V2, label = row_ix),
+    col = "#000000", size = text_size, alpha = 0.9
+  ) +
+  geom_text(
+    data = summary_data %>%
+      filter(type != "true") %>%
+      group_by(row_ix, method) %>%
+      summarise(V1 = mean(V1), V2 = mean(V2)),
+    aes(x = V1, y = V2, label = row_ix, col = method),
+    size = text_size
+  ) +
+  scale_color_manual(values = c("#3d6862", "#714678"), guide = FALSE) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1), ncol = 1)) +
+  facet_grid(method ~ .)
 }
 
 posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
@@ -300,11 +300,10 @@ posterior_checks_plots <- function(input_data) {
       aes(x = time, y = asinh(truth), group = rsv),
       size = 0.4, col = "#000000"
     ) +
-    scale_color_manual(values = c("#86B8B1", "#E5BB67")) +
+    scale_color_manual(values = c("#86B8B1", "#b186b8")) +
     labs(x = "time", y = "asinh(abundance)") +
-    guides(colour = guide_legend(nrow = 2, override.aes = list(alpha = 1, size = 1))) +
-    facet_wrap(~rsv, scales = "free", ncol = 3) +
-    theme(legend.position = "bottom")
+    guides(colour = guide_legend(nrow = 2, override.aes = list(alpha = 1, size = 2))) +
+    facet_wrap(~rsv, scales = "free", ncol = 3)
 
   plot_opts <- list(
     "x" = "V1",
@@ -312,20 +311,25 @@ posterior_checks_plots <- function(input_data) {
     "group" = "row_ix",
     "fill" = "method",
     "fill_type" = "category",
-    "fill_cols" = c("#86B8B1","#E5BB67"),
-    "h" = 1.5,
-    "theme_opts" = list("text_size" = 10, "subtitle_size" = 11)
+    "fill_colors" = c("#86B8B1","#b186b8"),
+    "h" = 2.5,
+    "theme_opts" = list("text_size" = 10, "subtitle_size" = 11, "key_width" = 1,
+                        "border_size" = 1)
   )
 
-  all_plots[["scores"]] <- summary_contours(input_data$scores_data, plot_opts) +
-    coord_fixed(0.5)
+  all_plots[["scores"]] <- summary_contours(input_data$scores_data, plot_opts, 2.3) +
+    labs(x = "Axis 1", y = "Axis 2") +
+    coord_fixed(0.8)
 
   plot_opts$h <- 0.01
-  all_plots[["loadings"]] <- summary_contours(input_data$loadings_data, plot_opts) +
-    coord_fixed(0.5)
+  plot_opts$theme_opts$legend_position <- "none"
+  all_plots[["loadings"]] <- summary_contours(input_data$loadings_data, plot_opts, 2.3) +
+    scale_x_continuous(breaks = c(0.05, 0, 0.05)) +
+    labs(x = "Axis 1", y = "Axis 2") +
+    coord_fixed(0.4)
 
   all_plots[["evals"]] <- ggplot() +
-    geom_point(
+   geom_point(
       data = input_data$evals_data %>%
         filter(type == "sim"),
       aes(x = as.factor(row_ix), y = log(value, 10), col = method),
@@ -338,12 +342,10 @@ posterior_checks_plots <- function(input_data) {
       col = "#000000", size = 0.9
     ) +
     ylim(log(0.25, 10), log(11, 10)) +
-    scale_color_manual(values = c("#86B8B1", "#E5BB67")) +
+    scale_color_manual(values = c("#86B8B1", "#b186b8")) +
+    scale_y_continuous(breaks = pretty_breaks(n = 2)) +
     guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1), ncol = 1)) +
-    theme(
-      axis.text.x = element_blank(),
-      legend.position = "bottom"
-    ) +
+    theme(axis.text.x = element_blank()) +
     labs(
       "x" = expression(i),
       "y" = expression(log[10](lambda[i]))
