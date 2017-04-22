@@ -142,7 +142,9 @@ where $S$ is the multilogit link
 \begin{align*}
 \left[S\left(\mu\right)\right]_{v} = \frac{\exp{\mu_{v}}}{\sum_{v^{\prime}} \exp{\mu_{v^{\prime}}}},
 \end{align*}
-and $t\left(d\right)$ maps document $d$ to the time it was sampled.
+and $t\left(d\right)$ maps document $d$ to the time it was sampled. The
+$\left(\mu_{t}\right)$ define a Gaussian random walk in $\reals^{V}$ with
+stepsize $\sigma$, and $S$ transforms the walk into a sequence of probabilities.
 
 \subsection{Nonnegative Matrix Factorization}
 \label{sec:nmf}
@@ -150,11 +152,10 @@ and $t\left(d\right)$ maps document $d$ to the time it was sampled.
 In LDA, count matrices are modeled by sampling from a multinomials with total
 counts coming from the total number of words in each document and probabilities
 coming from the rows of $\Theta B^{T}$ where $\Theta = \begin{pmatrix}\theta_{1}
-  \\ \vdots \\ \theta_{D} \end{pmatrix} \in \left(\simplex^{K -
-  1}\right)_{\downarrow \times D}$ and $B = \begin{pmatrix} \beta_{\cdot 1}
-  \dots \beta_{\cdot K} \end{pmatrix} \in \left(\simplex^{V -
-  1}\right)_{\rightarrow \times K}$ are $D \times K$ and $V \times K$ matrices
-representing document and topic distributions, respectively.
+  \\ \vdots \\ \theta_{D} \end{pmatrix}$ and $B = \begin{pmatrix} \beta_{\cdot 1}
+  \dots \beta_{\cdot K} \end{pmatrix}$ are $D \times K$ and $V \times K$ matrices
+representing document and topic distributions, respectively, and where each
+$\theta_{d} \in S^{K - 1}$ and $\beta_{k} \in S^{V - 1}$.
 
 
 To generalize this idea, it is possible to model the nonnegative matrix $N$
@@ -199,6 +200,8 @@ fits -- the case where the observed $T_{k}\left(x\right)$ lie in the bulk of the
 $T_{k}\left(x^{\ast}_{s}\right)$ -- or fails to fit -- the case where
 $T_{k}\left(x\right)$ lie far from the bulk of $T_{k}\left(x^{\ast}_{s}\right)$
 -- the data well.
+
+\subsection{Relating Microbiome and Text Analysis}
 
 \section{Simulation Study}
 
