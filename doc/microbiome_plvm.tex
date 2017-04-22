@@ -128,7 +128,7 @@ n_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\sim \Mult\left(n_{d\ast}, \bet
 \subsection{Dynamic Unigram Model}
 
 Geometrically, while LDA identifies samples with points in the convex hull of
-$K$ topics on the $V$-dimensional simplex, the Dynamic Unigram Model relates teh
+$K$ topics on the $V$-dimensional simplex, the Dynamic Unigram Model relates the
 change of samples over time with a continuous curve on this $V$-dimensional
 simplex \citep{blei2006dynamic}. This curve reflects the gradual evolution of
 probabilities over time, and is implemented by passing a random walk through a
@@ -173,8 +173,9 @@ N &\sim \Poi\left(\Theta B^{T}\right) \\
 \Theta &\sim \Gam\left(a_{0} 1_{D \times K}, b_{0} 1_{D \times K}\right) \\
 B &\sim \Gam\left(c_{0} 1_{V \times K}, d_{0} 1_{V \times K} \right),
 \end{align*}
-where mean that each entry in these matrices is sampled independently, with
-parameters given by the corresponding entry in the parameter matrix.
+where our notation means that each entry in these matrices is sampled
+independently, with parameters given by the corresponding entry in the parameter
+matrix.
 
 \subsection{Posterior Predictive Checks}
 
@@ -184,22 +185,24 @@ probabilistic modeling is the ease with which models can be adapted to better
 describe the data of interest. Here, we describe model assessment via posterior
 predictive checks \citep{rubin1984bayesianly, gelman2013philosophy}. In this
 approach, some statistics $T_{k}\left(x\right)$ of the data are defined which,
-in some sense, ``characterize'' the data. Ideally, data $x^{\ast}$ simulated
-from the fitted model have similar values of these statistics,
-$T_{k}\left(x^{\ast}\right) \approx T_{k}\left(x\right)$.
+in some sense, ``characterize'' the data. If the data $x^{\ast}$ simulated from
+the fitted model have statistics $T_{k}\left(x^{\ast}\right)$ with values
+similar to those in the observed data $T_{k}\left(x\right)$, then we have
+evidence that the proposed model approximates the data well, at least in the
+sense defined by $T_{k}$
 
 More precisely, simulate data $x_{1}^{\ast}, \dots x_{S}^{\ast}$ from the
 posterior predictive $p\left(x^{\ast}\vert x\right) \approx \int p\left(x^{\ast}
 \vert \theta\right) \hat{p}\left(\theta \vert x \right)d\theta$, where $x$ is
-the original data and $\hat{p}\left(\theta \vert x\right)$ is an estimate
-computed from posterior samples. For each of these simulated data sets, the
-characterizing statistics $T_{k}\left(x_{s}\right)$ are computed. Graphically
-comparing the true data $T_{k}\left(x\right)$ with the histogram of model-fit
-simulated $T_{k}\left(x^{\ast}\right)$ suggests ways in which the posited model
-fits -- the case where the observed $T_{k}\left(x\right)$ lie in the bulk of the
-$T_{k}\left(x^{\ast}_{s}\right)$ -- or fails to fit -- the case where
-$T_{k}\left(x\right)$ lie far from the bulk of $T_{k}\left(x^{\ast}_{s}\right)$
--- the data well.
+the original data and $\hat{p}\left(\theta \vert x\right)$ is an estimate of the
+posterior. For each of these simulated data sets, the characterizing statistics
+$T_{k}\left(x_{s}\right)$ are computed. Graphically comparing the
+$T_{k}\left(x\right)$ calculated on the true data with the histogram of
+model-fit simulated $T_{k}\left(x^{\ast}\right)$ suggests ways in which the
+posited model fits -- the case where the observed $T_{k}\left(x\right)$ lie in
+the bulk of the $T_{k}\left(x^{\ast}_{s}\right)$ -- or fails to fit -- the case
+where $T_{k}\left(x\right)$ lie far from the bulk of
+$T_{k}\left(x^{\ast}_{s}\right)$ -- the data well.
 
 \subsection{Relating Microbiome and Text Analysis}
 
