@@ -212,7 +212,7 @@ It can be liberating to have easy access to such a variety of modeling
 strategies for any given microbiome analysis problem. However, with this
 increased flexibility comes the difficulty of determining when to use what
 methods. To build some intuition about estimation accuracy across combinations
-of data settings and model types, we conduct some simulation studies. These are
+of data settings and model types, we conduct a series of simulation studies. These are
 meant to complement the model-checking that should follow parametric analysis --
 since we know the truth in simulations, it is easier to develop more definitive
 guidelines.
@@ -220,19 +220,19 @@ guidelines.
 More specifically, our plan is to divide our analysis into one simulation
 generating data from the true LDA model and one drawing from either the NMF or
 Z-NMF models. In both, we vary the sample size and dimension. For data simulated
-under LDA, we perform model estimation using either MCMC sampling, Variational
-Bayes, or a bootstrapping procedure we describe below, while for the NMF
-example, we focus on MCMC sampling and Variational Bayes. The only
-misspecification we consider is a failure to account for zero inflation when the
-true data were generated according to the Z-NMF model -- though not pursued
-here, it could be interesting to study robustness of study conclusions to
-misspecification in the number of topics or deliberate contamination.
+under LDA, we perform model estimation using either Markov Chain Monte Carlo
+(MCMC) sampling, Variational Bayes (VB), or a bootstrapping procedure we
+describe below, while for the NMF example, we focus on MCMC sampling and VB. The
+only misspecification we consider is a failure to account for zero inflation
+when the true data were generated according to the Z-NMF model -- though not
+pursued here, it could be interesting to study robustness of study conclusions
+to misspecification in the number of topics or deliberate contamination.
 
 For the LDA experiment, we vary the number of samples $D \in \{20, 100\}$, the
 number of features $V \in \{10, 50\}$, and the total word count per document $N
 \in \{20, 50, 100\}$. On the other hand, we fix the number of topics to $K = 2$
 and the Dirichlet hyperparameter to $\alpha_{0} = \gamma_{0} = 1$. For each
-simulated data set, we perform estimation using Variational Bayes, MCMC
+simulated data set, we perform estimation using VB, MCMC
 sampling, and a parametric bootstrap-after-VB procedure. In more detail, this
 last parametric bootstrap procedure fits VB to the original data, simulates $B =
 500$ new data sets $X^{\ast}_{b}$ according to the LDA model using VB-estimated
@@ -241,31 +241,32 @@ re-estimates parameters $\{\hat{\theta}^{\ast\ast}_{b},
 \hat{\beta}^{\ast\ast}_{b}\}$ on each simulated data set, again using VB. The
 motivation for this procedure is the desire to strike an easily-parallelizable
 compromise between MCMC Sampling, which can be time consuming but has reliable
-uncertainty estimates, and Variational Bayes, which is fast, but can
-underestimate uncertainty.
+uncertainty estimates, and VB, which is fast, but can
+underestimate uncertainty \citep{giordano2014covariance}.
 
 Figure \ref{fig:lda_contours} displays the true and posterior $\beta_{k}$ for
-the experiments with $V = 10$ features, while other simulation characteristics
-are varied. Each panel represents a single experimental configuration, with two
-axes associated with the two underlying topics. Each black number $v$ is the
+the experiments with $V = 10$ features, while varying other simulation characteristics.
+Each panel represents a single experimental configuration, with each
+axis associated with an underlying topic. Each black number $v$ is the
 true value of feature $v$ across topics: $\left(\beta_{v1}, \beta_{v2}\right)$.
-The shaded clouds are sampled posteriors, while the orange labels give posterior
-means. Across rows, different inferential procedures are compared The top row of
+The shaded clouds are sampled posteriors, and the orange labels give posterior
+means. Across rows, different inferential procedures are compared, the top row of
 column labels refers to the total count $N$ within each sample, while the second
 refers to the number of samples $D$. The analogous figure when $V = 50$ is
-provided in the supplemental material.
+provided in the Supplementary Figure \ref{fig:nmf_v50}.
 
 As expected, when $D$ increases, the posterior for $\beta$, whose dimension does
 not increase with $D$, begins to concentrate around its true value. Consistent
-with earlier findings, the VB posteriors are generally lower variance and more
-elliptical than the true MCMC sampled posteriors. The bootstrap samples seem
-somewhere between the VB and MCMC sampled distributions in terms of variability
-within each feature. As the number of samples or number of words within samples
-increases, the three methods become indistinguishable. Interestingly, when $D$
-and $N$ are small ($N = D = 20$), VB appears more accurate than either the MCMC
-or bootstrapping approaches, whose posterior means all lie along the diagonal,
-corresponding to topics that both reflect the global marginal feature counts
-across samples. This effect is especially pronounced in the case $V = 50$.
+with earlier findings, the VB posteriors are narrower and more elliptical than
+the more plausible MCMC sampled posteriors. The bootstrap samples seem somewhere
+between the VB and MCMC sampled distributions in terms of variability within
+each feature. As the number of samples or total count within samples increases,
+the three methods become indistinguishable. Interestingly, when $D$ and $N$ are
+small ($N = D = 20$), VB appears more accurate than either the MCMC or
+bootstrapping approaches, whose posterior means all lie along the diagonal,
+corresponding to the failure to estimate distinct topics, and instead defaulting
+to marginal feature counts across samples. This effect is especially pronounced
+in the case $V = 50$.
 
 For the NMF experiment, we vary the number of features $V$ between $\{75, 125\}$
 and zero-inflation probability $p_{0} \in \{0, 0.2\}$. We keep the number of samples
@@ -280,16 +281,16 @@ Within each panel, we display histograms of the errors\footnote{We use a
   large errors.}, $\sqrt{\hat{\theta}_{dk}} - \sqrt{\theta_{dk}}$, where color
 encodes the latent factor $k$.
 
-Here, the improved concentration in the high-dimensional ($V = 125$) regime is
+The improved concentration in the high-dimensional ($V = 125$) regime is
 more readily apparent. Further, the superiority of MCMC in the
-lower-dimensional ($V = 75$) case is still noticeable in the fact that the MCMC
+lower-dimensional ($V = 75$) case is suggested by the observation that the MCMC
 histogram is somewhat narrower in the center. However, while there seems to be
-less mass in the tails for the Gibbs histogram, the tails themselves are just as
-wide as in the Variational Bayes histogram.
+less mass in the tails of the MCMC histogram, the tails themselves are just as
+wide as in the VB histogram.
 
-The most noticeable difference across these panels is that Variational Bayes
+The most noticeable difference across these panels is that VB
 seems to perform substantially worse when zero-inflation is present, especially
-when zero-inflation is not taken into account. Surprisingly, Gibbs Sampling
+when zero-inflation is not taken into account. Surprisingly, MCMC
 seems only slightly worse in this situation. Further, the case in which
 zero-inflation is not explicitly modeled does not seem to do worse than the case
 it is.
@@ -300,7 +301,7 @@ In applying probabilistic methods to microbiome data analysis, we concentrate on
 two questions,
 \begin{enumerate}
 \item Do these models fit well to the raw or preprocessed data, and what techniques
-are available for evaluating model fit?
+are available for performing this evaluation?
 \item Supposing these models fit well, do they lend themselves to informative
 summaries of the original data?
 \end{enumerate}
@@ -309,7 +310,7 @@ To begin to develop answers to these questions, we reanalyze the data of
 \citep{dethlefsen2011incomplete}, a study of bacterial dynamics in response to
 antibiotic treatment. This study monitored the microbiomes of three patients
 over ten months, with two antibiotics time courses introduced in between, in
-order to study the effect antibiotic perturbations within the context of
+order to study the effect of antibiotic perturbations within the context of
 natural long term dynamics. The study concluded that antibiotics cause
 substantial changes in short-term community composition, with certain species
 being substantially more resilient than others, and that in one patient,
@@ -326,7 +327,7 @@ the dimensionality from 2582 to 354.
 In this case study, we focus on LDA\footnote{We set $K = 4$, based on the
   heuristic that a large $K$ would be less meaningful, considering there are
   only 56 samples.} and the dynamic unigram model. A similar study using GaP and
-Z-GaP is omitted for brevity. Throughout, we apply Variational Bayes, though in
+Z-GaP is omitted for brevity. Throughout, we apply VB, though in
 light of the simulation study, we exercise caution when interpreting estimated
 uncertainties.
 
@@ -531,7 +532,7 @@ Supplementary material is available online at
 \begin{figure}[!p]
   \centering\includegraphics{figure/visualizezinfthetashist-1}
   \caption{Zero inflation poses problems for NMF, even when accounted for in the
-    likelihood. The deterioration is most dramatic when applying Variational Bayes.}
+    likelihood. The deterioration is most dramatic when applying VB.}
   \label{fig:zinf_thetas}
 \end{figure}
 
