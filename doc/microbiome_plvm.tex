@@ -367,64 +367,68 @@ the samples across all timepoints, including those unassociated with the time
 courses. Across all topics, we find that uncertainty is typically smaller for
 parameters with larger values.
 
-To interpret these topics in terms of their bacterial composition, we study the
+To interpret these topics in terms of their bacterial community fingerprint, we study the
 estimated topic distributions $\beta_{\cdot k}$. This is displayed in Figure
 \ref{fig:antibiotics_lda_beta}. The four rows correspond to the $K = 4$
 estimated topics. Each boxplot within a row is associated with posterior samples
 for a single bacterium. Different colors identify different taxonomic families,
 and within these families, bacteria are sorted according to evolutionary
 relatedness. We have hidden outliers from the posterior sampling, because they
-inflate the $y$-axis range and make the figure harder to read.
+inflate the $y$-axis range and make the figure harder to read. We have also
+removed all but the top four most prevalent taxonomic families, to prevent individual
+boxplots from becoming too narrow.
 
 Considering the mixture probabilities in Figure \ref{fig:antibiotics_lda_theta},
-those bacteria with large probabilities in the third and fourth rows in Figure
+those bacteria with large probabilities in the third and fourth rows of Figure
 \ref{fig:antibiotics_lda_beta} constitute a large fraction of the samples taken
-during antibiotic time courses, reflecting those increasing rapidly and
-gradually at those points, respectively. This could be due to these bacteria
-thriving during the regimen or other bacteria being more negatively impacted --
-viewing the raw data directly supports the latter scenario. These distributions
-are relatively more concentrated on a small subset of bacteria with high
-probabilities, reflected by the drop in logitted probabilities far below zero.
-This corresponds to a decrease in community diversity during antibiotic time
-courses.
+during antibiotic time courses, reflecting those whose abundances increase
+rapidly (Topic 3) or gradually (Topic 4) at the start of antibiotics. This could
+be due to these bacteria thriving during the regimen or other bacteria being
+more negatively impacted -- viewing the raw data directly supports the latter
+scenario. These distributions are relatively more concentrated on a small subset
+of bacteria with high probabilities, reflected by the drop in logitted
+probabilities far below zero. This corresponds to a decrease in community
+diversity during antibiotic time courses.
 
 We also note ``bumps'' of neighboring bacteria with similarly elevated topic
 probabilities. It is encouraging that, even without specifying smoothness along
-the tree in the prior for the $\beta_{\cdot k}$s, such smoothness emerges in the
-fitted model.
+the phylogenetic tree in the prior for the $\beta_{\cdot k}$s, such smoothness
+emerges in the fitted model.
 
 \subsection{Dynamic Unigram Model}
 
-While we can interpret the LDA-estimated $\hat{\theta}_{i}$ according to their
+While we can interpret the LDA-estimated $\hat{\theta}_{d}$ according to their
 temporal context, this information was never directly provided to the algorithm.
-In contrast, we now apply the Dynamic Unigram Model to the same data, which
-explicitly models temporal evolution, but not latent mixture structure. Our
-primary results are displayed in Figure \ref{fig:antibiotics_unigram_theta}.
+In contrast, we can apply the Dynamic Unigram model to the same data, which
+explicitly models temporal evolution. Unlike LDA, however, this model does not
+seek latent mixture structure. Our primary results are displayed in Figure
+\ref{fig:antibiotics_unigram_theta}.
 
-Each row in this figure is interpreted similarly to a row in
+Each row in this figure is interpreted similarly to a row in Figure
 \ref{fig:antibiotics_lda_beta}, except now they correspond to estimated
-proportions over time $\mu_{t}$ rather than transformed topics
+proportions over time $g\left(\mu_{t}\right)$ rather than transformed topics
 $g\left(\beta_{k}\right)$. In particular, only four of the 54 total timepoints
 is displayed, highlighting a time window around the first antibiotic time
 course. Such a display implicitly assumes a relatively smooth interpolation
-between timepoints.
+between timepoints, which is enforced by the form of the Dynamic Unigram model.
 
 This analysis yields conclusions similar to those obtained through LDA, though
 reaching them requires somewhat more effort. For example, on day 10, most
-$\mu_{tv}$'s have most quantiles larger than zero, and few are positioned
-substantially higher than the bulk. This is consistent with higher community
-diversity before the antibiotic time course. On the other hand, at time 15, one
-day after the time course began, most species have quantiles lower than zero,
-while a few are positioned much larger than the rest. This corresponds to a less
-diverse community, whose membership is concentrated on those species with
-outlying boxplots. This decrease in diversity seems most profound at time 20; by
-time 25, during the interim, much of the community seems to have recovered.
+$g\left(\mu_{tv}\right)$'s have most of their mass concentrated above zero, and
+few are positioned exceptionally far form the bulk. This is consistent with
+higher community diversity before the antibiotic time course. On the other hand,
+at time 15, one day after the time course began, most species have quantiles
+lower than zero, while a few are positioned much higher than the rest. This
+corresponds to a less diverse community, whose membership is concentrated on
+those species with outlying boxplots. This decrease in diversity seems most
+profound at time 20; though by time 25, during the interim, much of the
+community seems to have recovered.
 
-Further, we continue to see differential recovery across bacteria, though the
-effect is not as obvious as in LDA, where this effect was captured by topics.
-For example, many subintervals of Lachnospiraceae seem to return to their
-pre-antibiotics levels, while the Ruminococceae continue to have low values of
-$\mu_{tv}$.
+Further, while we continue to see differential recovery across bacteria, the
+effect is not as obvious as in LDA, where this effect was decomposed across
+topics. For example, many subintervals of Lachnospiraceae seem to return to
+their pre-antibiotics levels by time 25, while the Ruminococceae continue to
+have low values of $\mu_{tv}$.
 
 \subsection{Posterior Checks}
 
