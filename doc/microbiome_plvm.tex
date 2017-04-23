@@ -311,25 +311,29 @@ To begin to develop answers to these questions, we reanalyze the data of
 antibiotic treatment. This study monitored the microbiomes of three patients
 over ten months, with two antibiotics time courses introduced in between, in
 order to study the effect of antibiotic perturbations within the context of
-natural long term dynamics. The study concluded that antibiotics cause
-substantial changes in short-term community composition, with certain species
-being substantially more resilient than others, and that in one patient,
-long-term effects could be observed. The purpose our case study is to compare
-these conclusions with those obtained through unsupervised probabilistic models.
+natural long-term dynamics. By applying Principal Components Analysis, the study
+concluded that antibiotics cause substantial changes in short-term community
+composition, with certain species being substantially more resilient than
+others, and also detected long-term effects in one patient. The purpose our case
+study is to compare these conclusions with those obtained through unsupervised
+probabilistic models.
 
 In light of the fact that variation in bacterial signatures tends to be
-dominated by between individual effects, we choose to study one individual at a
-time. In this report, we focus on Subject F, who had been reported to exhibit
-incomplete recovery of the pre-antibiotic treatment bacterial community. Further, we
-filter to only those bacteria present in at least 45\% of samples. This reduces
-the dimensionality from 2582 to 354.
+dominated by between-subject effects, and since with only three subjects, there
+is little reason for a model which clusters across subjects, we choose to study
+one individual at a time. In this report, we focus on Subject F, who had been
+reported to exhibit incomplete recovery of the pre-antibiotic treatment
+bacterial community. However, analogous figures for the other two subjects are
+available in the supplementary material. Further, we filter to only those
+bacteria present in at least 45\% of samples. This reduces the dimensionality
+from 2582 to 354.
 
 In this case study, we focus on LDA\footnote{We set $K = 4$, based on the
-  heuristic that a large $K$ would be less meaningful, considering there are
-  only 56 samples.} and the dynamic unigram model. A similar study using GaP and
-Z-GaP is omitted for brevity. Throughout, we apply VB, though in
-light of the simulation study, we exercise caution when interpreting estimated
-uncertainties.
+  heuristic that a larger $K$ would be less meaningful, considering there are
+  only 56 timepoints.} and the Dynamic Unigram model. A similar study using GaP
+and Z-GaP is omitted for brevity. Throughout, we apply VB, though considering
+the results of the simulation study, we exercise caution when interpreting
+estimated uncertainties.
 
 Note that we view the fitted probabilities on a logit scale -- for a raw vector
 of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right)$, we plot
@@ -342,13 +346,11 @@ class.
 \label{sec:antibiotics_lda}
 
 The fitted parameter values are summarized in Figures
-\ref{fig:antibiotics_lda_theta}, \ref{fig:antibiotics_lda_beta}.
-In Figure \ref{fig:antibiotics_lda_theta} the rows represent topics, the
-$x$-axis represents time, and the $y$-axis gives the fitted probabilities on a
-logit scale, but centered according to the average log probability, rather than
-any reference class, $g\left(\mathbf{p}\right) = \left(\log p_{1} - \overline{\log
-  \mathbf{p}}, \dots, \log p_{K} - \overline{\log \mathbf{p}}\right)$. The boxplots
-provide posterior quantiles for each $\theta_{ik}$.
+\ref{fig:antibiotics_lda_theta} and \ref{fig:antibiotics_lda_beta}.
+In Figure \ref{fig:antibiotics_lda_theta}, rows represent topics, the $x$-axis
+represents time, and the $y$-axis gives the transformed fitted probabilities
+$g\left(\mathbf{p}\right)$. The boxplots provide posterior quantiles for each
+$\theta_{ik}$.
 
 This figure draws attention to the two antibiotic time courses, which took place
 between days 12-23 and 41-51. Topic 1 becomes depressed during the time courses,
