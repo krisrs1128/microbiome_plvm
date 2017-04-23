@@ -178,6 +178,7 @@ independently, with parameters given by the corresponding entry in the parameter
 matrix.
 
 \subsection{Posterior Predictive Checks}
+\label{sec:ppc_overview}
 
 Model assessment is important for qualifying interpretations, and can further
 guide refinements in subsequent analysis. Indeed, part of the appeal of
@@ -395,7 +396,8 @@ probabilities. It is encouraging that, even without specifying smoothness along
 the phylogenetic tree in the prior for the $\beta_{\cdot k}$s, such smoothness
 emerges in the fitted model.
 
-\subsection{Dynamic Unigram Model}
+\subsection{Dynamic Unigram model} 
+\label{sec:antibiotics_unigram}
 
 While we can interpret the LDA-estimated $\hat{\theta}_{d}$ according to their
 temporal context, this information was never directly provided to the algorithm.
@@ -430,13 +432,18 @@ topics. For example, many subintervals of Lachnospiraceae seem to return to
 their pre-antibiotics levels by time 25, while the Ruminococceae continue to
 have low values of $\mu_{tv}$.
 
-\subsection{Posterior Checks}
+\subsection{Posterior Predictive Checks}
 
-In Figure \ref{fig:antibiotics_posterior_ts}, we plot observed time series for
+While we have found both LDA and the Dynamic Unigram model qualitatively useful,
+it is still important to seek more formal diagnostics of model fit. Here, we
+consider several posterior predictive cehcks, as foreshadowed in
+section \label{sec:ppc_overview}.
+
+To this end, in Figure \ref{fig:antibiotics_posterior_ts}, we plot observed time series for
 randomly selected bacteria and contrast them with samples from the posterior
 predictive according to the four topic LDA model of
-section \label{sec:antibiotics_lda} and the unigram model of
-section \label{sec:antibiotics_unigram}. Each subpanel corresponds to a single
+section \ref{sec:antibiotics_lda} and the unigram model of
+section \ref{sec:antibiotics_unigram}. Each subpanel corresponds to a single
 RSV. The black lines represent observed time series. Note that the $y$-axis scales
 vary, as some RSVs are much more abundant than others. Each dot is a simulated
 timepoint from a posterior predictive time series.
@@ -446,42 +453,44 @@ with approximately the correct shape. However, we observe two substantial types
 of departures between simulated and observed data. First, for series with larger
 counts, the posterior predictive tends to oversmooth. For example, the drop to 0
 in RSV 54 is not captured in any posterior predictive samples. Similar
-oversmoothing is visible in RSVs 177, 207, and 263. A more startling departure
-occurs in the second half of series 207. Here, the posterior predictive places
-most mass on the event that the bacterial time series rebounds to its initial
-abundance when in reality the species vanishes during the second antibiotic time
-course, never to return. A potential explanation for LDA's failure to capture
-this pattern is that not many initially highly abundant RSVs disappear after the
-second time course, and hence they are not captured by the global LDA summary.
-This suggests a technique for highlighting outlier RSVs: we can look at the
-average discrepancy between observed series and their posterior predictive
-samples.
+oversmoothing is visible in RSVs 177, 207, and 263. A more startling type of
+departure occurs in the second half of series 207. Here, the posterior
+predictive places most mass on the event that the bacterial time series rebounds
+to its initial abundance when in reality the species vanishes during the second
+antibiotic time course, never to return. A potential explanation for LDA's
+failure to capture this pattern is that not many initially highly abundant RSVs
+disappear after the second time course, and hence they are not captured by the
+global LDA summary. This suggests a technique for highlighting outlier RSVs: we
+can look at the average discrepancy between observed series and their posterior
+predictive samples.
 
 On the other hand, for the unigram model, the posterior predictive places most
-of its support close to the observed RSV series. Usually, this is a positive
-development, reflecting good model fit. However, here, there is reason for
-concern -- the unigram model may not do much more than fit empirical proportions
-at each timepoint, and there may be potential to produce more succinct summaries
-that still preserve the essential structure of the data. That is, the unigram
-model seems overparameterized, and seems to be memorizing the input.
+of its support close to the observed RSV series. Usually, this is desirable
+behavior, reflecting good model fit. However, here, there is reason for concern
+-- the unigram model may not do much more than fit empirical proportions at each
+timepoint, and there may be potential to produce more succinct summaries that
+still preserve the essential structure of the data. That is, the unigram model
+seems overparameterized, simply memorizing the input.
 
 An alternative posterior predictive check compares PCA scores and loadings in
 the true and posterior predictive data. Our motivation is that many microbiome
-studies base their findings on views generated by PCA, so it would be desirable
+studies base their findings on views generated by PCA, so it would be encouraging
 if our probabilistic summaries typically agree with the reductions produced by
 PCA.
 
-Figure \ref{fig:antibiotics_posterior_evals} gives the PCA eigenvalues
-between the true and posterior predictive samples, after having
-$\asinh$-transformed both. The associated scores and loadings figures are
-available as Supplementary Figures \ref{fig:} and \ref{fig:}. The posterior
-predictive samples have comparable top four eigenvalues, but rapidly drop-off
-between the fourth and fifth eigenvalues. On the other hand, the observed data
-have a more steady decline. This is likely a consequence of using $K = 4$ topics
-in the LDA model, which would be consistent with the matrix factorization view
-of LDA described in section \ref{sec:nmf}. In light of these scree plots, it may
-be safe to increase $K$ in follow-up analysis, as long as topics remain
-interpretable.
+Figure \ref{fig:antibiotics_posterior_evals} gives the PCA eigenvalues between
+the true and posterior predictive samples, after having $\asinh$-transformed
+both. The associated scores and loadings figures are available as Supplementary
+Figure \ref{fig:antibiotics_posterioc_pca}. The posterior predictive samples
+have comparable top four eigenvalues, but rapidly drop-off between the fourth
+and fifth eigenvalues. On the other hand, the observed data have a more steady
+decline. This is likely a consequence of using $K = 4$ topics in the LDA model,
+which would be consistent with the matrix factorization view of LDA described in
+section \ref{sec:nmf}. In light of these scree plots, it may be safe to increase
+$K$ in follow-up analysis, as long as topics remain interpretable. In contrast,
+the eigenvalues for the Dynamic Unigram model closely match those in the
+observed data, lending further evidence to the claim that this model is
+overparameterized.
 
 \section{Discussion}
 
