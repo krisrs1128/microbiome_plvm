@@ -396,7 +396,7 @@ probabilities. It is encouraging that, even without specifying smoothness along
 the phylogenetic tree in the prior for the $\beta_{\cdot k}$s, such smoothness
 emerges in the fitted model.
 
-\subsection{Dynamic Unigram model} 
+\subsection{Dynamic Unigram model}
 \label{sec:antibiotics_unigram}
 
 While we can interpret the LDA-estimated $\hat{\theta}_{d}$ according to their
@@ -494,12 +494,12 @@ overparameterized.
 
 \section{Discussion}
 
-We have described the utility of a probabilistic modeling perspective in the
+We have described the utility of taking a probabilistic modeling perspective in the
 analysis of microbiome data. We have provided a detailed implementation of benchmark
 analysis approaches, along with exploratory visualization of fitted parameters
 and model assessment through posterior predictive checks. Through simulation, we
 have established heuristics for determining the appropriateness of applying
-different models and inference mechanisms in alternative data regimes. On a real
+different models and inference mechanisms depending on the overall data regime. On a real
 microbiome data analysis problem, we have characterized the advantages and
 limitations of multiple probabilistic modeling techniques. Rather than focusing
 on any single model, like most earlier work, we have emphasized the practice of
@@ -508,13 +508,13 @@ have emphasized both insights in terms of estimated parameters, as well as
 uncertainty, in the form of full approximate posterior distributions.
 
 Microbiome studies are a source of richly structured, high-dimensional data,
-coupled with novel scientific problem formulations. For example, in the
+coupled with novel scientific problem setups. For example, in the
 antibiotics data set described here, we have already encountered structure in
 the form of zero-inflated counts, time series with changepoints, and a priori
 known phylogenetic relationships between features. More modern microbiome
-studies tend to collect more samples as well as multiple sources of -- spectral
-and genomic, in addition bacterial abundance data, for example -- per sample.
-Further, the scientific investigation revolved around a combination of
+studies tend to collect more samples as well as more data sources -- spectral
+and genomic, in addition bacterial abundance, for example -- per sample.
+Further, the investigations often revolve around a combination of
 ecological community characterization and medically-relevant identification of
 treatment effects. We believe we have only begun to see the potential for
 probabilistic methods to guide careful scientific reasoning -- which emphasizes
