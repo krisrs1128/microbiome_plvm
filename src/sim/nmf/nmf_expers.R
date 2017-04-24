@@ -27,7 +27,7 @@ sim_factors <- list(
   "zero_inf_prob" = c(0, 0.2)
 )
 model_factors <- list(
-  "inference" = c("gibbs", "vb"),
+  "inference" = c("gibbs", "vb", "bootstrap"),
   "method" = c(
     file.path(stan_path, "nmf_gamma_poisson.stan"),
     file.path(stan_path, "nmf_gamma_poisson_zero.stan")
