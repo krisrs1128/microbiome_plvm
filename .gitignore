@@ -3,6 +3,8 @@ src/sim/nmf/fits/*
 src/sim/nmf/*.json
 src/sim/lda/fits/*
 src/sim/lda/pipeline/*.json
+data/fits/*
+data/figure-input/*
 doc/*.aux
 doc/*.log
 doc/*.pdf
