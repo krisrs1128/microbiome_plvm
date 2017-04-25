@@ -223,7 +223,7 @@ terms is provided below,
     and biological samples (microbiome analysis). It is of interest to highlight
     similarities and differences across these units, often through some
     variation on clustering.
-  \item \textbf{Term} $\iff$ \textbf{Bacteria}: The fundamental characteristics
+  \item \textbf{Term} $\iff$ \textbf{Bacteria}: The fundamental features
     with which to describe samples are the counts of terms (text analysis) and
     bacteria\footnote{More formally, by bacteria, we mean ribosomal sequence
       variants \citep{callahan2016dada2}. We call these bacteria for simplicity
@@ -239,7 +239,7 @@ terms is provided below,
     to a single instance of a term in a document, not it's total count. The
     analog in microbiome analysis would be an individual sequencing read, though
     this is rarely the object of statistical analysis.
-  \item \textbf{Corpus} $\iff \textbf{Environment}: Sometimes a grouping
+  \item \textbf{Corpus} $\iff$ \textbf{Environment}: Sometimes a grouping
     structure is known apriori among sampling units. In this case, it can be
     informative to describe whether topics are or are not shared across these
     groups \citep{teh2004sharing}. In the text analysis community, a known group
@@ -249,6 +249,47 @@ terms is provided below,
     obtained.
 \end{itemize}
 
+Now that we have established the semantic connections between text and
+microbiome analysis, we compare the types of data and analysis goals that are
+typical within the respective fields. In both fields, a core unit of analysis is
+the sample-by-feature (either document-by-term or biological sample-by-bacteria)
+matrix. Besides count structure, the most striking similarity between these data
+matrices is sparsity: most entries are zero. Further, observed counts tend to be
+highly-skewed -- some terms are far more common than others, and in the same
+way, some microbes are much more abundant than others. Finally, in both fields,
+contextual information beyond the raw sample-by-feature matrix is typically
+available. For example, timestamps are often available in both domains,
+$n$-grams have a natural analog in terms of small subnetworks of co-occuring
+microbes, and phylogenetic similarity between bacteria parallels a priori known
+linguistic characteristics of terms.
+
+Nonetheless, in practice, the structure of these data can be quite different.
+First, text data can be on a much larger scale. For example, the Wikipedia
+corpus studied in \citep{hoffman2013stochastic} includes 3.8 million articles.
+In contrast, even large microbiome data sets typically only have on the order of
+hundreds of samples. Similarly, the total number of terms in such large-scale
+text analysis problems can be substantially larger than the number of bacteria
+species under consideration.
+
+While the limited scale of microbiome studies reduces computational burden, we
+note that in one sense, microbiome studies are larger in scale -- there tend to
+be tens of thousands of reads per sample in microbiome studies, but only
+hundreds to thousands of words within any article. This means that techniques
+that rely on the representation of documents as sequences of individual words,
+rather than vectors of word counts, require too much memory to be practical.
+This makes many useful text analysis techniques -- for model inference
+\citep{griffiths2004finding} and evaluation \citep{wallach2009evaluation}, for
+example -- out of reach for standard microbiome problems. This does, however,
+suggest opporunities for potential future research.
+
+Lastly, we compare the prevailing analytical goals within text and microbiome
+analysis. In both fields, data reduction can be informative for developing
+models of system behavior. However, an essential difference is that even
+unsupervised text analysis techniques are often embedded within automatic
+systems, for text classification or information retrieval, for example, which
+don't require the intervention of a scientific investigator. In contrast,
+in microbiome studies, researchers often have control over specific experimental
+design structure.
 
 \section{Simulation Study}
 
@@ -564,12 +605,12 @@ probabilistic methods to guide careful scientific reasoning -- which emphasizes
 both insights and the degree of uncertainty about them -- in these richly
 structured scenarios.
 
-\section{Software}
-
 \section{Supplementary Material}
 
 Supplementary material is available online at
 \url{http://biostatistics.oxfordjournals.org}.
+
+\section{Reproducibility}
 
 \section*{Acknowledgments}
 
