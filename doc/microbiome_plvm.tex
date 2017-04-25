@@ -205,7 +205,50 @@ the bulk of the $T_{k}\left(x^{\ast}_{s}\right)$ -- or fails to fit -- the case
 where $T_{k}\left(x\right)$ lie far from the bulk of
 $T_{k}\left(x^{\ast}_{s}\right)$ -- the data well.
 
-\subsection{Relating Microbiome and Text Analysis}
+\subsection{Microbiome vs. Text Analysis}
+
+One of the primary contributions of our work is the observation that methods
+popular in text analysis can be adapted to the microbiome setting in a way that
+produces useful summaries. Here, we develop the analogy between these
+applications, though we also draw attention to points where the parallels break
+down.
+
+In the abstract, it becomes clear that the semantic differences between these
+fields are often superficial. One mapping between the most common field-specific
+terms is provided below,
+
+\begin{itemize}
+  \item \textbf{Document} $\iff$ \textbf{Biological Sample}: The basic sampling
+    units, over which conclusions are generalized, are documents (text analysis)
+    and biological samples (microbiome analysis). It is of interest to highlight
+    similarities and differences across these units, often through some
+    variation on clustering.
+  \item \textbf{Term} $\iff$ \textbf{Bacteria}: The fundamental characteristics
+    with which to describe samples are the counts of terms (text analysis) and
+    bacteria\footnote{More formally, by bacteria, we mean ribosomal sequence
+      variants \citep{callahan2016dada2}. We call these bacteria for simplicity
+      of exposition.} (microbiome analysis).
+  \item \textbf{Topic} $\iff$ \textbf{Community}: For interpretation, it is
+    common to imagine ``typical'' units which can be used as a point of
+    reference for observed samples. In text analysis, these are called topics --
+    for example, ``business'' or ``politics'' articles have their own specific
+    vocabularies. On the other hand, in microbiome analysis, these are called
+    ``communities'' -- one common breakdown healthy vs. diseased. Different
+    communities have their different bacterial signatures.
+  \item \textbf{Word} $\iff$ \textbf{Sequencing Read}: A ``word'' in text analysis refers
+    to a single instance of a term in a document, not it's total count. The
+    analog in microbiome analysis would be an individual sequencing read, though
+    this is rarely the object of statistical analysis.
+  \item \textbf{Corpus} $\iff \textbf{Environment}: Sometimes a grouping
+    structure is known apriori among sampling units. In this case, it can be
+    informative to describe whether topics are or are not shared across these
+    groups \citep{teh2004sharing}. In the text analysis community, a known group
+    of documents -- for example, all articles coming from one newspaper -- is
+    called a corpus. In the microbiome community, the associated concept is the
+    environment -- for example, skin or soil -- from which a sample was
+    obtained.
+\end{itemize}
+
 
 \section{Simulation Study}
 
