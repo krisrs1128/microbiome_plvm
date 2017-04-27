@@ -37,7 +37,7 @@ model_factors <- list(
 write_configs(
   sim_factors,
   model_factors,
-  n_batches = 4,
+  n_batches = 1,
   config_path = config_path,
   output_dir = fits_dir
 )
