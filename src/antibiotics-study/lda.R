@@ -25,7 +25,6 @@ set.seed(11242016)
 ## ---- get-data ----
 abt <- get(load("../../data/antibiotics-study/abt.rda"))
 abt <- abt %>%
-  filter_taxa(function(x) sum(x != 0) > .45 * nsamples(abt), prune = TRUE) %>%
   subset_samples(ind == "F")
 
 releveled_sample_data <- abt %>%
@@ -196,30 +195,33 @@ p <- ggplot(theta_hat) +
 ggsave("../../doc/figure/visualize_lda_theta_boxplot-1.pdf", p, width = 6, height = 2.9)
 
 ## ---- visualize_lda_beta ----
-plot_opts <- list("x" = "rsv",
-  "y" =  "beta_logit",
-  "fill" = "Taxon_5",
-  "col" = "Taxon_5",
-  "facet_terms" = c("topic", "Taxon_5"),
-  "facet_scales" = "free_x",
-  "facet_space" = "free_x",
-  "fill_colors" = brewer.pal(stan_data$K, "Set2"),
-  "col_colors" = brewer.pal(stan_data$K, "Set2"),
-  "theme_opts" = list(border_size = 0.7, text_size = 10, subtitle_size = 11),
-  "outlier.shape" = NA,
-  "alpha" = 1,
-  "size" = 0.4
-)
-p <- ggboxplot(
-  beta_hat %>%
-  data.frame() %>%
-  filter(Taxon_5 %in% levels(beta_hat$Taxon_5)[1:4]),
-  plot_opts
-) +
+top_rsvs <- names(sort(taxa_sums(abt), decreasing = TRUE)[1:200])
+beta_summary <- beta_hat %>%
+  group_by(rsv_ix, topic) %>%
+  summarise(
+    beta_median = median(beta_logit),
+    Taxon_5 = Taxon_5[1],
+    beta_upper = quantile(beta_logit, 0.975),
+    beta_lower = quantile(beta_logit, 0.025)
+  ) %>%
+  filter(Taxon_5 %in% levels(beta_hat$Taxon_5)[1:5])
+beta_summary$rsv_ix <- rep(seq_len(nrow(beta_summary) / 4), each = 4)
+
+p <- ggplot(beta_summary) +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
-  scale_y_continuous(breaks = scales::pretty_breaks(3), limits = c(-9, 7)) +
-  labs(x = "Species", y = expression(paste("g(", beta[k], ")")), fill = "Family") +
+  geom_point(aes(x = rsv_ix, y = beta_median, col = Taxon_5), size = 0.1) +
+  geom_errorbar(
+    aes(x = rsv_ix, alpha = beta_upper, ymax = beta_upper, ymin = beta_lower, col = Taxon_5),
+    size = 0.4
+  ) +
+  scale_color_brewer(palette = "Set2") +
+  scale_alpha(range = c(0.01, 1), breaks = c(1, 2, 3), guide = FALSE) + ## larger values have darker CIs
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(3), limits = c(-5, 12)) +
+  facet_grid(topic ~ .) +
+  labs(x = "Species", y = expression(paste("g(", beta[k], ")")), col = "Family") +
   theme(
+    panel.border = element_rect(fill = "transparent", size = 0.75),
     axis.text.x = element_blank(),
     strip.text.x = element_blank(),
     legend.position = "bottom"
