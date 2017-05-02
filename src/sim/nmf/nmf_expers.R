@@ -23,14 +23,14 @@ dir.create(fits_dir, recursive = TRUE)
 
 sim_factors <- list(
   "N" = c(20, 100),
-  ## uncomment to get p = 10 experiment values (need to adjust expected sum over
-  ## rows)
-    "P" = c(10),
-    "a0" = c(2, 5, 10),
-  ## "P" = c(50),
-  ## "a0" = c(2 / 5, 1, 2),
+  "P" = c(10),
+  "a" = c(1, 2/5, 1/5),
   "zero_inf_prob" = c(0, 0.2)
 )
+sim_factors_high <- sim_factors
+sim_factors_high$P <- 50
+sim_factors_high$a <- c(5, 2, 1)
+
 model_factors <- list(
   "inference" = c("gibbs", "vb", "bootstrap"),
   "method" = c(
@@ -39,12 +39,14 @@ model_factors <- list(
   )
 )
 
+config_df <- rbind(
+  expand.grid(c(sim_factors, model_factors)),
+  expand.grid(c(sim_factors_high, model_factors))
+)
+
 write_configs(
-  sim_factors,
-  model_factors,
-  n_batches = 4,
-  base_id = "p_10",
-  ## base_id = "p_50",
+  config_df,
+  n_batches = 3,
   config_path = config_path,
   output_dir = fits_dir
 )
