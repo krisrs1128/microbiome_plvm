@@ -25,7 +25,6 @@ set.seed(11242016)
 ## ---- get-data ----
 abt <- get(load("../../data/antibiotics-study/abt.rda"))
 abt <- abt %>%
-#  filter_taxa(function(x) sum(x != 0) > 0.15 * nsamples(abt), prune = TRUE) %>%
   subset_samples(ind == "F")
 
 releveled_sample_data <- abt %>%
@@ -193,7 +192,7 @@ p <- ggplot(theta_hat) +
   labs(x = "Time", y = expression(paste("g(", theta[k], ")"))) +
   theme(legend.position = "none") +
   scale_x_discrete(breaks = seq(1, 60, by = 10) - 1)
-#ggsave("../../doc/figure/visualize_lda_theta_boxplot-1.pdf", p, width = 6, height = 2.9)
+ggsave("../../doc/figure/visualize_lda_theta_boxplot-1.pdf", p, width = 6, height = 2.9)
 
 ## ---- visualize_lda_beta ----
 top_rsvs <- names(sort(taxa_sums(abt), decreasing = TRUE)[1:200])
@@ -208,7 +207,7 @@ beta_summary <- beta_hat %>%
   filter(Taxon_5 %in% levels(beta_hat$Taxon_5)[1:5])
 beta_summary$rsv_ix <- rep(seq_len(nrow(beta_summary) / 4), each = 4)
 
-ggplot(beta_summary) +
+p <- ggplot(beta_summary) +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
   geom_point(aes(x = rsv_ix, y = beta_median, col = Taxon_5), size = 0.1) +
   geom_errorbar(

@@ -288,6 +288,7 @@ posterior_checks_plots <- function(input_data) {
   all_plots[["hists"]] <- compare_histograms(input_data$mx, input_data$m_sim)
   all_plots[["quantiles"]] <- compare_quantiles(input_data$mx, input_data$m_sim)
   all_plots[["margins"]] <- compare_margins(input_data$mx, input_data$m_sim)
+  input_data$m_sim <- NULL
 
   all_plots[["ts"]] <- ggplot() +
     geom_point(
