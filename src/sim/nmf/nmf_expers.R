@@ -22,8 +22,13 @@ fits_dir = file.path(nmf_dir, "fits")
 dir.create(fits_dir, recursive = TRUE)
 
 sim_factors <- list(
-  "N" = c(100),
-  "P" = c(75, 125),
+  "N" = c(20, 100),
+  ## uncomment to get p = 10 experiment values (need to adjust expected sum over
+  ## rows)
+    "P" = c(10),
+    "a0" = c(2, 5, 10),
+  ## "P" = c(50),
+  ## "a0" = c(2 / 5, 1, 2),
   "zero_inf_prob" = c(0, 0.2)
 )
 model_factors <- list(
@@ -37,7 +42,9 @@ model_factors <- list(
 write_configs(
   sim_factors,
   model_factors,
-  n_batches = 1,
+  n_batches = 4,
+  base_id = "p_10",
+  ## base_id = "p_50",
   config_path = config_path,
   output_dir = fits_dir
 )
