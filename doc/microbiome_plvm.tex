@@ -158,15 +158,15 @@ representing document and topic distributions, respectively, and where each
 $\theta_{d} \in S^{K - 1}$ and $\beta_{k} \in S^{V - 1}$.
 
 
-To generalize this idea, it is possible to model the nonnegative matrix $N$
-by the product of low rank matrices, $N \approx \Theta B^{T}$, where now the
-only constraints on $\Theta$ and $B$ are that $\Theta \in \reals_{+}^{D \times
-  K}$ and $B \in \reals_{+}^{V \times K}$. This is the starting point for a
-variety of algorithms in the Nonnegative Matrix Factorization (NMF) literature
+Alternatively, it is possible to model the nonnegative matrix $N$ by the product
+of low rank matrices, $N \approx \Theta B^{T}$, where now the only constraints
+on $\Theta$ and $B$ are that $\Theta \in \reals_{+}^{D \times K}$ and $B \in
+\reals_{+}^{V \times K}$. This is the starting point for a variety of algorithms
+in the Nonnegative Matrix Factorization (NMF) literature
 \citep{wang2013nonnegative, berry2007algorithms, lee2001algorithms}
 
 Here, we will consider a Gamma-Poisson factorization model (GaP)
-\citep{kucukelbir2015automatic, canny2004gap} which is proposes the hierarchical
+\citep{kucukelbir2015automatic, canny2004gap} which proposes the hierarchical
 model
 \begin{align*}
 N &\sim \Poi\left(\Theta B^{T}\right) \\
@@ -295,7 +295,7 @@ design structure.
 
 It can be liberating to have easy access to such a variety of modeling
 strategies for any given microbiome analysis problem. However, with this
-increased flexibility comes the difficulty of determining when to use what
+increased flexibility comes the difficulty of determining when to use which
 methods. To build some intuition about estimation accuracy across combinations
 of data settings and model types, we conduct a series of simulation studies. These are
 meant to complement the model-checking that should follow parametric analysis --
@@ -404,10 +404,10 @@ study is to compare these conclusions with those obtained through unsupervised
 probabilistic models.
 
 In light of the fact that variation in bacterial signatures tends to be
-dominated by between-subject effects, and since with only three subjects, there
-is little reason for a model which clusters across subjects, we choose to study
-one individual at a time. In this report, we focus on Subject F, who had been
-reported to exhibit incomplete recovery of the pre-antibiotic treatment
+dominated by strong inter-subject effects, and since with only three subjects,
+there is little reason for a model which clusters across subjects, we choose to
+study one individual at a time. In this report, we focus on Subject F, who had
+been reported to exhibit incomplete recovery of the pre-antibiotic treatment
 bacterial community. However, analogous figures for the other two subjects are
 available in the supplementary material. Further, we filter to only those
 bacteria present in at least 45\% of samples. This reduces the dimensionality
@@ -613,10 +613,10 @@ Supplementary material is available online at
 \section{Reproducibility}
 
 Code for all simulations, data analysis, and figures is available at
-\href{https://github.com/krisrs1128/microbiome_plvm}. Detailed instructions are
+\url{https://github.com/krisrs1128/microbiome_plvm}. Detailed instructions are
 available in the repository README.md. Further, a docker image with all software
 requirements preinstalled is available from
-\href{https://hub.docker.com/r/krisrs1128/microbiome_plvm}.
+\url{https://hub.docker.com/r/krisrs1128/microbiome_plvm}.
 
 \section*{Acknowledgments}
 
