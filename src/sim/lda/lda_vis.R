@@ -65,3 +65,29 @@ ggsave(
   width = 5,
   height = 3
 )
+
+## ---- relative-errors ----
+perf <- combined %>%
+  mutate(value_1 = log(value_1), truth_1 = log(truth_1), value_2 = log(value_2), truth_2 = log(truth_2)) %>%
+  group_by(variable, method, D, V, N) %>%
+  summarise(
+    error = mean(sqrt((value_1 - truth_1) ^ 2 + (value_2 - truth_2) ^ 2)),
+    error_bar = sd(value_1)
+  )
+
+theme_set(ggscaffold::min_theme(list(border_size = .7)))
+method_cols <- c("#ae7664", "#64ae76", "#7664ae")
+p <- ggplot(perf) +
+  geom_abline(slope = 1, alpha = 0.6, size = 0.3) +
+  geom_point(aes(x = log(error), y = log(error_bar), col = method), size = 0.7, alpha = 0.6) +
+  scale_color_manual(values = method_cols) +
+  guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
+  labs(x = "Error", y = "SD (k = 1)") +
+  facet_grid(N ~ V + D)
+
+ggsave(
+  file.path(base_dir, "doc", "figure/beta_errors_lda.pdf"),
+  p,
+  width = 5,
+  height = 3
+)
