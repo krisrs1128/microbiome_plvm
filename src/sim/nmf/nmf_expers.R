@@ -25,15 +25,13 @@ dir.create(fits_dir, recursive = TRUE)
 sim_factors <- list(
   "N" = c(20, 100),
   "P" = 10,
-  "b" = c(1, 4/7, 1/3),
-  "a" = c(1, 10/7, 5/3),
+  "prior_params" = list(c(1, 1, 1, 1), c(4/7, 10/7, 1, 1), c(1/3, 5/3, 1, 1)),
   "zero_inf_prob" = c(0, 0.2)
 )
 
 sim_factors_high <- sim_factors
 sim_factors_high$P <- 50
-sim_factors_high$a <- c(5/3, 4/3, 1)
-sim_factors_high$b <- c(1/3, 2/3, 1)
+sim_factors_high$prior_params <- list(c(5/3, 1/3, 1, 1), c(4/3, 2/3, 1, 1), c(1, 1, 1, 1))
 
 model_factors <- list(
   "inference" = c("gibbs", "vb", "bootstrap"),
