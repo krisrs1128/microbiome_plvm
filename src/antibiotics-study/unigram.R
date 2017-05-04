@@ -139,25 +139,42 @@ plot_opts <- list(
   "fill_colors" = brewer.pal(8, "Set2"),
   "theme_opts" = list(border_size = 0.7, text_size = 10, subtitle_size = 10)
 )
-p <- ggboxplot(
-  mu_hat %>%
-  filter(
-    Taxon_5 %in% levels(mu_hat$Taxon_5)[1:4],
-    time %in% seq(10, 26, by = 5)
+
+mu_summary <- mu_hat %>%
+  group_by(rsv, topic) %>%
+  summarise(
+    mu_median = median(mu),
+    Taxon_5 = Taxon_5[1],
+    mu_upper = quantile(mu, 0.975),
+    mu_lower = quantile(mu, 0.025)
   ) %>%
-  as.data.frame(),
-  plot_opts
-) +
+  filter(
+    Taxon_5 %in% levels(mu_hat$Taxon_5)[1:5],
+    time %in% seq(10, 26, by = 5)
+  )
+mu_summary$rsv_ix <- rep(seq_len(nrow(mu_summary) / 4), each = 4)
+
+theme_set(min_theme(list(text_size = 10, subtitle_size = 10)))
+p <- ggplot(mu_summary) +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
+  geom_point(aes(x = rsv_ix, y = mu_median, col = Taxon_5), size = 0.1) +
+  geom_errorbar(
+    aes(x = rsv, alpha = mu_upper, ymax = mu_upper, ymin = mu_lower, col = Taxon_5),
+    size = 0.4
+  ) +
+  scale_color_brewer(palette = "Set2") +
+  scale_alpha(range = c(0.01, 1), breaks = c(1, 2, 3), guide = FALSE) + ## larger values have darker CIs
+  scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(breaks = scales::pretty_breaks(3), limits = c(-9, 7)) +
   facet_grid(condition + time ~ Taxon_5, scales = "free_x", space = "free_x") +
-  labs(y = expression(mu[t]), fill = "Family") +
+  labs(x = "Species", y = expression(mu[t]), fill = "Family") +
   theme(
-    strip.text.x = element_blank(),
+    panel.border = element_rect(fill = "transparent", size = 0.75),
     axis.text.x = element_blank(),
-    axis.title = element_text(size = 11),
-    legend.position = "bottom",
+    strip.text.x = element_blank(),
+    legend.position = "bottom"
   )
+
 ggsave("../../doc/figure/antibiotics_unigram_mu.pdf", p, width = 6, height = 3.5)
 
 ## ---- posterior-checks ----

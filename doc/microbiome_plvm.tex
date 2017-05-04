@@ -338,7 +338,7 @@ The shaded clouds are sampled posteriors, and the orange labels give posterior
 means. Across rows, different inferential procedures are compared, the top row of
 column labels refers to the total count $N$ within each sample, while the second
 refers to the number of samples $D$. The analogous figure when $V = 50$ is
-provided in the Supplementary Figure \ref{fig:nmf_v50}.
+provided in the Supplementary Figure \ref{fig:lda_v50}.
 
 As expected, when $D$ increases, the posterior for $\beta$, whose dimension does
 not increase with $D$, begins to concentrate around its true value. Consistent
@@ -353,32 +353,31 @@ corresponding to the failure to estimate distinct topics, and instead defaulting
 to marginal feature counts across samples. This effect is especially pronounced
 in the case $V = 50$.
 
-For the NMF experiment, we vary the number of features $V$ between $\{75, 125\}$
-and zero-inflation probability $p_{0} \in \{0, 0.2\}$. We keep the number of samples
-$D$ fixed at $100$ and latent factors $K$ fixed at 2. Unlike LDA, the total
-count within each sample is random. Further, in light of the discussion above,
-we omit the bootstrap-after-VB estimation technique. Figure
-\ref{fig:zinf_thetas} summarizes the estimation error across regimes. The first
-row of column names gives $p_{0}$, and the second gives the assumed model: GaP
-for the Gamma-Poisson model and Z-GaP for the zero-inflated Gamma-Poisson.
-Within each panel, we display histograms of the errors\footnote{We use a
-  square-root transformation to ensure the figures are not dominated by very
-  large errors.}, $\sqrt{\hat{\theta}_{dk}} - \sqrt{\theta_{dk}}$, where color
-encodes the latent factor $k$.
+While the kernel-smoothed posterior densities display the complete results from
+this simulation study, a few summary statistics from these densities can
+facilitate comparison across models and data generation regimes. The key
+features of interest are (1) how close are the posterior means for each
+parameter to their true values, after alignment, and (2) how concentrated are
+the posteriors? Figure \ref{fig:beta_errors_lda} addresses these questions
+directly -- the $x$-axis gives the RMSE of the square-root-transformed posterior
+means for the $\beta_{vk}$, for each v$, and the $y$-axis gives the
+associated standard deviation, along $K = 1$, for each $v$. As in Figure
+\ref{fig:lda_contours}, the first row of column numbers gives the total count
+$N$ in each sample, and the second gives $D$, the number of samples. The grey
+line within each panel is the identity line, where the error equals one SD.
 
-The improved concentration in the high-dimensional ($V = 125$) regime is
-more readily apparent. Further, the superiority of MCMC in the
-lower-dimensional ($V = 75$) case is suggested by the observation that the MCMC
-histogram is somewhat narrower in the center. However, while there seems to be
-less mass in the tails of the MCMC histogram, the tails themselves are just as
-wide as in the VB histogram.
-
-The most noticeable difference across these panels is that VB
-seems to perform substantially worse when zero-inflation is present, especially
-when zero-inflation is not taken into account. Surprisingly, MCMC
-seems only slightly worse in this situation. Further, the case in which
-zero-inflation is not explicitly modeled does not seem to do worse than the case
-it is.
+For the NMF experiment, we use similar parameters, except now we introduce a
+zero-inflation probability, $p_{0} \in \{0, 0.2\}$, and have control only over
+the expected number of words per document $\Earg{N}$, rather than $N$. To
+modulate $\Earg{N}$, we vary $a$ and $b$ so that $\Earg{N} = \frac{b}{a} \in
+\{20, 50, 100\}$, matching the LDA experiment, and with the constraint $a + b =
+1$, which controls the overall prior strength. As before, we vary the number of
+samples $D \in \{20, 100\}$ but fix the number of latent factors $K$ at 2.
+Figure \ref{fig:zinf_errors_beta} summarizes the estimation error across
+regimes, and is read in the same was as \ref{fig:lda_errors_beta}, except
+instead of providing the fixed values of $N$, we provide the parameter $a$,
+which parameterizes $\Earg{N}$. The associated posterior density display is
+given in Supplementary Figure \ref{fig:zinf_contours}.
 
 \section{Data Analysis}
 
@@ -635,10 +634,17 @@ requirements preinstalled is available from
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics{figure/visualizezinfthetashist-1}
-  \caption{Zero inflation poses problems for NMF, even when accounted for in the
-    likelihood. The deterioration is most dramatic when applying VB.}
-  \label{fig:zinf_thetas}
+  \centering
+  \includegraphics[options]{figure/beta_errors_lda}
+  \caption{A summary of the errors and uncertainty across models and regimes for
+    the $\beta_{vk}$ in Figure
+    \ref{fig:lda_contours}. \label{fig:beta_errors_lda} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[options]{figure/beta_errors_zinf}
+  \caption{\label{fig:zinf_contours} }
 \end{figure}
 
 \begin{figure}[!p]
@@ -715,6 +721,12 @@ requirements preinstalled is available from
     contours, while the posterior means are displayed as shaded text. The
     observed data PCA results, after alignment with posterior samples, are
     displayed as black text. \label{fig:antibiotics_posterior_pca} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[options]{figure/zinf_contours}
+  \caption{\label{fig:zinf_contours} }
 \end{figure}
 
 \end{document}

@@ -195,7 +195,6 @@ p <- ggplot(theta_hat) +
 ggsave("../../doc/figure/visualize_lda_theta_boxplot-1.pdf", p, width = 6, height = 2.9)
 
 ## ---- visualize_lda_beta ----
-top_rsvs <- names(sort(taxa_sums(abt), decreasing = TRUE)[1:200])
 beta_summary <- beta_hat %>%
   group_by(rsv_ix, topic) %>%
   summarise(

@@ -14,6 +14,7 @@ library("ggplot2")
 library("nmfSim")
 library("plyr")
 library("dplyr")
+library("ggscaffold")
 
 ## ---- beta-reshape ----
 ## extract beta information from the fits
@@ -68,13 +69,19 @@ zinf_data <- beta_fits
 plot_opts$facet_terms <- c("zero_inf_prob", "inference", "method")
 plot_opts$group <- "i"
 
-## ---- visualizezinfbetashist ----
+## ---- zinf-betas-errors ----
 zinf_data$a <- as.character(zinf_data$a)
 zinf_data$zero_inf_prob <- as.character(zinf_data$zero_inf_prob)
 
 perf <- zinf_data %>%
-  mutate(value_1 = log(value_1), value_2 = log(value_2), truth_1 = log(truth_1), truth_2 = log(truth_2)) %>%
-  group_by(j, inference, method, zero_inf_prob, a, N, P) %>%
+  mutate(
+    a = substr(a, 1, 2),
+    value_1 = sqrt(value_1),
+    value_2 = sqrt(value_2),
+    truth_1 = sqrt(truth_1),
+    truth_2 = sqrt(truth_2)
+  ) %>%
+  group_by(j, inference, method, zero_inf_prob, a, b, N, P) %>%
   summarise(
     error = mean(sqrt((value_1 - truth_1) ^ 2 + (value_2 - truth_2) ^ 2)),
     error_bar = sd(value_1)
@@ -86,11 +93,14 @@ p <- ggplot(perf) +
   geom_abline(slope = 1, alpha = 0.6, size = 0.3) +
   geom_point(
     aes(x = error, y = error_bar, col = inference, shape = zero_inf_prob),
-    size = 0.7, alpha = 0.6) +
-  facet_grid(method + a ~ P + N) +
+    size = 0.7, alpha = 0.6
+  ) +
+  facet_grid(method + P ~ N + a + b) +
   scale_color_manual(values = method_cols) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
-  labs(x = "Error", y = "SD (k = 1)")
+  labs(x = "Error", y = "SD (k = 1)", col = "Inference") +
+  ylim(0, 4) +
+  xlim(0, 4)
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_errors_nmf.pdf"),
@@ -99,32 +109,41 @@ ggsave(
   height = 3
 )
 
+## ---- zinf-betas-contours ----
 combined <- zinf_data %>%
   filter(P == 10)
 
-plot_opts <- list(x = "log(value_1)", y = "log(value_2)", 
-                  group = "j", fill_type = "gradient", h = 1)
+plot_opts <- list(x = "sqrt(value_1)", y = "sqrt(value_2)",
+                  group = "j", fill_type = "gradient", h = 0.1)
 
 ggcontours(combined, plot_opts) +
   geom_text(
     data = combined %>%
       filter(iteration == 1),
     aes(
-      x = log(truth_1),
-      y = log(truth_2),
+      x = sqrt(truth_1),
+      y = sqrt(truth_2),
       label = j
     ),
-    size = 2) +
+    size = 2
+  ) +
   geom_text(
     data = combined %>%
-      group_by(j, N, P, a, K, method) %>%
+      group_by(j, N, a, b, zero_inf_prob, inference, method) %>%
       summarise(value_mean_1 = mean(value_1), value_mean_2 = mean(value_2)),
     aes(
-      x = log(value_mean_1),
-      y = log(value_mean_2),
+      x = sqrt(value_mean_1),
+      y = sqrt(value_mean_2),
       label = j
     ),
-    size = 2, col = "black") + ##"#fc8d62") +
-  facet_grid(inference ~ N + a) +
-  ylim(-15, 11) +
-  xlim(-15, 11)
+    size = 2, col = "#fc8d62") +
+  facet_grid(method + inference + zero_inf_prob ~ N + a + b) +
+  ylim(0, 3) +
+  xlim(0, 3)
+
+ggsave(
+  file.path(base_dir, "doc", "figure/beta_contours_nmf.pdf"),
+  p,
+  width = 5,
+  height = 3
+)
