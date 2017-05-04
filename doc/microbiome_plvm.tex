@@ -359,15 +359,14 @@ the expected number of words per document $\Earg{N}$, rather than $N$. To
 modulate $\Earg{N}$, we vary $a$ and $b$ so that $\Earg{N} = \frac{b}{a} \in
 \{20, 50, 100\}$, matching the LDA experiment, and with the constraint $a + b =
 1$, which controls the overall prior strength. As before, we vary the number of
-samples $D \in \{20, 50\}$ but fix the number of latent factors $K$ at 2.
-Further, in light of the discussion above, we omit the bootstrap-after-VB
-estimation technique. Figure \ref{fig:zinf_thetas} summarizes the estimation
-error across regimes. The first row of column names gives $p_{0}$, and the
-second gives the assumed model: GaP for the Gamma-Poisson model and Z-GaP for
-the zero-inflated Gamma-Poisson. Within each panel, we display histograms of the
-errors\footnote{We use a square-root transformation to ensure the figures are
-  not dominated by very large errors.}, $\sqrt{\hat{\theta}_{dk}} -
-\sqrt{\theta_{dk}}$, where color encodes the latent factor $k$.
+samples $D \in \{20, 50\}$ but fix the number of latent factors $K$ at 2. Figure
+\ref{fig:zinf_thetas} summarizes the estimation error across regimes. The first
+row of column names gives $p_{0}$, and the second gives the assumed model: GaP
+for the Gamma-Poisson model and Z-GaP for the zero-inflated Gamma-Poisson.
+Within each panel, we display histograms of the errors\footnote{We use a
+  square-root transformation to ensure the figures are not dominated by very
+  large errors.}, $\sqrt{\hat{\theta}_{dk}} - \sqrt{\theta_{dk}}$, where color
+encodes the latent factor $k$.
 
 The improved concentration in the high-dimensional ($V = 125$) regime is
 more readily apparent. Further, the superiority of MCMC in the
