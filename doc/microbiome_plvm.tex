@@ -360,8 +360,11 @@ features of interest are (1) how close are the posterior means for each
 parameter to their true values, after alignment, and (2) how concentrated are
 the posteriors? Figure \ref{fig:beta_errors_lda} addresses these questions
 directly -- the $x$-axis gives the RMSE of the square-root-transformed posterior
-means for the $\beta_{vk}$, for each word v$, and the $y$-axis gives the
-associated standard deviation, along $K = 1$, for each $v$.
+means for the $\beta_{vk}$, for each v$, and the $y$-axis gives the
+associated standard deviation, along $K = 1$, for each $v$. As in Figure
+\ref{fig:lda_contours}, the first row of column numbers gives the total count
+$N$ in each sample, and the second gives $D$, the number of samples. The grey
+line within each panel is the identity line, where the error equals one SD.
 
 For the NMF experiment, we use similar parameters, except now we introduce a
 zero-inflation probability, $p_{0} \in \{0, 0.2\}$, and have control only over
@@ -369,22 +372,12 @@ the expected number of words per document $\Earg{N}$, rather than $N$. To
 modulate $\Earg{N}$, we vary $a$ and $b$ so that $\Earg{N} = \frac{b}{a} \in
 \{20, 50, 100\}$, matching the LDA experiment, and with the constraint $a + b =
 1$, which controls the overall prior strength. As before, we vary the number of
-samples $D \in \{20, 100\}$ but fix the number of latent factors $K$ at 2. Figure
-\ref{fig:zinf_thetas} summarizes the estimation error across regimes.
-
-The improved concentration in the high-dimensional ($V = 125$) regime is
-more readily apparent. Further, the superiority of MCMC in the
-lower-dimensional ($V = 75$) case is suggested by the observation that the MCMC
-histogram is somewhat narrower in the center. However, while there seems to be
-less mass in the tails of the MCMC histogram, the tails themselves are just as
-wide as in the VB histogram.
-
-The most noticeable difference across these panels is that VB
-seems to perform substantially worse when zero-inflation is present, especially
-when zero-inflation is not taken into account. Surprisingly, MCMC
-seems only slightly worse in this situation. Further, the case in which
-zero-inflation is not explicitly modeled does not seem to do worse than the case
-it is.
+samples $D \in \{20, 100\}$ but fix the number of latent factors $K$ at 2.
+Figure \ref{fig:zinf_errors_beta} summarizes the estimation error across
+regimes, and is read in the same was as \ref{fig:lda_errors_beta}, except
+instead of providing the fixed values of $N$, we provide the parameter $a$,
+which parameterizes $\Earg{N}$. The associated posterior density display is
+given in Supplementary Figure \ref{fig:zinf_contours}.
 
 \section{Data Analysis}
 
@@ -644,15 +637,14 @@ requirements preinstalled is available from
   \centering
   \includegraphics[options]{figure/beta_errors_lda}
   \caption{A summary of the errors and uncertainty across models and regimes for
-    terms in Figure \ref{fig:lda_contours}, after transforming to a
-    log-scale. \label{fig:beta_errors_lda} }
+    the $\beta_{vk}$ in Figure
+    \ref{fig:lda_contours}. \label{fig:beta_errors_lda} }
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics{figure/visualizezinfthetashist-1}
-  \caption{Zero inflation poses problems for NMF, even when accounted for in the
-    likelihood. The deterioration is most dramatic when applying VB.}
-  \label{fig:zinf_thetas}
+  \centering
+  \includegraphics[options]{figure/beta_errors_zinf}
+  \caption{\label{fig:zinf_contours} }
 \end{figure}
 
 \begin{figure}[!p]
@@ -729,6 +721,12 @@ requirements preinstalled is available from
     contours, while the posterior means are displayed as shaded text. The
     observed data PCA results, after alignment with posterior samples, are
     displayed as black text. \label{fig:antibiotics_posterior_pca} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[options]{figure/zinf_contours}
+  \caption{\label{fig:zinf_contours} }
 \end{figure}
 
 \end{document}
