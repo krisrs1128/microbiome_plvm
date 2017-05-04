@@ -15,8 +15,8 @@ library("nmfSim")
 library("plyr")
 library("dplyr")
 
-## ---- theta-reshape ----
-## extract theta information from the fits
+## ---- beta-reshape ----
+## extract beta information from the fits
 base_dir = "~/Desktop/microbiome_plvm"
 #base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 nmf_dir <- file.path(base_dir, "src", "sim", "nmf")
@@ -24,31 +24,20 @@ fits_dir <- file.path(nmf_dir, "fits")
 figure_dir <- file.path(base_dir, "doc", "figure")
 dir.create(figure_dir, recursive = TRUE)
 
-fits <- list.files(fits_dir, "p_10-*", full.names = TRUE)
+fits <- list.files(fits_dir, "fit-*", full.names = TRUE)
 expers <- fromJSON(
   file.path(nmf_dir, "config.json"),
   simplifyVector = FALSE
 )
 
-
-## Temporary realignment, to avoid having to rereun all the simulations
-for (i in seq_along(fits)) {
-  cur_samples <- get(load(fits[[i]]))
-  if (dim(cur_samples$theta)[2] == 2) {
-    cur_samples$theta <- aperm(cur_samples$theta, c(1, 3, 2))
-    cur_samples$beta <- aperm(cur_samples$beta, c(1, 3, 2))
-    save(cur_samples, file = fits[[i]])
-  }
-}
-
-theta_fits <- reshape_all_samples(
+beta_fits <- reshape_all_samples(
   fits,
   file.path(nmf_dir, "config.json"),
-  "theta",
-  c("i", "k")
+  "beta",
+  c("j", "k")
 )
-theta_fits$method <- basename(as.character(theta_fits$method))
-theta_fits$method <- theta_fits$method %>%
+beta_fits$method <- basename(as.character(beta_fits$method))
+beta_fits$method <- beta_fits$method %>%
   revalue(
     c(
     "nmf_gamma_poisson.stan" = "GaP",
@@ -56,8 +45,8 @@ theta_fits$method <- theta_fits$method %>%
     )
   )
 
-## ---- visualizethetas-prep -----
-## Visualize the fitted thetas, according to a few different simulation properties
+## ---- visualizebetas-prep -----
+## Visualize the fitted betas, according to a few different simulation properties
 plot_opts <- list(
   "x" = "value_1",
   "y" = "value_2",
@@ -74,71 +63,68 @@ plot_opts <- list(
   "panel_border" = 0.1
 )
 
-## ---- visualize-zinf-thetas-prep ----
-zinf_data <- theta_fits %>%
-  filter(P == 10, N == 100)
+## ---- visualize-zinf-betas-prep ----
+zinf_data <- beta_fits
 plot_opts$facet_terms <- c("zero_inf_prob", "inference", "method")
 plot_opts$group <- "i"
 
-## ---- visualizezinfthetashist ----
-zinf_data$a0 <- as.character(zinf_data$a0)
+## ---- visualizezinfbetashist ----
+zinf_data$a <- as.character(zinf_data$a)
 zinf_data$zero_inf_prob <- as.character(zinf_data$zero_inf_prob)
 
 perf <- zinf_data %>%
-  mutate(value_1 = sqrt(value_1), truth_1 = sqrt(truth_1), value_2 = sqrt(value_2), truth_2 = sqrt(truth_2)) %>%
-  group_by(i, inference, method, zero_inf_prob, a0) %>%
+  mutate(value_1 = log(value_1), value_2 = log(value_2), truth_1 = log(truth_1), truth_2 = log(truth_2)) %>%
+  group_by(j, inference, method, zero_inf_prob, a, N, P) %>%
   summarise(
     error = mean(sqrt((value_1 - truth_1) ^ 2 + (value_2 - truth_2) ^ 2)),
-    error_bar = sqrt(det(cov(cbind(value_1, value_2))))
+    error_bar = sd(value_1)
   )
 
-ggplot(perf) +
-  geom_point(aes(x = error, y = error_bar)) +
-  facet_grid(inference ~ method + zero_inf_prob) +
-  geom_abline(slope = 1) +
-  coord_fixed()
+theme_set(ggscaffold::min_theme(list(border_size = .7)))
+method_cols <- c("#ae7664", "#64ae76", "#7664ae")
+p <- ggplot(perf) +
+  geom_abline(slope = 1, alpha = 0.6, size = 0.3) +
+  geom_point(
+    aes(x = error, y = error_bar, col = inference, shape = zero_inf_prob),
+    size = 0.7, alpha = 0.6) +
+  facet_grid(method + a ~ P + N) +
+  scale_color_manual(values = method_cols) +
+  guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
+  labs(x = "Error", y = "SD (k = 1)")
 
-x = zinf_data %>%
-  filter(i == "6", inference == "gibbs", method == "GaP", zero_inf_prob == 0, a0 == "1") %>%
-  select(value_1, value_2)
-y = zinf_data %>%
-  filter(i == "6", inference == "gibbs", method == "GaP", zero_inf_prob == 0, a0 == "0.2") %>%
-  select(value_1, value_2)
+ggsave(
+  file.path(base_dir, "doc", "figure/beta_errors_nmf.pdf"),
+  p,
+  width = 5,
+  height = 3
+)
 
-ggplot(x) +
-  geom_point(aes(x = value_1, y = value_2))
-sqrt(det(cov(as.matrix(x))))
-(sd(x$value_1) + sd(x$value_2) ) / 2
-mean(sqrt(diag(cov(as.matrix(x)))))
-sqrt(det(cov(as.matrix(x))))
+combined <- zinf_data %>%
+  filter(P == 10)
 
-head(zinf_data)
-ggplot() +
+plot_opts <- list(x = "log(value_1)", y = "log(value_2)", 
+                  group = "j", fill_type = "gradient", h = 1)
+
+ggcontours(combined, plot_opts) +
   geom_text(
-    data = zinf_data %>% sample_n(10000),
-    aes(x = sqrt(value_1), y = sqrt(value_2), label = i), alpha = 0.2, size = 1) +
+    data = combined %>%
+      filter(iteration == 1),
+    aes(
+      x = log(truth_1),
+      y = log(truth_2),
+      label = j
+    ),
+    size = 2) +
   geom_text(
-    data = zinf_data %>%
-      group_by(i, inference, method, zero_inf_prob, a) %>%
-      summarise(truth_1 = truth_1[1], truth_2 = truth_2[1]),
-    aes(x = sqrt(truth_1), y = sqrt(truth_2), label = i), alpha = 1, size = 3) +
-  facet_grid(inference ~ zero_inf_prob + method + a)
-
-ggplot() +
-  geom_text(
-    data = zinf_data %>%
-      group_by(i, inference, method, zero_inf_prob, a) %>%
-      summarise(value_1 = mean(value_1), value_2 = mean(value_2)),
-    aes(x = sqrt(value_1), y = sqrt(value_2), label = i), alpha = 1, size = 3, col = "red") +
-  geom_text(
-    data = zinf_data %>%
-      group_by(i, inference, method, zero_inf_prob, a) %>%
-      summarise(truth_1 = truth_1[1], truth_2 = truth_2[1]),
-    aes(x = sqrt(truth_1), y = sqrt(truth_2), label = i), alpha = 1, size = 3) +
-  facet_grid(inference ~ zero_inf_prob + method + a)
-
-mzinf_data <- melt_reshaped_samples(zinf_data)
-
-p <- error_histograms(mzinf_data, plot_opts$facet_terms) +
-  facet_grid(inference ~ zero_inf_prob + method)
-ggsave(file.path(figure_dir, "visualizezinfthetashist-1.pdf"), p)
+    data = combined %>%
+      group_by(j, N, P, a, K, method) %>%
+      summarise(value_mean_1 = mean(value_1), value_mean_2 = mean(value_2)),
+    aes(
+      x = log(value_mean_1),
+      y = log(value_mean_2),
+      label = j
+    ),
+    size = 2, col = "black") + ##"#fc8d62") +
+  facet_grid(inference ~ N + a) +
+  ylim(-15, 11) +
+  xlim(-15, 11)

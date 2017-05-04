@@ -14,7 +14,8 @@ library("nmfSim")
 
 ## ---- configuration ----
 ## create the configuration JSON file
-base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
+#base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
+base_dir <- "~/Desktop/microbiome_plvm/"
 nmf_dir <- file.path(base_dir, "src", "sim", "nmf")
 config_path <- file.path(nmf_dir, "config.json")
 stan_path <- file.path(.libPaths()[1], "nmfSim", "extdata")
@@ -23,13 +24,16 @@ dir.create(fits_dir, recursive = TRUE)
 
 sim_factors <- list(
   "N" = c(20, 100),
-  "P" = c(10),
-  "a" = c(1, 2/5, 1/5),
+  "P" = 10,
+  "b" = c(1, 4/7, 1/3),
+  "a" = c(1, 10/7, 5/3),
   "zero_inf_prob" = c(0, 0.2)
 )
+
 sim_factors_high <- sim_factors
 sim_factors_high$P <- 50
-sim_factors_high$a <- c(5, 2, 1)
+sim_factors_high$a <- c(5/3, 4/3, 1)
+sim_factors_high$b <- c(1/3, 2/3, 1)
 
 model_factors <- list(
   "inference" = c("gibbs", "vb", "bootstrap"),
