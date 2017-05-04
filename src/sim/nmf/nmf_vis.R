@@ -81,7 +81,7 @@ perf <- zinf_data %>%
     truth_1 = sqrt(truth_1),
     truth_2 = sqrt(truth_2)
   ) %>%
-  group_by(j, inference, method, zero_inf_prob, a, N, P) %>%
+  group_by(j, inference, method, zero_inf_prob, a, b, N, P) %>%
   summarise(
     error = mean(sqrt((value_1 - truth_1) ^ 2 + (value_2 - truth_2) ^ 2)),
     error_bar = sd(value_1)
@@ -95,10 +95,12 @@ p <- ggplot(perf) +
     aes(x = error, y = error_bar, col = inference, shape = zero_inf_prob),
     size = 0.7, alpha = 0.6
   ) +
-  facet_grid(P ~ N + a) +
+  facet_grid(method + P ~ N + a + b) +
   scale_color_manual(values = method_cols) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
-  labs(x = "Error", y = "SD (k = 1)", col = "Inference")
+  labs(x = "Error", y = "SD (k = 1)", col = "Inference") +
+  ylim(0, 4) +
+  xlim(0, 4)
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_errors_nmf.pdf"),
@@ -138,3 +140,10 @@ ggcontours(combined, plot_opts) +
   facet_grid(method + inference + zero_inf_prob ~ N + a + b) +
   ylim(0, 3) +
   xlim(0, 3)
+
+ggsave(
+  file.path(base_dir, "doc", "figure/beta_contours_nmf.pdf"),
+  p,
+  width = 5,
+  height = 3
+)
