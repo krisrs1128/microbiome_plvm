@@ -302,6 +302,7 @@ posterior_checks_plots <- function(input_data) {
       size = 0.4, col = "#000000"
     ) +
     scale_color_manual(values = c("#86B8B1", "#b186b8")) +
+    scale_y_continuous(breaks = scales::pretty_breaks(3)) +
     labs(x = "time", y = "asinh(abundance)") +
     guides(colour = guide_legend(nrow = 2, override.aes = list(alpha = 1, size = 2))) +
     facet_wrap(~rsv, scales = "free", ncol = 3)
