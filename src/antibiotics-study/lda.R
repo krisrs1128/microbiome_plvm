@@ -1,10 +1,15 @@
 #! /usr/bin/env Rscript
 
 # File description -------------------------------------------------------------
-# Generate data for multinomial mixture model, and run rstan code for it
+# RStan code to run LDA on antibiotics dataset.
 # Based on
 # https://github.com/stan-dev/stan/releases/download/v2.12.0/stan-reference-2.12.0.pdf
 # page 157
+
+library("argparser")
+parser <- arg_parser("Perform LDA on the antibiotics dataset")
+parser <- add_argument(parser, "--subject", help = "Subject on which to perform analysis", default = "F")
+argv <- parse_args(parser)
 
 ## ---- setup ----
 library("rstan")
@@ -25,7 +30,7 @@ set.seed(11242016)
 ## ---- get-data ----
 abt <- get(load("../../data/antibiotics-study/abt.rda"))
 abt <- abt %>%
-  subset_samples(ind == "F")
+  subset_samples(ind == argv$subject)
 
 releveled_sample_data <- abt %>%
   sample_data %>%
@@ -174,7 +179,10 @@ p <- ggheatmap(
   plot_opts
 ) +
   labs(fill = "g(theta)")
-ggsave("../../doc/figure/visualize_lda_theta_heatmap-1.pdf", p, width = 7, height = 0.9)
+ggsave(
+  sprintf("../../doc/figure/visualize_lda_theta_heatmap-%s.pdf"),
+  p, width = 7, height = 0.9
+)
 
 ## ---- visualize_lda_theta_boxplot ----
 p <- ggplot(theta_hat) +
@@ -192,7 +200,10 @@ p <- ggplot(theta_hat) +
   labs(x = "Time", y = expression(paste("g(", theta[k], ")"))) +
   theme(legend.position = "none") +
   scale_x_discrete(breaks = seq(1, 60, by = 10) - 1)
-ggsave("../../doc/figure/visualize_lda_theta_boxplot-1.pdf", p, width = 6, height = 2.9)
+ggsave(
+  sprintf("../../doc/figure/visualize_lda_theta_boxplot-%s.pdf", argv$subject),
+  p, width = 6, height = 2.9
+)
 
 ## ---- visualize_lda_beta ----
 beta_summary <- beta_hat %>%
@@ -225,18 +236,21 @@ p <- ggplot(beta_summary) +
     strip.text.x = element_blank(),
     legend.position = "bottom"
   )
-ggsave("../../doc/figure/visualize_lda_beta-1.pdf", p, width = 6, height = 3.5)
+ggsave(
+  sprintf("../../doc/figure/visualize_lda_beta-%s.pdf", argv$subject),
+  p, width = 6, height = 3.5
+)
 
 ## ---- posterior-checks ----
 checks_data <- posterior_checks_input(
   x,
   samples$x_sim,
-  "../../data/figure-input/lda"
+  sprintf("../../data/figure-input/lda-%s", argv$subject)
 )
 
 ## ---- js-input ----
 colnames(beta_summary) <- c("ix", "topic", "median", "fill", "upper", "lower")
 cat(
   sprintf("var beta = %s", jsonlite::toJSON(beta_summary, auto_unbox = TRUE)),
-  file = "../../data/antibiotics-study/lda_beta.js"
+  file = sprintf("../../data/antibiotics-study/lda_beta-%s.js", argv$subject)
 )
