@@ -96,9 +96,15 @@ stan_data <- list(
   gamma = rep(0.5, ncol(x))
 )
 
-m <- stan_model(file = "../stan/lda_counts.stan")
-n_iter <- 1000
-stan_fit <- vb(m, stan_data, iter = 2 * n_iter)
+f <- stan_model(file = "../stan/lda_counts.stan")
+stan_fit <- vb(
+  f,
+  data = stan_data,
+  iter = 3000,
+  output_samples = 1000,
+  eta = 0.1,
+  adapt_engaged = FALSE
+)
 save(
   stan_fit,
   file = sprintf("../../data/fits/lda-%s-%s.rda", argv$subject, gsub("[:|| ||-]", "", Sys.time()))
@@ -110,7 +116,7 @@ rm(stan_fit)
 # underlying RSV distributions
 beta_logit <- samples$beta
 
-for (i in seq_len(n_iter)) {
+for (i in seq_len(nrow(beta_logit))) {
   for (k in seq_len(stan_data$K)) {
     beta_logit[i, k, ] <- log(beta_logit[i, k, ])
     beta_logit[i, k, ] <- beta_logit[i, k, ] - mean(beta_logit[i, k, ])
@@ -142,7 +148,7 @@ beta_hat$rsv <- factor(beta_hat$rsv, levels = taxa$rsv)
 
 ## ---- extract_theta ----
 theta_logit <- samples$theta
-for (i in seq_len(n_iter)) {
+for (i in seq_len(nrow(theta_logit))) {
   for (d in seq_len(stan_data$D)) {
     theta_logit[i, d, ] <- log(theta_logit[i, d, ])
     theta_logit[i, d, ] <- theta_logit[i, d, ] - mean(theta_logit[i, d, ])
