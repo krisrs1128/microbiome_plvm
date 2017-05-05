@@ -26,7 +26,6 @@ function beta_extract(id) {
   return beta.map(function(x) { return x[id]; });
 }
 
-// var unique_fill = ["Lachnospiraceae", "Bacteroidaceae", "Eubacteria", "Streptococcaceae", "Ruminococceae", "uncultured", "Peptostreptococcaceae", "other"];
 var unique_fill = ["Lachnospiraceae", "Ruminococcaceae", "Bacteroidaceae", "uncultured",
                    "Eubacteria", "Peptostreptococcaceae", "Streptococcaceae", "other"];
 var unique_ix = d3.set(beta_extract("ix")).values().map(parseFloat);
