@@ -116,7 +116,7 @@ combined <- zinf_data %>%
 plot_opts <- list(x = "sqrt(value_1)", y = "sqrt(value_2)",
                   group = "j", fill_type = "gradient", h = 0.1)
 
-ggcontours(combined, plot_opts) +
+p <- ggcontours(combined, plot_opts) +
   geom_text(
     data = combined %>%
       filter(iteration == 1),

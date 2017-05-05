@@ -3,7 +3,10 @@
 # File description -------------------------------------------------------------
 # This is an application of the dynamic unigram model to the antibiotics data
 
-# Code block ------------------------------------------------------------------
+library("argparser")
+parser <- arg_parser("Perform dynamic unigrams on the antibiotics dataset")
+parser <- add_argument(parser, "--subject", help = "Subject on which to perform analysis", default = "F")
+argv <- parse_args(parser)
 
 ## ---- setup ----
 library("rstan")
@@ -27,8 +30,7 @@ softmax <- function(x) {
 ## ---- get-data ----
 abt <- get(load("../../data/antibiotics-study/abt.rda"))
 abt <- abt %>%
-  filter_taxa(function(x) sum(x != 0) > .45 * nsamples(abt), prune = TRUE) %>%
-  subset_samples(ind == "F")
+  subset_samples(ind == argv$subject)
 
 ## ---- run-model ----
 times <- sample_data(abt)$time
@@ -36,7 +38,7 @@ x <- t(get_taxa(abt))
 dimnames(x) <- NULL
 stan_data <- list(
   N = nrow(x),
-  V = ncol(x),
+ V = ncol(x),
   T = length(times),
   times = times,
   times_mapping = times,
@@ -46,10 +48,17 @@ stan_data <- list(
 )
 
 m <- stan_model("../stan/unigram.stan")
-stan_fit <- vb(m, data = stan_data)
+stan_fit <- vb(
+  m,
+  data = stan_data,
+  iter = 5000,
+  output_samples = 1000,
+  eta = 0.1,
+  adapt_engaged = FALSE
+)
 save(
   stan_fit,
-  file = sprintf("../../data/fits/unigram-%s.rda", gsub("[:|| ||-]", "", Sys.time()))
+  file = sprintf("../../data/fits/unigram-%s-%s.rda", argv$subject, gsub("[:|| ||-]", "", Sys.time()))
 )
 samples <- rstan::extract(stan_fit)
 rm(stan_fit)
@@ -124,7 +133,10 @@ p <- gglines(
     strip.text.y = element_blank(),
     legend.position = "bottom"
   )
-ggsave("../../doc/figure/unigramseries-1.pdf", p)
+ggsave(
+  sprintf("../../doc/figure/unigramseries-%s.pdf", argv$subject),
+  p
+)
 
 ## ---- unigramboxplots ----
 plot_opts <- list(
@@ -175,11 +187,14 @@ p <- ggplot(mu_summary) +
     legend.position = "bottom"
   )
 
-ggsave("../../doc/figure/antibiotics_unigram_mu.pdf", p, width = 6, height = 3.5)
+ggsave(
+  sprintf("../../doc/figure/antibiotics_unigram_mu-%s.pdf", argv$subject),
+  p, width = 6, height = 3.5
+)
 
 ## ---- posterior-checks ----
 checks_data <- posterior_checks_input(
   x,
   samples$x_sim,
-  "../../data/figure-input/unigram"
+  sprintf("../../data/figure-input/unigram-%s", argv$subject)
 )
