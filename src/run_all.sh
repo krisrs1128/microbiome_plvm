@@ -25,5 +25,11 @@ chmod +x lda.R unigram.R posterior_checks.R
 ./lda.R
 ./unigram.R
 ./posterior_checks.R
+./lda.R --subject 'D'
+./unigram.R --subject 'D'
+./posterior_checks.R --subject 'D'
+./lda.R --subject 'E'
+./unigram.R --subject 'E'
+./posterior_checks.R --subject 'E'
 
 cd $MICROBIOME_PLVM_DIR
