@@ -21,8 +21,9 @@ cd $MICROBIOME_PLVM_DIR
 
 ## Run and save for antibiotics application to LDA experiment
 cd $MICROBIOME_PLVM_DIR/src/antibiotics-study
-Rscript lda.R
-Rscript unigram.R
-Rscript posterior_checks.R
+chmod +x lda.R unigram.R posterior_checks.R
+./lda.R
+./unigram.R
+./posterior_checks.R
 
 cd $MICROBIOME_PLVM_DIR

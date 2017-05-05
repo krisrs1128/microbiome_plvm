@@ -5,6 +5,12 @@
 ## methods' R scripts, to visualize the posterior check values of the different
 ## methods side-by-side we read the figure data separately and visualize here.
 
+library("argparser")
+parser <- arg_parser("Perform dynamic unigrams on the antibiotics dataset")
+parser <- add_argument(parser, "--subject", help = "Subject on which to perform analysis", default = "F")
+argv <- parse_args(parser)
+
+## ---- setup ----
 library("plyr")
 library("dplyr")
 library("ggplot2")
@@ -16,7 +22,11 @@ theme_set(ggscaffold::min_theme(list(text_size = 10, subtitle_size = 11)))
 set.seed(11242016)
 
 ## ---- read-reshape ----
-input_paths <- list.files("../../data/figure-input/", full.names = TRUE)
+input_paths <- list.files(
+  "../../data/figure-input",
+  sprintf("*-%s.feather", argv$subject),
+  full.names = TRUE
+)
 input_data <- lapply(
   input_paths,
   read_feather
@@ -45,10 +55,10 @@ p <- posterior_checks_plots(merged_data)
 output_dir <- "../../doc/figure/"
 dir.create(output_dir, recursive = TRUE)
 
-ggsave(sprintf("%s/posterior_check_hists.png", output_dir), p[["hists"]], width = 6, height = 3.5)
-ggsave(sprintf("%s/posterior_check_quantiles.png", output_dir), p[["quantiles"]], width = 4.5, height = 2.2)
-ggsave(sprintf("%s/posterior_check_margins.png", output_dir), p[["margins"]], width = 6, height = 3.5)
-ggsave(sprintf("%s/posterior_check_ts.png", output_dir), p[["ts"]], width = 6, height = 4)
-ggsave(sprintf("%s/posterior_check_scores.png", output_dir), p[["scores"]], width = 5, height = 2.9)
-ggsave(sprintf("%s/posterior_check_loadings.png", output_dir), p[["loadings"]], width = 2, height = 3.5)
-ggsave(sprintf("%s/posterior_check_evals.png", output_dir), p[["evals"]], width = 6, height = 3.5)
+ggsave(sprintf("%s/posterior_check_hists-%s.png", output_dir, argv$subject), p[["hists"]], width = 6, height = 3.5)
+ggsave(sprintf("%s/posterior_check_quantiles-%s.png", output_dir, argv$subject), p[["quantiles"]], width = 4.5, height = 2.2)
+ggsave(sprintf("%s/posterior_check_margins-%s.png", output_dir, argv$subject), p[["margins"]], width = 6, height = 3.5)
+ggsave(sprintf("%s/posterior_check_ts-%s.png", output_dir, argv$subject), p[["ts"]], width = 6, height = 4)
+ggsave(sprintf("%s/posterior_check_scores-%s.png", output_dir, argv$subject), p[["scores"]], width = 5, height = 2.9)
+ggsave(sprintf("%s/posterior_check_loadings-%s.png", output_dir, argv$subject), p[["loadings"]], width = 2, height = 3.5)
+ggsave(sprintf("%s/posterior_check_evals-%s.png", output_dir, argv$subject), p[["evals"]], width = 6, height = 3.5)
