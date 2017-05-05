@@ -101,7 +101,7 @@ n_iter <- 1000
 stan_fit <- vb(m, stan_data, iter = 2 * n_iter)
 save(
   stan_fit,
-  file = sprintf("../../data/fits/lda-%s.rda", gsub("[:|| ||-]", "", Sys.time()))
+  file = sprintf("../../data/fits/lda-%s-%s.rda", argv$subject, gsub("[:|| ||-]", "", Sys.time()))
 )
 samples <- rstan::extract(stan_fit)
 rm(stan_fit)
