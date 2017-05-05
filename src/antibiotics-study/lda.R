@@ -233,3 +233,10 @@ checks_data <- posterior_checks_input(
   samples$x_sim,
   "../../data/figure-input/lda"
 )
+
+## ---- js-input ----
+colnames(beta_summary) <- c("ix", "topic", "median", "fill", "upper", "lower")
+cat(
+  sprintf("var beta = %s", jsonlite::toJSON(beta_summary, auto_unbox = TRUE)),
+  file = "../../data/antibiotics-study/lda_beta.js"
+)
