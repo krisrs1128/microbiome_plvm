@@ -48,7 +48,14 @@ stan_data <- list(
 )
 
 m <- stan_model("../stan/unigram.stan")
-stan_fit <- vb(m, data = stan_data)
+stan_fit <- vb(
+  m,
+  data = stan_data,
+  iter = 5000,
+  output_samples = 1000,
+  eta = 0.1,
+  adapt_engaged = FALSE
+)
 save(
   stan_fit,
   file = sprintf("../../data/fits/unigram-%s-%s.rda", argv$subject, gsub("[:|| ||-]", "", Sys.time()))
