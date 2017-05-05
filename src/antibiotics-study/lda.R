@@ -180,7 +180,7 @@ p <- ggheatmap(
 ) +
   labs(fill = "g(theta)")
 ggsave(
-  sprintf("../../doc/figure/visualize_lda_theta_heatmap-%s.pdf"),
+  sprintf("../../doc/figure/visualize_lda_theta_heatmap-%s.pdf", argv$subject),
   p, width = 7, height = 0.9
 )
 
