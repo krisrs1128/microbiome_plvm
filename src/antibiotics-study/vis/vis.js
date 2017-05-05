@@ -16,6 +16,12 @@ elem.append("rect")
     "fill": "#F7F7F7"
   });
 
+elem.append("g")
+  .attrs({
+    "id": "text_box",
+    "transform": "translate(" + 0.65 * width + "," + 0.85 * height + ")",
+  });
+
 var unique_fill = d3.set(beta.map(function(x) { return x.fill; })).values();
 var unique_ix = d3.set(beta.map(function(x) { return x.ix; })).values();
 var unique_topics = d3.set(beta.map(function(x) { return x.topic; })).values();
@@ -31,7 +37,7 @@ var scales = {
     .range([0, width]),
   "panels": d3.scaleBand()
     .domain(unique_topics)
-    .range([0, height])
+    .range([0, 0.85 * height])
 };
 
 scales.y.range([scales.panels.step(), 0]);
@@ -45,4 +51,19 @@ elem.selectAll("circle")
     "cx": function(d) { return scales.x(d.ix); },
     "cy": function(d) { return scales.panels(d.topic) + scales.y(d.median); },
     "fill": function(d) { return scales.fill(d.fill); }
-  });
+  })
+  .on("mouseover", update_info);
+
+function update_info(d) {
+  d3.select("#text_box")
+    .selectAll("text")
+    .remove()
+
+  d3.select("#text_box")
+    .append("text")
+    .text(d.ix)
+    .attrs({
+      "transform": "translate(10, 20)",
+      "font-size": 20
+    });
+}
