@@ -21,6 +21,7 @@ library("ggscaffold")
 source("./posterior_check_funs.R")
 dir.create("../../data/fits/", recursive = TRUE)
 dir.create("../../doc/figure/", recursive = TRUE)
+theme_set(min_theme())
 set.seed(11242016)
 
 softmax <- function(x) {
@@ -51,7 +52,7 @@ m <- stan_model("../stan/unigram.stan")
 stan_fit <- vb(
   m,
   data = stan_data,
-  iter = 5000,
+  iter = 6000,
   output_samples = 1000,
   eta = 0.1,
   adapt_engaged = FALSE
