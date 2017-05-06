@@ -21,6 +21,7 @@ library("phyloseq")
 library("RColorBrewer")
 library("ggscaffold")
 library("feather")
+theme_set(min_theme())
 source("./posterior_check_funs.R")
 dir.create("../../data/fits/", recursive = TRUE)
 dir.create("../../data/figure-input/", recursive = TRUE)
@@ -100,7 +101,7 @@ f <- stan_model(file = "../stan/lda_counts.stan")
 stan_fit <- vb(
   f,
   data = stan_data,
-  iter = 3000,
+  iter = 6000,
   output_samples = 1000,
   eta = 0.1,
   adapt_engaged = FALSE
@@ -109,6 +110,7 @@ save(
   stan_fit,
   file = sprintf("../../data/fits/lda-%s-%s.rda", argv$subject, gsub("[:|| ||-]", "", Sys.time()))
 )
+
 samples <- rstan::extract(stan_fit)
 rm(stan_fit)
 
@@ -215,12 +217,14 @@ ggsave(
 beta_summary <- beta_hat %>%
   group_by(rsv_ix, topic) %>%
   summarise(
+    rsv = rsv[1],
     beta_median = median(beta_logit),
     Taxon_5 = Taxon_5[1],
     beta_upper = quantile(beta_logit, 0.975),
     beta_lower = quantile(beta_logit, 0.025)
-  ) %>%
-  filter(Taxon_5 %in% levels(beta_hat$Taxon_5)[1:5])
+  )
+levels(beta_summary$Taxon_5) <- append(levels(beta_summary$Taxon_5), "other")
+beta_summary$Taxon_5[!(beta_summary$Taxon_5 %in% levels(beta_summary$Taxon_5)[1:7])] <- "other"
 beta_summary$rsv_ix <- rep(seq_len(nrow(beta_summary) / 4), each = 4)
 
 p <- ggplot(beta_summary) +
@@ -255,8 +259,8 @@ checks_data <- posterior_checks_input(
 )
 
 ## ---- js-input ----
-colnames(beta_summary) <- c("ix", "topic", "median", "fill", "upper", "lower")
+colnames(beta_summary) <- c("ix", "topic", "label", "median", "fill", "upper", "lower")
 cat(
   sprintf("var beta = %s", jsonlite::toJSON(beta_summary, auto_unbox = TRUE)),
-  file = sprintf("../../data/antibiotics-study/lda_beta-%s.js", argv$subject)
+  file = sprintf("vis/lda_beta-%s.js", argv$subject)
 )

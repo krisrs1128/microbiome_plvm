@@ -96,6 +96,8 @@ p <- ggplot(perf) +
     size = 0.7, alpha = 0.6
   ) +
   facet_grid(method + P ~ N + a + b) +
+  scale_y_continuous(limits = c(0, 1.7)) +
+  scale_x_continuous(limits = c(0, 3)) +
   scale_color_manual(values = method_cols) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   labs(x = "Error", y = "SD (k = 1)", col = "Inference") +

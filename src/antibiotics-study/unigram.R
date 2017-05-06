@@ -13,6 +13,7 @@ library("rstan")
 library("reshape2")
 library("plyr")
 library("dplyr")
+library("tidyr")
 library("ggplot2")
 library("RColorBrewer")
 library("phyloseq")
@@ -21,6 +22,7 @@ library("ggscaffold")
 source("./posterior_check_funs.R")
 dir.create("../../data/fits/", recursive = TRUE)
 dir.create("../../doc/figure/", recursive = TRUE)
+theme_set(min_theme())
 set.seed(11242016)
 
 softmax <- function(x) {
@@ -51,7 +53,7 @@ m <- stan_model("../stan/unigram.stan")
 stan_fit <- vb(
   m,
   data = stan_data,
-  iter = 5000,
+  iter = 6000,
   output_samples = 1000,
   eta = 0.1,
   adapt_engaged = FALSE
@@ -64,34 +66,33 @@ samples <- rstan::extract(stan_fit)
 rm(stan_fit)
 
 ## ---- prepare-mu ----
-taxa <- cbind(
-  rsv = rownames(tax_table(abt)),
-  as_data_frame(tax_table(abt)@.Data)
-)
+taxa <- as_data_frame(tax_table(abt)@.Data)
+taxa$rsv <- rownames(tax_table(abt))
 taxa$Taxon_5[which(taxa$Taxon_5 == "")] <- taxa$Taxon_4[which(taxa$Taxon_5 == "")]
 taxa$Taxon_5 <- taxa$Taxon_5 %>%
-  revalue(c("Bacteroidaceae_Bacteroides" = "Bacteroides"))
+  revalue(c("Bacteroidaceae_Bacteroides" = "Bacteroidaceae"))
 
-## center the mus
-mu <- samples$mu
-for (i in seq_len(stan_data$T)) {
+## subset to small number of times, and center the mus
+keep_times <- seq(10, 26, by = 5)
+mu <- samples$mu[, keep_times, ]
+samples$mu <- NULL
+for (i in seq_len(ncol(mu))) {
   mu[, i,] <- mu[, i, ] - mean(mu[, i,])
 }
 
-mu_hat <- samples$mu %>%
+## ---- plot-data ----
+## prepare summary statistics to plot
+mu_summary <- apply(mu, c(2, 3), quantile, c(0.025, 0.5, 0.975)) %>%
   melt(
-    varnames = c("iteration", "time", "rsv_ix"),
+    varnames = c("quantile", "time", "rsv_ix"),
     value.name = "mu"
-  )
-
-mu_hat$rsv <- rownames(otu_table(abt))[mu_hat$rsv_ix]
-mu_hat$time <- times[mu_hat$time]
-mu_hat <- mu_hat %>%
-  left_join(taxa) %>%
-  left_join(sample_data(abt)[, c("time", "condition")]) %>%
-  group_by(time) %>%
+  ) %>%
+  spread(quantile, mu) %>%
   mutate(
-    prob = softmax(mu),
+    time = keep_times[time]
+  ) %>%
+  left_join(sample_data(abt)[, c("time", "condition")]) %>%
+  mutate(
     condition = revalue(
       condition,
       c("Pre Cp" = "Pre",
@@ -103,82 +104,34 @@ mu_hat <- mu_hat %>%
     )
   )
 
-group_order <- sort(table(taxa$Taxon_5), decreasing = TRUE)
-mu_hat$Taxon_5 <- factor(mu_hat$Taxon_5, levels = names(group_order))
-mu_hat$rsv <- factor(
-  taxa[mu_hat$rsv_ix, ]$rsv,
+colnames(mu_summary) <- c("time", "rsv_ix", "lower", "median", "upper", "condition")
+mu_summary$rsv <- factor(
+  taxa[mu_summary$rsv_ix, ]$rsv,
   levels = rownames(tax_table(abt))
 )
 
-## ---- unigramseries ----
-plot_opts <- list(
-  "x" = "time",
-  "y" = "mean_mu",
-  "col" = "Taxon_5",
-  "facet_terms" = c("Taxon_5", "."),
-  "alpha" = 0.4,
-  "group" = "rsv"
-)
-p <- gglines(
-  mu_hat %>%
-  filter(Taxon_5 %in% levels(mu_hat$Taxon_5)[1:4]) %>%
-  group_by(rsv, time) %>%
-  summarise(mean_mu = mean(mu), Taxon_5 = Taxon_5[1]) %>%
-  as.data.frame(),
-  plot_opts
-) +
-  scale_y_continuous(breaks = scales::pretty_breaks(3)) +
-  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1))) +
-  theme(
-    strip.text.y = element_blank(),
-    legend.position = "bottom"
-  )
-ggsave(
-  sprintf("../../doc/figure/unigramseries-%s.pdf", argv$subject),
-  p
+mu_summary <- mu_summary %>%
+  left_join(taxa[, c("rsv", "Taxon_5")])
+sorted_taxa <- names(sort(table(mu_summary$Taxon_5), decreasing = TRUE))
+mu_summary$Taxon_5 <- factor(
+  mu_summary$Taxon_5,
+  levels = c(sorted_taxa, "other")
 )
 
-## ---- unigramboxplots ----
-plot_opts <- list(
-  "x" = "rsv",
-  "y" = "mu",
-  "fill" = "Taxon_5",
-  "col" = "Taxon_5",
-  "outlier.shape" = NA,
-  "alpha" = 1,
-  "size" = 0.4,
-  "col_colors" = brewer.pal(8, "Set2"),
-  "fill_colors" = brewer.pal(8, "Set2"),
-  "theme_opts" = list(border_size = 0.7, text_size = 10, subtitle_size = 10)
-)
-
-mu_summary <- mu_hat %>%
-  group_by(rsv, topic) %>%
-  summarise(
-    mu_median = median(mu),
-    Taxon_5 = Taxon_5[1],
-    mu_upper = quantile(mu, 0.975),
-    mu_lower = quantile(mu, 0.025)
-  ) %>%
-  filter(
-    Taxon_5 %in% levels(mu_hat$Taxon_5)[1:5],
-    time %in% seq(10, 26, by = 5)
-  )
-mu_summary$rsv_ix <- rep(seq_len(nrow(mu_summary) / 4), each = 4)
-
+mu_summary$Taxon_5[!(mu_summary$Taxon_5 %in% sorted_taxa[1:7])] <- "other"
 theme_set(min_theme(list(text_size = 10, subtitle_size = 10)))
 p <- ggplot(mu_summary) +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
-  geom_point(aes(x = rsv_ix, y = mu_median, col = Taxon_5), size = 0.1) +
+  geom_point(aes(x = rsv_ix, y = median, col = Taxon_5), size = 0.1) +
   geom_errorbar(
-    aes(x = rsv, alpha = mu_upper, ymax = mu_upper, ymin = mu_lower, col = Taxon_5),
+    aes(x = rsv_ix, alpha = upper, ymax = upper, ymin = lower, col = Taxon_5),
     size = 0.4
   ) +
   scale_color_brewer(palette = "Set2") +
   scale_alpha(range = c(0.01, 1), breaks = c(1, 2, 3), guide = FALSE) + ## larger values have darker CIs
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(breaks = scales::pretty_breaks(3), limits = c(-9, 7)) +
-  facet_grid(condition + time ~ Taxon_5, scales = "free_x", space = "free_x") +
+  facet_grid(condition + time ~ ., scales = "free_x", space = "free_x") +
   labs(x = "Species", y = expression(mu[t]), fill = "Family") +
   theme(
     panel.border = element_rect(fill = "transparent", size = 0.75),
