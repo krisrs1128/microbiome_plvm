@@ -48,22 +48,8 @@ compare_histograms <- function(mx, m_sim, n_vis = 4) {
 #' @param n_vis [int] The number of simulated samples to show
 #' @return p [ggplot] A plot comparing the true quantiles in mx to those in the
 #'   simulations m_sim.
-compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
-  if (is.null(q_probs)) {
-    q_probs <- seq(0, 1, 0.01)
-  }
-
-  quantiles_comp <- m_sim %>%
-    group_by(iteration, method) %>%
-    do(
-      data_frame(
-        type = "sim",
-        q_ix = q_probs,
-        q = quantile(asinh(.$sim_value), q_probs)
-      )
-    )
-
-  ggplot(quantiles_comp) +
+compare_quantiles <- function(mx, q_sim) {
+  ggplot(q_sim) +
     geom_step(
       aes(x = q, y = q_ix, col = method, group = iteration),
       alpha = 0.1, position = position_jitter(h = 0.005),
@@ -71,7 +57,7 @@ compare_quantiles <- function(mx, m_sim, q_probs = NULL) {
     geom_step(
       data = data_frame(
         q_ix = q_probs,
-        q = quantile(asinh(mx$truth), q_probs)
+        q = quantile(asinh(mx$truth), seq(0, 1, 0.01))
       ),
       aes(x = q, y = q_ix), col = "#000000",
       size = 0.5
@@ -211,10 +197,10 @@ summary_contours <- function(summary_data, plot_opts, text_size = 3) {
 }
 
 posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
-  m_sim <- x_sim %>%
+  q_sim <- apply(asinh(x_sim), c(1, 2), quantile, seq(0, 1, 0.01))  %>%
     melt(
-      varnames = c("iteration", "sample", "rsv"),
-      value.name = "sim_value"
+      varnames = c("q_ix", "iteration", "sample"),
+      value.name = "q"
     ) %>%
     as_data_frame()
 
@@ -227,14 +213,24 @@ posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
 
   mx_samples <- mx
   mx_samples$sample_id  <- sample_names(abt)[mx_samples$sample]
+
+  keep_taxa <- sample(seq_len(ntaxa(abt)), 12)
+  m_sim <- x_sim[,, keep_taxa] %>%
+    melt(
+      varnames = c("iteration", "sample", "rsv"),
+      value.name = "sim_value"
+    ) %>%
+    as_data_frame()
+  m_sim$rsv <- keep_taxa[m_sim$rsv]
+
   mx_samples <- mx_samples %>%
+    filter(rsv %in% keep_taxa) %>%
     left_join(
       cbind(
         sample_id = sample_names(abt),
         as_data_frame(sample_data(abt))
       )
     ) %>%
-    filter(rsv %in% sample(seq_len(ntaxa(abt)), 12)) %>%
     left_join(m_sim)
 
   scores_data <- sample_summary_fun(
@@ -259,7 +255,7 @@ posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
   )
 
   input_data <- list(
-    "m_sim" = m_sim,
+    "q_sim" = q_sim,
     "mx" = mx,
     "mx_samples" = mx_samples,
     "scores_data" = scores_data,
