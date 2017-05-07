@@ -49,14 +49,15 @@ compare_histograms <- function(mx, m_sim, n_vis = 4) {
 #' @return p [ggplot] A plot comparing the true quantiles in mx to those in the
 #'   simulations m_sim.
 compare_quantiles <- function(mx, q_sim) {
-  ggplot(q_sim) +
+  q_sim$q_ix <- 0.01 * as.numeric(gsub("\\%", "", q_sim$q_ix))
+  ggplot(q_sim %>% filter(iteration < 20)) +
     geom_step(
       aes(x = q, y = q_ix, col = method, group = iteration),
       alpha = 0.1, position = position_jitter(h = 0.005),
     ) +
     geom_step(
       data = data_frame(
-        q_ix = q_probs,
+        q_ix = seq(0, 1, 0.01),
         q = quantile(asinh(mx$truth), seq(0, 1, 0.01))
       ),
       aes(x = q, y = q_ix), col = "#000000",
@@ -197,9 +198,9 @@ summary_contours <- function(summary_data, plot_opts, text_size = 3) {
 }
 
 posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
-  q_sim <- apply(asinh(x_sim), c(1, 2), quantile, seq(0, 1, 0.01))  %>%
+  q_sim <- apply(asinh(x_sim), 1, quantile, seq(0, 1, 0.01))  %>%
     melt(
-      varnames = c("q_ix", "iteration", "sample"),
+      varnames = c("q_ix", "iteration"),
       value.name = "q"
     ) %>%
     as_data_frame()
@@ -214,7 +215,7 @@ posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
   mx_samples <- mx
   mx_samples$sample_id  <- sample_names(abt)[mx_samples$sample]
 
-  keep_taxa <- sample(seq_len(ntaxa(abt)), 12)
+  keep_taxa <- c(29, 54, 149, 177, 182, 195, 207, 208, 249, 263, 289, 327)
   m_sim <- x_sim[,, keep_taxa] %>%
     melt(
       varnames = c("iteration", "sample", "rsv"),
@@ -233,23 +234,25 @@ posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
     ) %>%
     left_join(m_sim)
 
+  ## prefilter taxa used in PCA, so that the loadings plot is readable
+  pca_taxa <- order(apply(asinh(x), 2, var), decreasing = TRUE)[1:1000]
   scores_data <- sample_summary_fun(
-    asinh(t(x)),
-    aperm(asinh(x_sim), c(1, 3, 2)),
+    asinh(t(x[, pca_taxa])),
+    aperm(asinh(x_sim[,, pca_taxa]), c(1, 3, 2)),
     scores_summary,
     list("K" = 2)
   )
 
   loadings_data <- sample_summary_fun(
-    asinh(t(x)),
-    aperm(asinh(x_sim), c(1, 3, 2)),
+    asinh(t(x[, pca_taxa])),
+    aperm(asinh(x_sim[,, pca_taxa]), c(1, 3, 2)),
     loadings_summary,
     list("K" = 2)
   )
 
   evals_data <- sample_summary_fun(
-    asinh(t(x)),
-    aperm(asinh(x_sim), c(1, 3, 2)),
+    asinh(t(x[, pca_taxa])),
+    aperm(asinh(x_sim[,, pca_taxa]), c(1, 3, 2)),
     evals_summary,
     list()
   )
@@ -281,9 +284,7 @@ posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
 posterior_checks_plots <- function(input_data) {
   library("ggplot2")
   all_plots <- list()
-  all_plots[["hists"]] <- compare_histograms(input_data$mx, input_data$m_sim)
-  all_plots[["quantiles"]] <- compare_quantiles(input_data$mx, input_data$m_sim)
-  all_plots[["margins"]] <- compare_margins(input_data$mx, input_data$m_sim)
+  all_plots[["quantiles"]] <- compare_quantiles(input_data$mx, input_data$q_sim)
   input_data$m_sim <- NULL
 
   all_plots[["ts"]] <- ggplot() +
