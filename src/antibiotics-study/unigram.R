@@ -40,7 +40,7 @@ x <- t(get_taxa(abt))
 dimnames(x) <- NULL
 stan_data <- list(
   N = nrow(x),
- V = ncol(x),
+  V = ncol(x),
   T = length(times),
   times = times,
   times_mapping = times,
