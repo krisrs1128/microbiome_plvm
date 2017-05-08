@@ -217,7 +217,8 @@ posterior_checks_input <- function(x, x_sim, file_basename = NULL) {
   mx_samples <- mx
   mx_samples$sample_id  <- sample_names(abt)[mx_samples$sample]
 
-  keep_taxa <- c(29, 54, 149, 177, 182, 195, 207, 208, 249, 263, 289, 327)
+  ## show taxa chosen randomly among those present in >= 45% of samples
+  keep_taxa <- c(160, 343, 891, 1036, 1045, 1086, 1116, 1131, 1417, 1463, 1659, 1895)
   m_sim <- x_sim[,, keep_taxa] %>%
     melt(
       varnames = c("iteration", "sample", "rsv"),
