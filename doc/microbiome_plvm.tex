@@ -47,19 +47,17 @@ accepted for publication November 1, 2010}
     from both basic scientific and medical perpsectives. From a biostatistical
     point of view, many microbiome analysis goals can be viewed through the lens
     of latent variable modeling. However, although probabilistic latent variable
-    models are a cornerstone of modern Bayesian statistics and unsupervised
-    learning, they are rarely applied in the context of microbiome data
-    analysis, despite the rich structure -- for example, evolutionary, temporal,
-    and count structure -- that could be incorporated directly through such
-    models. Here, we explore the application of modern probabilistic latent
-    variable modeling methods to microbiome data, with a focus on Latent
-    Dirichlet Allocation, Nonnegative Matrix Factorization, and Dynamic Unigram
-    Models. To develop guidelines for when different methods are appropriate, we
-    perform a simulation study. We further illustrate and compare these
-    techniques using the data of \citep{dethlefsen2011incomplete}, a study on
-    the effects of antibiotics on bacterial community composition. Code and data
-    for all simulations and case studies are available publicly.
-  }
+    models are a cornerstone of modern unsupervised learning, they are rarely
+    applied in the context of microbiome data analysis, in spite of the
+    evolutionary, temporal, and count structure that could be incorporated
+    directly through such models. Here, we explore the application of
+    probabilistic latent variable modeling methods to microbiome data, with a
+    focus on Latent Dirichlet Allocation, Nonnegative Matrix Factorization, and
+    Dynamic Unigram Models. To develop guidelines for when different methods are
+    appropriate, we perform a simulation study. We further illustrate and
+    compare these techniques using the data of \citep{dethlefsen2011incomplete},
+    a study on the effects of antibiotics on bacterial community composition.
+    Code and data for all simulations and case studies are available publicly.}
   {
     Microbiome; Microbial ecology; Latent Dirichlet Allocation; Nonnegative
     Matrix Factorization; Posterior predictive checks; Bayesian data analysis
@@ -77,10 +75,14 @@ perturbations \citep{dethlefsen2011incomplete}.
 In the process, there tend to be two complementary difficulties. First, the data
 are often high-dimensional, measured over several hundreds or thousands of
 bacteria. Studying patterns at the level of individual bacteria is typically
-uninformative. Second, it can be important to study bacterial abundances in context
-of existing biological knowledge. For example, it is scientifically meaningful
-when a collection of evolutionarily related bacteria have similar abundance
-profiles.
+uninformative. Second, it can be important to study bacterial abundances in
+context of existing biological knowledge. For example, it is scientifically
+meaningful when a collection of bacteria that are known to be evolutionarily
+related have similar abundance profiles. These challenges motivate
+methodological work in the microbiome, including phylogenetically-informed
+techniques for dimensionality-reduction \citep{fukuyama2017adaptive,
+  chen2013structure} and high-dimensional regression
+\citep{segata2011metagenomic, chen2013variable, shafiei2015biomico}.
 
 \section{Methods}
 
