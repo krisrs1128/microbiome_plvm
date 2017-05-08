@@ -238,6 +238,7 @@ p <- ggplot(beta_summary) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(breaks = scales::pretty_breaks(3), limits = c(-5, 12)) +
   facet_grid(topic ~ .) +
+  guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   labs(x = "Species", y = expression(paste("g(", beta[k], ")")), col = "Family") +
   theme(
     panel.border = element_rect(fill = "transparent", size = 0.75),

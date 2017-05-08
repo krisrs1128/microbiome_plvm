@@ -133,6 +133,7 @@ p <- ggplot(mu_summary) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(breaks = scales::pretty_breaks(3), limits = c(-3, 10)) +
   facet_grid(condition + time ~ ., scales = "free_x", space = "free_x") +
+  guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   labs(x = "Species", y = expression(mu[t]), col = "Family") +
   theme(
     panel.border = element_rect(fill = "transparent", size = 0.75),
