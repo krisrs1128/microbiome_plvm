@@ -110,7 +110,6 @@ save(
   stan_fit,
   file = sprintf("../../data/fits/lda-%s-%s.rda", argv$subject, gsub("[:|| ||-]", "", Sys.time()))
 )
-
 samples <- rstan::extract(stan_fit)
 rm(stan_fit)
 

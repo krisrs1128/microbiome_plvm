@@ -18,8 +18,7 @@ library("ggscaffold")
 
 ## ---- beta-reshape ----
 ## extract beta information from the fits
-base_dir = "~/Desktop/microbiome_plvm"
-#base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
+base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 nmf_dir <- file.path(base_dir, "src", "sim", "nmf")
 fits_dir <- file.path(nmf_dir, "fits")
 figure_dir <- file.path(base_dir, "doc", "figure")
@@ -101,7 +100,7 @@ p <- ggplot(perf) +
   scale_color_manual(values = method_cols) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   labs(x = "Error", y = "SD (k = 1)", col = "Inference") +
-  ylim(0, 4) +
+  ylim(0, 2.5) +
   xlim(0, 4)
 
 ggsave(
@@ -140,12 +139,13 @@ p <- ggcontours(combined, plot_opts) +
     ),
     size = 2, col = "#fc8d62") +
   facet_grid(method + inference + zero_inf_prob ~ N + a + b) +
+  labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
   ylim(0, 3) +
   xlim(0, 3)
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_contours_nmf.pdf"),
   p,
-  width = 5,
-  height = 3
+  width = 7,
+  height = 8
 )

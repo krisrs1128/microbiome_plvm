@@ -24,7 +24,7 @@ set.seed(11242016)
 ## ---- read-reshape ----
 input_paths <- list.files(
   "../../data/figure-input",
-  sprintf("*-%s.feather", argv$subject),
+  sprintf("*-%s-*", argv$subject),
   full.names = TRUE
 )
 input_data <- lapply(
@@ -35,7 +35,7 @@ input_data <- lapply(
 input_types <- data_frame(
   basename = gsub("\\.feather", "", basename(input_paths))
 ) %>%
-  separate(basename, c("method", "data"), "-")
+  separate(basename, c("method", "subject", "data"), "-")
 
 data_types <- unique(input_types$data)
 merged_data <- list()
@@ -55,7 +55,6 @@ p <- posterior_checks_plots(merged_data)
 output_dir <- "../../doc/figure/"
 dir.create(output_dir, recursive = TRUE)
 
-ggsave(sprintf("%s/posterior_check_hists-%s.png", output_dir, argv$subject), p[["hists"]], width = 6, height = 3.5)
 ggsave(sprintf("%s/posterior_check_quantiles-%s.png", output_dir, argv$subject), p[["quantiles"]], width = 4.5, height = 2.2)
 ggsave(sprintf("%s/posterior_check_margins-%s.png", output_dir, argv$subject), p[["margins"]], width = 6, height = 3.5)
 ggsave(sprintf("%s/posterior_check_ts-%s.png", output_dir, argv$subject), p[["ts"]], width = 6, height = 4)
