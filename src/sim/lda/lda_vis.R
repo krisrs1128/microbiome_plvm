@@ -60,15 +60,19 @@ p[[1]] <- p[[1]] +
   labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
   facet_grid(method ~ D + N)
 
+p[[2]] <- p[[2]] +
+  labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
+  facet_grid(method ~ D + N)
+
 ggsave(
-  file.path(base_dir, "doc", "figure/beta_contours_v10.pdf"),
+  file.path(base_dir, "doc", "figure/beta_contours_v10.png"),
   p[[1]],
   width = 5,
   height = 3
 )
 
 ggsave(
-  file.path(base_dir, "doc", "figure/beta_contours_v50.pdf"),
+  file.path(base_dir, "doc", "figure/beta_contours_v50.png"),
   p[[2]],
   width = 5,
   height = 3
