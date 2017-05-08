@@ -96,11 +96,13 @@ settings \citep{shafiei2015biomico, chen2012estimating, holmes2012dirichlet,
 \subsection{Latent Dirichlet Allocation}
 
 Latent Dirichlet Allocation (LDA) is a generalization of multinomial mixture
-modeling applicable to count matrices. We adopt the usual topic modeling
-terminology, where each document is summarized by a vector of term counts.
-Suppose there are $D$ documents across $V$ terms, and that these documents are
-assumed mixtures of $K$ underlying topics, where a topic is defined as a
-distribution over words.
+modeling applicable to count matrices. For now, we adopt the usual text-analysis
+terminology, where the count matrices of interest are counts of terms across
+documents. Suppose there are $D$ documents across $V$ terms, and that these
+documents are assumed mixtures of $K$ underlying topics, where a topic is
+defined as a distribution over words. In
+section \label{sec:microbiome_vs_text_analysis}, we review the correspondence
+between text and microbiome analysis.
 
 Let $\theta_{d} \in \simplex^{K}$ represent the $d^{th}$ topic's mixture over the
 $K$ underlying topics. Represent the term in the $n_{th}$ word of this document
@@ -114,11 +116,8 @@ z_{dn} \vert \theta_{d} &\sim \Mult\left(1, \theta_{d}\right) \\
 \beta_{\cdot k} &\sim \Dir\left(\gamma\right).
 \end{align*}
 In microbiome applications, we will find a formulation that marginalizes over
-the $z_{dn}$ more convenient. Indeed, a strict analogy between text modeling and
-microbiome analysis would consider each bacteria a word $w_{dn}$, and we are
-more interested in are counts of species across samples. Setting $n_{dv} =
-\sum_{n = 1}^{N_{d}} \indic{w_{dn} = v}$, we can write the marginal distribution
-as
+the $z_{dn}$ more convenient. Setting $n_{dv} = \sum_{n = 1}^{N_{d}}
+\indic{w_{dn} = v}$, we can write the marginal distribution as
 \begin{align*}
 n_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\sim \Mult\left(n_{d\ast}, \beta \theta_{d}\right) \\
 \beta_{\cdot k} &\sim \Dir\left(\gamma\right), k = 1, \dots, K \\
@@ -206,6 +205,7 @@ where $T_{k}\left(x\right)$ lie far from the bulk of
 $T_{k}\left(x^{\ast}_{s}\right)$ -- the data well.
 
 \subsection{Microbiome vs. Text Analysis}
+\label{sec:microbiome_vs_text_analysis}
 
 One of the primary contributions of our work is the observation that methods
 popular in text analysis can be adapted to the microbiome setting in a way that
@@ -222,11 +222,11 @@ terms is provided below,
     units, over which conclusions are generalized, are documents (text analysis)
     and biological samples (microbiome analysis). It is of interest to highlight
     similarities and differences across these units, often through some
-    variation on clustering.
+    variation on clustering or dimensionality reduction.
   \item \textbf{Term} $\iff$ \textbf{Bacteria}: The fundamental features
     with which to describe samples are the counts of terms (text analysis) and
-    bacteria\footnote{More formally, by bacteria, we mean ribosomal sequence
-      variants \citep{callahan2016dada2}. We call these bacteria for simplicity
+    bacteria\footnote{More formally, by bacteria, we mean Ribosomal Sequence
+      Variants \citep{callahan2016dada2}. We call these bacteria for simplicity
       of exposition.} (microbiome analysis).
   \item \textbf{Topic} $\iff$ \textbf{Community}: For interpretation, it is
     common to imagine ``typical'' units which can be used as a point of
@@ -234,9 +234,9 @@ terms is provided below,
     for example, ``business'' or ``politics'' articles have their own specific
     vocabularies. On the other hand, in microbiome analysis, these are called
     ``communities'' -- one common breakdown healthy vs. diseased. Different
-    communities have their different bacterial signatures.
+    communities have different bacterial signatures.
   \item \textbf{Word} $\iff$ \textbf{Sequencing Read}: A ``word'' in text analysis refers
-    to a single instance of a term in a document, not it's total count. The
+    to a single instance of a term in a document, not its total count. The
     analog in microbiome analysis would be an individual sequencing read, though
     this is rarely the object of statistical analysis.
   \item \textbf{Corpus} $\iff$ \textbf{Environment}: Sometimes a grouping
@@ -260,16 +260,16 @@ way, some microbes are much more abundant than others. Finally, in both fields,
 contextual information beyond the raw sample-by-feature matrix is typically
 available. For example, timestamps are often available in both domains,
 $n$-grams have a natural analog in terms of small subnetworks of co-occuring
-microbes, and phylogenetic similarity between bacteria parallels a priori known
+bacteria, and phylogenetic similarity between species parallels a priori known
 linguistic characteristics of terms.
 
 Nonetheless, in practice, the structure of these data can be quite different.
 First, text data can be on a much larger scale. For example, the Wikipedia
 corpus studied in \citep{hoffman2013stochastic} includes 3.8 million articles.
 In contrast, even large microbiome data sets typically only have on the order of
-hundreds of samples. Similarly, the total number of terms in such large-scale
-text analysis problems can be substantially larger than the number of bacteria
-species under consideration.
+thousands of samples \citep{human2012structure}. Similarly, the total number of
+terms in such large-scale text analysis problems can be substantially larger
+than the number of bacterial species under consideration.
 
 While the limited scale of microbiome studies reduces computational burden, we
 note that in one sense, microbiome studies are larger in scale -- there tend to
@@ -277,10 +277,10 @@ be tens of thousands of reads per sample in microbiome studies, but only
 hundreds to thousands of words within any article. This means that techniques
 that rely on the representation of documents as sequences of individual words,
 rather than vectors of word counts, require too much memory to be practical.
-This makes many useful text analysis techniques -- for model inference
-\citep{griffiths2004finding} and evaluation \citep{wallach2009evaluation}, for
-example -- out of reach for standard microbiome problems. This does, however,
-suggest opporunities for potential future research.
+This makes many useful text analysis techniques -- for example, some methods for
+model inference \citep{griffiths2004finding} and evaluation
+\citep{wallach2009evaluation} -- out of reach for standard microbiome problems.
+This does, however, suggest opporunities for potential future research.
 
 Lastly, we compare the prevailing analytical goals within text and microbiome
 analysis. In both fields, data reduction can be informative for developing
@@ -304,30 +304,29 @@ guidelines.
 
 More specifically, our plan is to divide our analysis into one simulation
 generating data from the true LDA model and one drawing from either the NMF or
-Z-NMF models. In both, we vary the sample size and dimension. For data simulated
-under LDA, we perform model estimation using either Markov Chain Monte Carlo
+Z-NMF models. In both, we vary the sample size and dimension. For both
+experiments, we perform model estimation using either Markov Chain Monte Carlo
 (MCMC) sampling, Variational Bayes (VB), or a bootstrapping procedure we
-describe below, while for the NMF example, we focus on MCMC sampling and VB. The
-only misspecification we consider is a failure to account for zero inflation
-when the true data were generated according to the Z-NMF model -- though not
-pursued here, it could be interesting to study robustness of study conclusions
-to misspecification in the number of topics or deliberate contamination.
+describe below. The only misspecification we consider is a failure to account
+for zero inflation when the true data were generated according to the Z-NMF
+model -- though not pursued here, it could be interesting to study robustness of
+study conclusions to misspecification in the number of topics or deliberate
+contamination.
 
 For the LDA experiment, we vary the number of samples $D \in \{20, 100\}$, the
-number of features $V \in \{10, 50\}$, and the total word count per document $N
-\in \{20, 50, 100\}$. On the other hand, we fix the number of topics to $K = 2$
-and the Dirichlet hyperparameter to $\alpha_{0} = \gamma_{0} = 1$. For each
-simulated data set, we perform estimation using VB, MCMC
-sampling, and a parametric bootstrap-after-VB procedure. In more detail, this
-last parametric bootstrap procedure fits VB to the original data, simulates $B =
-500$ new data sets $X^{\ast}_{b}$ according to the LDA model using VB-estimated
-parameters $\{\hat{\theta}^{\ast}_{b}, \hat{\beta}^{\ast}_{b}\}$, and
-re-estimates parameters $\{\hat{\theta}^{\ast\ast}_{b},
-\hat{\beta}^{\ast\ast}_{b}\}$ on each simulated data set, again using VB. The
-motivation for this procedure is the desire to strike an easily-parallelizable
-compromise between MCMC Sampling, which can be time consuming but has reliable
-uncertainty estimates, and VB, which is fast, but can
-underestimate uncertainty \citep{wang2005inadequacy}.
+number of features $V \in \{10, 50\}$, and the total count per sample $N \in
+\{20, 50, 100\}$. On the other hand, we fix the number of topics to $K = 2$ and
+the Dirichlet hyperparameter to $\alpha_{0} = \gamma_{0} = 1$. For each
+simulated data set, we perform estimation using VB, MCMC sampling, and a
+parametric bootstrap-after-VB procedure. In more detail, this last parametric
+bootstrap procedure fits VB to the original data, simulates $B = 500$ new data
+sets $X^{\ast}_{b}$ according to the LDA model using VB-estimated parameters
+$\{\hat{\theta}^{\ast}_{b}, \hat{\beta}^{\ast}_{b}\}$, and re-estimates
+parameters $\{\hat{\theta}^{\ast\ast}_{b}, \hat{\beta}^{\ast\ast}_{b}\}$ on each
+simulated data set, again using VB. The motivation for this procedure is the
+desire to strike an easily-parallelizable compromise between MCMC sampling,
+which can be time consuming but has reliable uncertainty estimates, and VB,
+which is fast, but can underestimate uncertainty \citep{wang2005inadequacy}.
 
 Figure \ref{fig:lda_contours} displays the true and posterior $\beta_{k}$ for
 the experiments with $V = 10$ features, while varying other simulation characteristics.
@@ -342,16 +341,16 @@ provided in the Supplementary Figure \ref{fig:lda_v50}.
 
 As expected, when $D$ increases, the posterior for $\beta$, whose dimension does
 not increase with $D$, begins to concentrate around its true value. Consistent
-with earlier findings, the VB posteriors are narrower and more elliptical than
-the more plausible MCMC sampled posteriors. The bootstrap samples seem somewhere
-between the VB and MCMC sampled distributions in terms of variability within
-each feature. As the number of samples or total count within samples increases,
-the three methods become indistinguishable. Interestingly, when $D$ and $N$ are
-small ($N = D = 20$), VB appears more accurate than either the MCMC or
-bootstrapping approaches, whose posterior means all lie along the diagonal,
-corresponding to the failure to estimate distinct topics, and instead defaulting
-to marginal feature counts across samples. This effect is especially pronounced
-in the case $V = 50$.
+with \citep{wang2005inadequacy}, the VB posteriors are narrower and more
+elliptical than the more plausible MCMC sampled posteriors. The bootstrap
+samples seem somewhere between the VB and MCMC sampled distributions in terms of
+variability within each feature. As the number of samples or total count within
+samples increases, the three methods become indistinguishable. Interestingly,
+when $D$ and $N$ are small ($N = D = 20$), VB appears more accurate than either
+the MCMC or bootstrapping approaches, whose posterior means all lie along the
+diagonal, corresponding to the failure to estimate distinct topics, and instead
+defaulting to marginal feature counts across samples. This effect is especially
+pronounced in the case $V = 50$.
 
 While the kernel-smoothed posterior densities display the complete results from
 this simulation study, a few summary statistics from these densities can
@@ -368,10 +367,9 @@ line within each panel is the identity line, where the error equals one SD.
 
 For the NMF experiment, we use similar parameters, except now we introduce a
 zero-inflation probability, $p_{0} \in \{0, 0.2\}$, and have control only over
-the expected number of words per document $\Earg{N}$, rather than $N$. To
+the expected total count per sample $\Earg{N}$, rather than $N$. To
 modulate $\Earg{N}$, we vary $a$ and $b$ so that $\Earg{N} = \frac{b}{a} \in
-\{20, 50, 100\}$, matching the LDA experiment, and with the constraint $a + b =
-1$, which controls the overall prior strength. As before, we vary the number of
+\{20, 50, 100\}$, matching the LDA experiment. As before, we vary the number of
 samples $D \in \{20, 100\}$ but fix the number of latent factors $K$ at 2.
 Figure \ref{fig:zinf_errors_beta} summarizes the estimation error across
 regimes, and is read in the same was as \ref{fig:lda_errors_beta}, except
@@ -408,16 +406,18 @@ there is little reason for a model which clusters across subjects, we choose to
 study one individual at a time. In this report, we focus on Subject F, who had
 been reported to exhibit incomplete recovery of the pre-antibiotic treatment
 bacterial community. However, analogous figures for the other two subjects are
-available in the supplementary material. Further, we filter to only those
-bacteria present in at least 45\% of samples. This reduces the dimensionality
-from 2582 to 354.
+available as Supplementary Figures \ref{fig:antibiotics_lda_theta_D} through
+\ref{fig:antobiotics_lda_beta_F}. There are 2582 distinct species across these
+samples, and we perform no prefiltering, though most species are present in very
+low numbers.
 
 In this case study, we focus on LDA\footnote{We set $K = 4$, based on the
-  heuristic that a larger $K$ would be less meaningful, considering there are
-  only 56 timepoints.} and the Dynamic Unigram model. A similar study using GaP
-and Z-GaP is omitted for brevity. Throughout, we apply VB, though considering
-the results of the simulation study, we exercise caution when interpreting
-estimated uncertainties.
+  heuristic that a larger $K$ would be less meaningful, since there are only 56
+  timepoints.} and the Dynamic Unigram model. A similar study using GaP and
+Z-GaP is omitted, in light of the difficulties in estimation during the
+simulation studies. Throughout, we apply VB, though considering the results of
+the simulation study, we exercise caution when interpreting estimated
+uncertainties.
 
 Note that we view the fitted probabilities on a logit scale -- for a raw vector
 of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right)$, we plot
@@ -451,16 +451,16 @@ the samples across all timepoints, including those unassociated with the time
 courses. Across all topics, we find that uncertainty is typically smaller for
 parameters with larger values.
 
-To interpret these topics in terms of their bacterial community fingerprint, we study the
-estimated topic distributions $\beta_{\cdot k}$. This is displayed in Figure
-\ref{fig:antibiotics_lda_beta}. The four rows correspond to the $K = 4$
+To interpret these topics in terms of their bacterial community fingerprint, we
+study the estimated topic distributions $\beta_{\cdot k}$. This is displayed in
+Figure \ref{fig:antibiotics_lda_beta}. The four rows correspond to the $K = 4$
 estimated topics. Each boxplot within a row is associated with posterior samples
 for a single bacterium. Different colors identify different taxonomic families,
 and within these families, bacteria are sorted according to evolutionary
 relatedness. We have hidden outliers from the posterior sampling, because they
 inflate the $y$-axis range and make the figure harder to read. We have also
-removed all but the top four most prevalent taxonomic families, to prevent individual
-boxplots from becoming too narrow.
+removed all but the top four most prevalent taxonomic families, to prevent
+individual boxplots from becoming too narrow.
 
 Considering the mixture probabilities in Figure \ref{fig:antibiotics_lda_theta},
 those bacteria with large probabilities in the third and fourth rows of Figure
@@ -651,7 +651,7 @@ requirements preinstalled is available from
   \centering\includegraphics{figure/visualize_lda_theta_boxplot-F}
   \caption{Boxplots of approximate posteriors for estimated mixture memberships,
     and their evolution over time, suggests a strong effect of the first
-    antibiotic treatment, and long term effects, at least for bacteria within
+    antibiotic treatment, and long-term effects, at least for bacteria within
     one topic.}
   \label{fig:antibiotics_lda_theta}
 \end{figure}
