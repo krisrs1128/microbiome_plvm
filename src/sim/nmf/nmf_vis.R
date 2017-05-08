@@ -100,7 +100,7 @@ p <- ggplot(perf) +
   scale_color_manual(values = method_cols) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   labs(x = "Error", y = "SD (k = 1)", col = "Inference") +
-  ylim(0, 4) +
+  ylim(0, 2.5) +
   xlim(0, 4)
 
 ggsave(
