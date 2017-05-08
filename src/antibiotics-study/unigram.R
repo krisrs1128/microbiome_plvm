@@ -22,7 +22,7 @@ library("ggscaffold")
 source("./posterior_check_funs.R")
 dir.create("../../data/fits/", recursive = TRUE)
 dir.create("../../doc/figure/", recursive = TRUE)
-theme_set(min_theme())
+theme_set(min_theme(list(text_size = 7, subtitle_size = 9)))
 set.seed(11242016)
 
 softmax <- function(x) {
@@ -70,12 +70,14 @@ taxa <- as_data_frame(tax_table(abt)@.Data)
 taxa$rsv <- rownames(tax_table(abt))
 taxa$Taxon_5[which(taxa$Taxon_5 == "")] <- taxa$Taxon_4[which(taxa$Taxon_5 == "")]
 taxa$Taxon_5 <- taxa$Taxon_5 %>%
-  revalue(c("Bacteroidaceae_Bacteroides" = "Bacteroidaceae"))
+  revalue(
+    c("Bacteroidaceae_Bacteroides" = "Bacteroidaceae",
+      "Peptostreptococcaceae_1" = "Peptostreptococcaceae")
+  )
 
 ## subset to small number of times, and center the mus
 keep_times <- seq(10, 26, by = 5)
 mu <- samples$mu[, keep_times, ]
-samples$mu <- NULL
 for (i in seq_len(ncol(mu))) {
   mu[, i,] <- mu[, i, ] - mean(mu[, i,])
 }
@@ -119,7 +121,6 @@ mu_summary$Taxon_5 <- factor(
 )
 
 mu_summary$Taxon_5[!(mu_summary$Taxon_5 %in% sorted_taxa[1:7])] <- "other"
-theme_set(min_theme(list(text_size = 10, subtitle_size = 10)))
 p <- ggplot(mu_summary) +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
   geom_point(aes(x = rsv_ix, y = median, col = Taxon_5), size = 0.1) +
@@ -130,16 +131,16 @@ p <- ggplot(mu_summary) +
   scale_color_brewer(palette = "Set2") +
   scale_alpha(range = c(0.01, 1), breaks = c(1, 2, 3), guide = FALSE) + ## larger values have darker CIs
   scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(breaks = scales::pretty_breaks(3), limits = c(-9, 7)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(3), limits = c(-3, 10)) +
   facet_grid(condition + time ~ ., scales = "free_x", space = "free_x") +
-  labs(x = "Species", y = expression(mu[t]), fill = "Family") +
+  labs(x = "Species", y = expression(mu[t]), col = "Family") +
   theme(
     panel.border = element_rect(fill = "transparent", size = 0.75),
     axis.text.x = element_blank(),
     strip.text.x = element_blank(),
-    legend.position = "bottom"
+    legend.position = "bottom",
+    legend.text = element_text(size = 6.1)
   )
-
 ggsave(
   sprintf("../../doc/figure/antibiotics_unigram_mu-%s.pdf", argv$subject),
   p, width = 6, height = 3.5
