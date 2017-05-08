@@ -50,26 +50,28 @@ compare_histograms <- function(mx, m_sim, n_vis = 4) {
 #'   simulations m_sim.
 compare_quantiles <- function(mx, q_sim) {
   q_sim$q_ix <- 0.01 * as.numeric(gsub("\\%", "", q_sim$q_ix))
-  ggplot(q_sim %>% filter(iteration < 20)) +
-    geom_step(
-      aes(x = q, y = q_ix, col = method, group = iteration),
-      alpha = 0.1, position = position_jitter(h = 0.005),
+  q_true <- data_frame(
+    q_ix = seq(0, 1, 0.01),
+    q_true = quantile(asinh(mx$truth), seq(0, 1, 0.01))
+  )
+
+  q_joined <- q_sim %>%
+    full_join(q_true)
+
+  ggplot(q_joined) +
+    geom_abline(slope = 1, alpha = 0.6, size = 0.4, col = "#000000") +
+    geom_point(
+      aes(x = q_true, y = q, col = method),
+      alpha = 0.05, size = 0.1,
+      position = position_jitter(w = 0.2, h = 0.2)
     ) +
-    geom_step(
-      data = data_frame(
-        q_ix = seq(0, 1, 0.01),
-        q = quantile(asinh(mx$truth), seq(0, 1, 0.01))
-      ),
-      aes(x = q, y = q_ix), col = "#000000",
-      size = 0.5
-    ) +
+    coord_fixed() +
     scale_color_manual(values = c("#86B8B1", "#b186b8")) +
-    guides(colour = guide_legend(nrow = 2, override.aes = list(alpha = 1, size = 2))) +
+    guides(colour = guide_legend(override.aes = list(alpha = 1, size = 2))) +
     labs(
-      "x" = "x",
-      "y" = "Pr(asinh(count) < x)"
-    ) +
-    theme(legend.key.width = unit(0.25, "in"))
+      "x" = "Observed Quantiles",
+      "y" = "Posterior Predictive Quantiles"
+    )
 }
 
 compare_margins <- function(mx, m_sim) {
