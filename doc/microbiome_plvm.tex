@@ -649,20 +649,19 @@ requirements preinstalled is available from
 
 \begin{figure}[!p]
   \centering\includegraphics{figure/visualize_lda_theta_boxplot-F}
-  \caption{Boxplots of approximate posteriors for estimated mixture memberships,
-    and their evolution over time, suggests a strong effect of the first
-    antibiotic treatment, and long-term effects, at least for bacteria within
-    one topic.}
-  \label{fig:antibiotics_lda_theta}
+  \caption{Boxplots of approximate posteriors for estimated mixture memberships $\theta_{d}$,
+    and their evolution over time, reflect effects from antibiotic treatments.
+    Further, there appear to be long-term effects of treatment among bacteria in
+    topic 2.
+  \label{fig:antibiotics_lda_theta}}
 \end{figure}
 
 \begin{figure}[!p]
   \centering\includegraphics{figure/visualize_lda_beta-F}
-  \caption{Each boxplot describes an approximate posterior for one $\beta_{vk}$.
-    In light of Figure \ref{fig:antibiotics_lda_theta}, this guides the
-    interpretation of which bacterial taxa are more or less prevalent during
-    antibiotic treatments.}
-  \label{fig:antibiotics_lda_beta}
+  \caption{Each credible interval describes an approximate posterior for one
+    $\beta_{vk}$. Coupled with Figure \ref{fig:antibiotics_lda_theta}, this
+    guides the interpretation of which bacterial taxa are more or less prevalent
+    during antibiotic treatments.} \label{fig:antibiotics_lda_beta}
 \end{figure}
 
 \begin{figure}[!p]
