@@ -24,7 +24,10 @@ lda_dir <- file.path(base_dir, "src", "sim", "lda")
 output_path <- file.path(lda_dir, "fits")
 metadata <- read_csv(file.path(output_path, "metadata.csv")) %>%
   unique() %>%
-  mutate(file = file.path(lda_dir, "pipeline", file))
+  mutate(
+    file = file.path(lda_dir, "pipeline", file),
+    method = revalue(method, c("gibbs" = "mcmc"))
+  )
 
 ## ---- beta-samples ----
 beta <- get_truth_data(metadata, "beta") %>%
@@ -58,24 +61,28 @@ for (i in seq_along(unique_V)) {
 ## ---- betacontours1 ----
 p[[1]] <- p[[1]] +
   labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
+  theme(panel.border = element_rect(fill = "transparent", size = 0.7)) +
   facet_grid(method ~ D + N)
 
 p[[2]] <- p[[2]] +
   labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
+  theme(panel.border = element_rect(fill = "transparent", size = 0.7)) +
   facet_grid(method ~ D + N)
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_contours_v10.png"),
   p[[1]],
   width = 5,
-  height = 3
+  height = 3,
+  dpi = 450
 )
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_contours_v50.png"),
   p[[2]],
   width = 5,
-  height = 3
+  height = 3,
+  dpi = 450
 )
 
 ## ---- relative-errors ----

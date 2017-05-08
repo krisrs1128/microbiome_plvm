@@ -35,13 +35,15 @@ beta_fits <- reshape_all_samples(
   file.path(nmf_dir, "config.json"),
   "beta",
   c("j", "k")
-)
+) %>%
+  mutate(inference = revalue(inference, c("gibbs" = "mcmc")))
+
 beta_fits$method <- basename(as.character(beta_fits$method))
 beta_fits$method <- beta_fits$method %>%
   revalue(
     c(
-    "nmf_gamma_poisson.stan" = "GaP",
-    "nmf_gamma_poisson_zero.stan" = "Z-GaP"
+      "nmf_gamma_poisson.stan" = "GaP",
+      "nmf_gamma_poisson_zero.stan" = "Z-GaP"
     )
   )
 
