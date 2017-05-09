@@ -44,17 +44,17 @@ accepted for publication November 1, 2010}
     The human microbiome is a complex ecological system, and describing its
     structure and function under different environmental conditions is important
     from both basic scientific and medical perpsectives. From a biostatistical
-    point of view, many microbiome analysis goals can be viewed through the lens
-    of latent variable modeling. However, although probabilistic latent variable
+    point of view, many microbiome analysis goals can be formulated as latent
+    variable modeling problems. However, although probabilistic latent variable
     models are a cornerstone of modern unsupervised learning, they are rarely
     applied in the context of microbiome data analysis, in spite of the
-    evolutionary, temporal, and count structure that could be incorporated
-    directly through such models. Here, we explore the application of
-    probabilistic latent variable modeling methods to microbiome data, with a
+    evolutionary, temporal, and count structure that could be directly incorporated
+    through such models. We explore the application of
+    probabilistic latent variable models to microbiome data, with a
     focus on Latent Dirichlet Allocation, Nonnegative Matrix Factorization, and
-    Dynamic Unigram Models. To develop guidelines for when different methods are
+    Dynamic Unigram models. To develop guidelines for when different methods are
     appropriate, we perform a simulation study. We further illustrate and
-    compare these techniques using the data of \citep{dethlefsen2011incomplete},
+    compare these techniques using the data of \cite{dethlefsen2011incomplete},
     a study on the effects of antibiotics on bacterial community composition.
     Code and data for all simulations and case studies are available publicly.}
   {
@@ -97,21 +97,21 @@ explored in relatively limited settings \citep{shafiei2015biomico,
 
 Latent Dirichlet Allocation (LDA) is a generalization of multinomial mixture
 modeling applicable to count matrices \citep{blei2003latent}. For now, we adopt
-the usual text-analysis terminology, where the count matrices of interest are
+the usual text analysis terminology, where the count matrices of interest are
 counts of terms across documents, though in section
-\ref{sec:microbiome_vs_text_analysis} we clarify the connection to the language
-of microbiome analysis. Suppose there are $D$ documents across $V$ terms, and
+\ref{sec:microbiome_vs_text_analysis} we clarify the connection to 
+microbiome analysis. Suppose there are $D$ documents across $V$ terms, and
 that these documents are assumed to be mixtures of $K$ underlying topics, where
 a topic is defined as a distribution over words.
 
-Let $\theta_{d} \in \simplex^{K}$ represent the $d^{th}$ topic's mixture over the
+Let $\theta_{d} \in \simplex^{K - 1}$ represent the $d^{th}$ topic's mixture over the
 $K$ underlying topics. Represent the term in the $n_{th}$ word of this document
 by $w_{dn}$, and the associated topic by $z_{dn}$. Suppose the $k^{th}$ topic
 places weight $\beta_{vk}$ on the $v^{th}$ term, so that $\beta_{k} \in
-\simplex^{V}$. Suppose there are $N_{d}$ words in the $d^{th}$ document. Then,
+\simplex^{V - 1}$. Suppose there are $N_{d}$ words in the $d^{th}$ document. Then,
 the generative mechanism for the observed data set is
 \begin{align*}
-w_{dn} \vert \left(\beta_{\cdot k}\right)_{k = 1}^{K}, z_{dn} &\overset{iid}{\sim} \Mult\left(1, \beta_{\cdot z_{dn}}\right) \text{ for } d = 1, \dots, D  \text{ and } n = 1, \dots,  N_{d} \\
+w_{dn} \vert \left(\beta_{k}\right)_{k = 1}^{K}, z_{dn} &\overset{iid}{\sim} \Mult\left(1, \beta_{z_{dn}}\right) \text{ for } d = 1, \dots, D  \text{ and } n = 1, \dots,  N_{d} \\
 z_{dn} \vert \theta_{d} &\overset{iid}{\sim} \Mult\left(1, \theta_{d}\right) \text{ for } d = 1, \dots, D \text{ and } n = 1, \dots, N_{d}\\
 \theta_{d} &\overset{iid}{\sim} \Dir\left(\alpha\right) \text{ for } d = 1, \dots, D \\
 \beta_{\cdot k} &\overset{iid}{\sim} \Dir\left(\gamma\right) \text{ for } k = 1, \dots, K.
@@ -125,21 +125,21 @@ x_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\overset{iid}{\sim} \Mult\left(
 \beta_{k} &\overset{iid}{\sim} \Dir\left(\gamma\right) \text{ for }k = 1, \dots, K,
 \end{align*}
 where we have introduced the $V \times K$ matrix concatenating all topics
-column-wise, $B = \left(\beta_{1}, \dots, \beta_{K}\right)$. Geometrically, LDA
+column-wise, $B = \begin{pmatrix}beta_{1}, \dots, \beta_{K}\end{pmatrix}$. Geometrically, LDA
 identifies samples with points in the convex hull of $K$ topics
 $\left(\beta_{k}\right)$ on the $V$-dimensional simplex.
 
-\subsection{Dynamic Unigram Model}
+\subsection{Dynamic Unigram model}
 
 Upon examining this geometric interpretation, we might consider in some
 situations a model that identifies samples with a continuous curve on this
-$V$-dimensional simplex. This reasoning is the starting point of the Dynamic
-Unigram model \citep{blei2006dynamic}. This curve reflects the gradual evolution
+$V$-dimensional simplex. This reasoning leads naturally to the Dynamic
+Unigram model \citep{blei2006dynamic}. The underlying curve reflects the gradual evolution
 of probabilities over time, and is implemented by passing a random walk through
 a multilogit link. That is, the Dynamic Unigram model posits the generative
 model
 \begin{align*}
-x_{d\cdot} \vert \mu_{t\left(d\right)}  &\overset{iid}{\sim} \Mult\left(\sum_{v} x_{dv}, S\left(\mu_{t\left(d\right)}\right)\right) \text{ for } d = 1, \dots, D\\
+x_{d\cdot} \vert \mu_{t\left(d\right)}  &\overset{iid}{\sim} \Mult\left(N_{d}, S\left(\mu_{t\left(d\right)}\right)\right) \text{ for } d = 1, \dots, D\\
 \mu_{t} \vert \mu_{t - 1} &\overset{iid}{\sim} \Gsn\left(\mu_{t - 1}, \sigma^{2}I_{V}\right) \text{ for } t = 1, \dots, T \\
 \mu_{0} &\overset{iid}{\sim} \Gsn\left(0, \sigma^{2}I_{V}\right),
 \end{align*}
@@ -150,7 +150,7 @@ where $S$ is the multilogit link
 and $t\left(d\right)$ maps document $d$ to the time it was sampled. The
 $\left(\mu_{t}\right)$ define a Gaussian random walk in $\reals^{V}$ with
 step-size $\sigma$, and $S$ transforms the walk into a sequence of probability
-distributions. In our experiments, we place an inverse-gammma prior on
+distributions. In our experiments, we place a vague inverse-gammma prior on
 $\sigma^{2}$, since this hyperparameter is rarely known in practice.
 
 \subsection{Nonnegative Matrix Factorization}
@@ -159,21 +159,21 @@ $\sigma^{2}$, since this hyperparameter is rarely known in practice.
 In LDA, count matrices are modeled by sampling from multinomials with total
 counts coming from the word count of each document and probabilities
 coming from the rows of $\Theta B^{T}$ where $\Theta = \begin{pmatrix}\theta_{1}
-  \\ \vdots \\ \theta_{D} \end{pmatrix}$ and $B = \begin{pmatrix} \beta_{\cdot 1}
-  \dots \beta_{\cdot K} \end{pmatrix}$ are $D \times K$ and $V \times K$ matrices
+  \\ \vdots \\ \theta_{D} \end{pmatrix}$ and $B = \begin{pmatrix} \beta_{1}
+  \dots \beta_{K} \end{pmatrix}$ are $D \times K$ and $V \times K$ matrices
 representing document and topic distributions, respectively, and where each
-$\theta_{d} \in \mathcal{S}^{K - 1}$ and $\beta_{k} \in \mathcal{S}^{V - 1}$.
+$\theta_{d} \in \simplex^{K - 1}$ and $\beta_{k} \in \simplex^{V - 1}$.
 
 Alternatively, it is possible to model the nonnegative matrix $X$ by the product
 of low rank matrices, $X \approx \Theta B^{T}$, where now the only constraints
 on $\Theta$ and $B$ are that $\Theta \in \reals_{+}^{D \times K}$ and $B \in
-\reals_{+}^{V \times K}$. This is the starting point for a variety of algorithms
+\reals_{+}^{V \times K}$. This is the point of departure for a variety of algorithms
 in the Nonnegative Matrix Factorization (NMF) literature
 \citep{wang2013nonnegative, berry2007algorithms, lee2001algorithms}
 
 We focus on the Gamma-Poisson factorization model (GaP)
-\citep{kucukelbir2015automatic, canny2004gap} which proposes the hierarchical
-model
+\citep{kucukelbir2015automatic, carpenter2016stan, canny2004gap} which proposes
+the hierarchical model
 \begin{align*}
 X &\sim \Poi\left(\Theta B^{T}\right) \\
 \Theta &\sim \Gam\left(a_{0} 1_{D \times K}, b_{0} 1_{D \times K}\right) \\
@@ -185,15 +185,16 @@ matrix. As a consequence of the representation of the negative binomial
 distribution as a Gamma mixture of Poissons, this is a natural model to
 considering when facing overdispersed counts, which arise frequently in genomic
 and microbiome settings \citep{love2014moderated, mcmurdie2014waste}. In
-practice, the hyperparameters $a_{0}, b_{0}, c_{0}$, and $d_{0}$ are unknown,
-and in all experiments, we optimize over them according to the procedure in
-\citep{carpenter2016stan}, though it would also be possible to add a level to
-the hierarchy and place vague nonnegative priors on these parameters.
+practice, the hyperparameters $a_{0}, b_{0}, c_{0}$, and $d_{0}$ are unknown.
+In all of our experiments, we optimize over them, though it would also be
+possible to add a level to the hierarchy and place vague nonnegative priors on
+these parameters.
 
-In our simulation studies, we will consider a slight variant of this model, in
+In our simulation studies, we also consider a slight variant of this model, 
 similar to the proposal of \citep{pierson2015zifa}, which independently sends
-entries of $X$ to zero with probability $p_{0}$. In our experiments, we assume this
-zero-inflation probability is known. This procedure is denoted by Z-NMF.
+entries of $X$ to zero with probability $p_{0}$. In our experiments, we assume
+that this zero-inflation probability is known. This procedure is denoted by
+Z-NMF.
 
 \subsection{Posterior Predictive Checks}
 \label{sec:ppc_overview}
@@ -233,9 +234,9 @@ way that produces useful summaries. Before applying these methods, we develop
 the analogy between these text and microbiome analysis and also draw attention
 to points where the parallels break down.
 
-In the abstract, it becomes clear that the semantic differences between these
-fields are often superficial. For example, we can map between the most common
-field-specific terms as follows,
+In the abstract, it becomes clear that the semantic differences between the
+units of statistical analysis are often superficial. For example, we can map
+between the most common field-specific terms as follows,
 
 \begin{itemize}
   \item \textbf{Document} $\iff$ \textbf{Biological Sample}: The basic sampling
@@ -247,13 +248,13 @@ field-specific terms as follows,
     with which to describe samples are the counts of terms (text analysis) and
     bacteria (microbiome analysis). More formally, by bacteria, we mean
     Ribosomal Sequence Variants \citep{callahan2016dada2}, though we call these
-    bacteria for simplicity
+    bacteria for simplicity of exposition.
   \item \textbf{Topic} $\iff$ \textbf{Community}: For interpretation, it is
     common to imagine ``prototypical'' units which can be used as a point of
     reference for observed samples. In text analysis, these are called topics --
     for example, ``business'' or ``politics'' articles have their own specific
     vocabularies. On the other hand, in microbiome analysis, these are called
-    ``communities'' -- one common breakdown healthy vs. diseased. Different
+    ``communities'' -- one common breakdown is healthy vs. diseased. Different
     communities have different bacterial signatures.
   \item \textbf{Word} $\iff$ \textbf{Sequencing Read}: A ``word'' in text analysis refers
     to a single instance of a term in a document, not its total count. The
@@ -286,8 +287,8 @@ linguistic characteristics of terms.
 Nonetheless, in practice, the structure of these data can be quite different.
 First, text data can be on a much larger scale. For example, the Wikipedia
 corpus studied by \cite{hoffman2013stochastic} includes 3.8 million articles. In
-contrast, even large microbiome data sets, like the one studied by
-\cite{human2012structure}, typically only have on the order of thousands of
+contrast, even large microbiome datasets, like the one studied in
+\citep{human2012structure}, typically only have on the order of thousands of
 samples. Similarly, the total number of terms in such large-scale text analysis
 problems can be substantially larger than the number of bacterial species under
 consideration.
@@ -338,29 +339,30 @@ topics or deliberate contamination.
 For the LDA experiment, we vary the number of samples $D \in \{20, 100\}$, the
 number of features $V \in \{10, 50\}$, and the total count per sample $N \in
 \{20, 50, 100\}$. On the other hand, we fix the number of topics to $K = 2$ and
-the Dirichlet hyperparameter to $\alpha_{0} = \gamma_{0} = 1$. For each
-simulated data set, we perform estimation using VB, MCMC sampling, and a parametric bootstrap.
-In more detail, this bootstrap procedure
-fits VB to the original data, simulates $B = 1000$ new data
-sets $X^{\ast}_{b}$ according to the LDA model using VB-estimated parameters
-$\{\hat{\theta}^{\ast}_{b}, \hat{\beta}^{\ast}_{b}\}$, and re-estimates
-parameters $\{\hat{\theta}^{\ast\ast}_{b}, \hat{\beta}^{\ast\ast}_{b}\}$ on each
-simulated data set, again using VB. The motivation for this procedure is the
-desire to strike an easily-parallelizable compromise between MCMC sampling,
-which can be time consuming but has reliable uncertainty estimates, and VB,
-which is fast, but can underestimate uncertainty \citep{wang2005inadequacy}.
+the Dirichlet hyperparameter to $\alpha = \gamma = 1$. For each simulated data
+set, we perform estimation using VB, MCMC sampling, and a parametric bootstrap.
+In more detail, this bootstrap procedure fits VB to the original data, simulates
+$B = 1000$ new datasets $X^{\ast}_{b}$ according to the LDA model using
+VB-estimated parameters $\{\hat{\theta}^{\ast}_{b}, \hat{\beta}^{\ast}_{b}\}$,
+and re-estimates parameters $\{\hat{\theta}^{\ast\ast}_{b},
+\hat{\beta}^{\ast\ast}_{b}\}$ on each simulated data set, again using VB. The
+motivation for this procedure is the desire to strike an easily-parallelizable
+compromise between MCMC sampling, which can be time consuming but has reliable
+uncertainty estimates, and VB, which is fast, but can underestimate uncertainty
+\citep{wang2005inadequacy}.
 
 Note that, due to the label-switching problem, it is not possible to directly
 compare the estimated topics across simulation configurations. To address this
 issue, we attempt to identify the permutation that aligns topics across all
 experiments: for each experiment, we identify the true-estimated topics pair
 with highest correlation, then find the next highest pair among the remaining,
-etc. Judging from the aligned densities in Figures \ref{fig:beta_contours_v10},
-\ref{fig:beta_contours_v50}, and \ref{fig:beta_contours_nmf}, this ad-hoc
-alignment procedure seems sufficient.
+and so forth. Judging from the aligned densities in Figures
+\ref{fig:beta_contours_v10}, \ref{fig:beta_contours_v50}, and
+\ref{fig:beta_contours_nmf}, this ad-hoc alignment procedure seems sufficient.
+
 
 Figure \ref{fig:beta_contours_v10} displays the true and posterior $\beta_{k}$ for
-the experiments with $V = 10$ features, while varying other simulation
+the LDA experiment with $V = 10$ features, while varying other simulation
 characteristics. Each panel represents a single experimental configuration, with
 each axis associated with an underlying topic. Each black number $v$ is the
 square-root transformed value of feature $v$ across topics:
@@ -368,7 +370,7 @@ $\left(\sqrt{\beta_{v1}}, \sqrt{\beta_{v2}}\right)$. The shaded clouds are
 sampled posteriors, and the orange labels give posterior means. Across rows,
 different inferential procedures are compared. The top row of column labels
 refers to the total count $N$ within each sample, while the second refers to the
-number of samples $D$. The analogous figure when $V = 50$ is provided in the
+number of samples $D$. The analogous figure when $V = 50$ is provided in 
 Supplementary Figure \ref{fig:beta_contours_v50}.
 
 As expected, when $D$ increases, the posterior for $\beta$, whose dimension does
@@ -387,37 +389,37 @@ While the kernel-smoothed posterior densities display the complete results from
 this simulation study, a few summary statistics from these densities can
 facilitate comparison across models and data generation regimes. The key
 features of interest are (1) the distance of the posterior means for each
-parameter from their true values, after alignment, and (2) the concentration
-of these posteriors around their means? Figure \ref{fig:beta_errors_lda} addresses these questions
-directly -- the $x$-axis gives the RMSE of the square-root-transformed posterior
-means for the $\beta_{vk}$, for each $v$, and the $y$-axis gives the
-associated standard deviation, along $K = 1$, for each $v$. As in Figure
-\ref{fig:beta_contours_v10}, the first row of column numbers gives the total count
-$N$ in each sample, and the second gives $D$, the number of samples. The grey
-line within each panel is the identity line, where the error equals one standard
-deviation.
+parameter from their true values, after alignment, and (2) the concentration of
+these posteriors around their means. Figure \ref{fig:beta_errors_lda} addresses
+these questions directly -- the $x$-axis gives the RMSE of the
+square-root-transformed posterior means for the $\beta_{vk}$, for each $v$, and
+the $y$-axis gives the associated standard deviation, along $K = 1$, for each
+$v$. As in Figure \ref{fig:beta_contours_v10}, the first row of column numbers
+gives the total count $N$ in each sample, and the second gives $D$, the number
+of samples. The grey line within each panel is the identity line, where the
+error equals one standard deviation.
 
 The drift of points to the bottom left as $N$ and $D$ increase reflects the
 improved accuracy and concentration of all inference techniques when the number
 of samples and total count within samples increase. The ordering mentioned
-before is visible in the ordering across colors in this figure. Note that few
-points lie above the identity standard deviation line -- this suggests that the
-posteriors may be misleadingly narrow. Finally, we note that,
-the scale of errors and concentration in the $V = 10$ and $V = 50$
-cases are comparable. Considering that there is the same number of documents
-available for estimating each $\beta_{vk}$, this is not entirely surprising.
+before is visible in the ordering across colors when $N$ and $D$ are small. Note
+that few points lie above the identity standard deviation line -- this suggests
+that the posteriors may be misleadingly narrow. Finally, we note that, the scale
+of errors and concentration in the $V = 10$ and $V = 50$ cases are comparable.
+Considering that there is the same number of documents available for estimating
+each $\beta_{vk}$, this is not entirely surprising.
 
 For the NMF experiment, we use similar parameters, except now we introduce a
 zero-inflation probability, $p_{0} \in \{0, 0.2\}$, and have control only over
-the expected total count per sample $\Earg{N}$, rather than $N$. We perform
-inference both when $p_{0} > 0$ is incorporated into the model (in this case, we
-actually provide the true $p_{0}$ for inference), and when $p_{0}$ is
-(incorrectly) assumed to be zero. To modulate $\Earg{N}$, we vary $a_{0}$ and $b_{0}$ so
-that $\Earg{N} = \frac{b_{0}}{a_{0}}V \in \{20, 50, 100\}$, matching the LDA experiment.
-As before, we vary the number of samples $D \in \{20, 100\}$ but fix the number
-of latent factors $K$ at 2. Figure \ref{fig:beta_errors_zinf} summarizes the
-estimation error across regimes, and is read in the same way as Figure
-\ref{fig:beta_errors_lda}, except that
+the expected total count per sample $\Earg{N}$, rather than $N$. When $p_{0} >
+0$, we perform inference when the true value is provided and also when and when
+$p_{0}$ is (incorrectly) assumed to be zero. To modulate $\Earg{N}$, we vary
+$a_{0}$ and $b_{0}$ so that $\Earg{N} = \frac{b_{0}}{a_{0}}V \in \{20, 50,
+100\}$, matching the LDA experiment. As before, we vary the number of samples $D
+\in \{20, 100\}$ but fix the number of latent factors $K$ at 2. Figure
+\ref{fig:beta_errors_zinf} summarizes the estimation error across regimes, and
+is read in the same way as Figure \ref{fig:beta_errors_lda}, with two
+exceptions,
 \begin{enumerate}
 \item Instead of providing the fixed values of $N$, we display $\Earg{N}$.
 \item We must distinguish between different $p_{0}$ regimes, and whether or not
@@ -437,18 +439,17 @@ substantially larger than those in LDA, even when accounting for the larger
 scale of the $\theta_{d}$'s in this setting. Examining Supplementary Figure
 \ref{fig:beta_contours_nmf}, it appears that lack of identifiability in the NMF
 model may be affecting our ability to evaluate the resulting fits. The only way
-to distinguish between models that treat the mean
-$\left(c\Theta\right)\left(\frac{1}{c} B\right)^{T}$ instead of $\Theta B^{T}$
-is through the prior, and the prior may not be strong enough to guide inference
-to the right scaling.
+to distinguish between models $\left(c\Theta\right)\left(\frac{1}{c}
+B\right)^{T}$ and $\Theta B^{T}$ is through the prior, and the prior may not be
+strong enough to guide inference to the right scaling.
 
-Further, examining Supplementary Figure \ref{fig:beta_contours_nmf}, we note that
-the different inferential procedures produce quite different contours, even when
-$\Earg{N}$ is large. There also seem to be cases where MCMC sampling fails to
-concentrate, and cases for VB and the bootstrap that concentrate around the
-wrong value, though this may be related to rescaling. Generally, we do not find
-a direct probabilistic-programming implementation of the GaP or Z-GaP models
-reliable, even when $p_{0}$ is known.
+Further, examining Supplementary Figure \ref{fig:beta_contours_nmf}, we note
+that the different inferential procedures produce quite different contours, even
+when $\Earg{N}$ is large. There also seem to be cases where estimation fails to
+converge or concentrates around the incorrect value, though this may be related
+to rescaling. Generally, we do not find a direct probabilistic-programming
+implementation of the GaP or Z-GaP models reliable in the regimes under
+consideration, even when $p_{0}$ is known.
 
 \section{Data Analysis}
 \label{sec:data_analysis}
@@ -849,7 +850,7 @@ requirements preinstalled is available from
 
 \begin{figure}[!p]
   \centering
-  \includegraphics{figure/beta_contours_nmf}
+  \includegraphics[scale=0.15]{figure/beta_contours_nmf}
   \caption{The results across all simulation configurations in the NMF
     experiment are displayed here. Within each panel, we display the true value
     of $\sqrt{\beta_{v}}$ as black text, while orange gives posterior means.
