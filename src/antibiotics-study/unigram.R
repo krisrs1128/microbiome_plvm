@@ -53,9 +53,8 @@ m <- stan_model("../stan/unigram.stan")
 stan_fit <- vb(
   m,
   data = stan_data,
-  iter = 6000,
   output_samples = 1000,
-  eta = 0.1,
+  eta = 1,
   adapt_engaged = FALSE
 )
 save(

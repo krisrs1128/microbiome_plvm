@@ -101,7 +101,6 @@ f <- stan_model(file = "../stan/lda_counts.stan")
 stan_fit <- vb(
   f,
   data = stan_data,
-  iter = 6000,
   output_samples = 1000,
   eta = 1,
   adapt_engaged = FALSE
