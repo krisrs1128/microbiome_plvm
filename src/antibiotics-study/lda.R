@@ -103,7 +103,7 @@ stan_fit <- vb(
   data = stan_data,
   iter = 6000,
   output_samples = 1000,
-  eta = 0.1,
+  eta = 1,
   adapt_engaged = FALSE
 )
 save(
