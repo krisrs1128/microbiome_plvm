@@ -101,7 +101,7 @@ p <- ggplot(perf) +
   geom_point(aes(x = error, y = error_bar, col = method), size = 0.7, alpha = 0.6) +
   scale_color_manual(values = method_cols) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
-  labs(x = "Error", y = "SD (k = 1)", col = "Inference") +
+  labs(x = "Root Mean Squared Error", y = "Standard Deviation (k = 1)", col = "Inference") +
   facet_grid(V ~ D + N)
 
 ggsave(

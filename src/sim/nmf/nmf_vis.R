@@ -105,8 +105,11 @@ p <- ggplot(perf) +
   scale_y_continuous(limits = c(0, 1.5)) +
   scale_x_continuous(limits = c(0, 3)) +
   scale_color_manual(values = method_cols) +
-  guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
-  labs(x = "Error", y = "SD (k = 1)", col = "Inference", shape = expression(p[0]))
+  guides(
+    color = guide_legend(override.aes = list(alpha = 1, size = 2)),
+    shape = guide_legend(override.aes = list(alpha = 1, size = 2))
+  ) +
+  labs(x = "Root Mean Squared Error", y = "Standard Deviation (k = 1)", col = "Inference", shape = expression(p[0]))
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_errors_nmf.pdf"),
