@@ -35,13 +35,15 @@ beta_fits <- reshape_all_samples(
   file.path(nmf_dir, "config.json"),
   "beta",
   c("j", "k")
-)
+) %>%
+  mutate(inference = revalue(inference, c("gibbs" = "mcmc")))
+
 beta_fits$method <- basename(as.character(beta_fits$method))
 beta_fits$method <- beta_fits$method %>%
   revalue(
     c(
-    "nmf_gamma_poisson.stan" = "GaP",
-    "nmf_gamma_poisson_zero.stan" = "Z-GaP"
+      "nmf_gamma_poisson.stan" = "GaP",
+      "nmf_gamma_poisson_zero.stan" = "Z-GaP"
     )
   )
 
@@ -71,6 +73,10 @@ plot_opts$group <- "i"
 ## ---- zinf-betas-errors ----
 zinf_data$a <- as.character(zinf_data$a)
 zinf_data$zero_inf_prob <- as.character(zinf_data$zero_inf_prob)
+zinf_data <- zinf_data %>%
+  mutate(
+    EN = P * b / as.numeric(a)
+  )
 
 perf <- zinf_data %>%
   mutate(
@@ -80,7 +86,7 @@ perf <- zinf_data %>%
     truth_1 = sqrt(truth_1),
     truth_2 = sqrt(truth_2)
   ) %>%
-  group_by(j, inference, method, zero_inf_prob, a, b, N, P) %>%
+  group_by(j, inference, method, zero_inf_prob, EN, a, b, N, P) %>%
   summarise(
     error = mean(sqrt((value_1 - truth_1) ^ 2 + (value_2 - truth_2) ^ 2)),
     error_bar = sd(value_1)
@@ -88,20 +94,22 @@ perf <- zinf_data %>%
 
 theme_set(ggscaffold::min_theme(list(border_size = .7)))
 method_cols <- c("#ae7664", "#64ae76", "#7664ae")
+
 p <- ggplot(perf) +
   geom_abline(slope = 1, alpha = 0.6, size = 0.3) +
   geom_point(
     aes(x = error, y = error_bar, col = inference, shape = zero_inf_prob),
     size = 0.7, alpha = 0.6
   ) +
-  facet_grid(method + P ~ N + a + b) +
-  scale_y_continuous(limits = c(0, 1.7)) +
+  facet_grid(method + P ~ N + EN) +
+  scale_y_continuous(limits = c(0, 1.5)) +
   scale_x_continuous(limits = c(0, 3)) +
   scale_color_manual(values = method_cols) +
-  guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
-  labs(x = "Error", y = "SD (k = 1)", col = "Inference") +
-  ylim(0, 2.5) +
-  xlim(0, 4)
+  guides(
+    color = guide_legend(override.aes = list(alpha = 1, size = 2)),
+    shape = guide_legend(override.aes = list(alpha = 1, size = 2))
+  ) +
+  labs(x = "Root Mean Squared Error", y = "Standard Deviation (k = 1)", col = "Inference", shape = expression(p[0]))
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_errors_nmf.pdf"),
@@ -138,13 +146,13 @@ p <- ggcontours(combined, plot_opts) +
       label = j
     ),
     size = 2, col = "#fc8d62") +
-  facet_grid(method + inference + zero_inf_prob ~ N + a + b) +
-  labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
   ylim(0, 3) +
-  xlim(0, 3)
+  xlim(0, 3) +
+  facet_grid(method + inference + zero_inf_prob ~ N + EN) +
+  labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2])))
 
 ggsave(
-  file.path(base_dir, "doc", "figure/beta_contours_nmf.pdf"),
+  file.path(base_dir, "doc", "figure/beta_contours_nmf.png"),
   p,
   width = 7,
   height = 8

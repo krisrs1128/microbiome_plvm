@@ -43,7 +43,9 @@ mcombined <- rbind(
 combined <- mcombined %>%
   gather(type, value, truth, estimate) %>%
   unite(temp, type, dimension) %>%
-  spread(temp, value)
+  spread(temp, value) %>%
+  ungroup() %>%
+  mutate(method = revalue(method, c("gibbs" = "mcmc")))
 
 ## ---- beta-contours-object ----
 unique_V <- unique(mcombined$V)
@@ -58,13 +60,28 @@ for (i in seq_along(unique_V)) {
 ## ---- betacontours1 ----
 p[[1]] <- p[[1]] +
   labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
+  theme(panel.border = element_rect(fill = "transparent", size = 0.7)) +
+  facet_grid(method ~ D + N)
+
+p[[2]] <- p[[2]] +
+  labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
+  theme(panel.border = element_rect(fill = "transparent", size = 0.7)) +
   facet_grid(method ~ D + N)
 
 ggsave(
-  file.path(base_dir, "doc", "figure/betacontours1-1.pdf"),
+  file.path(base_dir, "doc", "figure/beta_contours_v10.png"),
   p[[1]],
   width = 5,
-  height = 3
+  height = 3,
+  dpi = 450
+)
+
+ggsave(
+  file.path(base_dir, "doc", "figure/beta_contours_v50.png"),
+  p[[2]],
+  width = 5,
+  height = 3,
+  dpi = 450
 )
 
 ## ---- relative-errors ----
@@ -83,7 +100,7 @@ p <- ggplot(perf) +
   geom_point(aes(x = error, y = error_bar, col = method), size = 0.7, alpha = 0.6) +
   scale_color_manual(values = method_cols) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
-  labs(x = "Error", y = "SD (k = 1)", col = "Inference") +
+  labs(x = "Root Mean Squared Error", y = "Standard Deviation (k = 1)", col = "Inference") +
   facet_grid(V ~ D + N)
 
 ggsave(

@@ -21,7 +21,7 @@ library("phyloseq")
 library("RColorBrewer")
 library("ggscaffold")
 library("feather")
-theme_set(min_theme())
+theme_set(min_theme(list(text_size = 7, subtitle_size = 9)))
 source("./posterior_check_funs.R")
 dir.create("../../data/fits/", recursive = TRUE)
 dir.create("../../data/figure-input/", recursive = TRUE)
@@ -101,9 +101,8 @@ f <- stan_model(file = "../stan/lda_counts.stan")
 stan_fit <- vb(
   f,
   data = stan_data,
-  iter = 6000,
   output_samples = 1000,
-  eta = 0.1,
+  eta = 1,
   adapt_engaged = FALSE
 )
 save(
@@ -238,6 +237,7 @@ p <- ggplot(beta_summary) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(breaks = scales::pretty_breaks(3), limits = c(-5, 12)) +
   facet_grid(topic ~ .) +
+  guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   labs(x = "Species", y = expression(paste("g(", beta[k], ")")), col = "Family") +
   theme(
     panel.border = element_rect(fill = "transparent", size = 0.75),
