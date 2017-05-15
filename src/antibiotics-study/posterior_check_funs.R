@@ -62,8 +62,8 @@ compare_quantiles <- function(mx, q_sim) {
     geom_abline(slope = 1, alpha = 0.6, size = 0.4, col = "#000000") +
     geom_point(
       aes(x = q_true, y = q, col = method),
-      alpha = 0.05, size = 0.1,
-      position = position_jitter(w = 0.2, h = 0.2)
+      alpha = 0.02, size = 0.01,
+      position = position_jitter(w = 0.3, h = 0.3)
     ) +
     coord_fixed() +
     scale_color_manual(values = c("#86B8B1", "#b186b8")) +
