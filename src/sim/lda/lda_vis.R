@@ -24,10 +24,7 @@ lda_dir <- file.path(base_dir, "src", "sim", "lda")
 output_path <- file.path(lda_dir, "fits")
 metadata <- read_csv(file.path(output_path, "metadata.csv")) %>%
   unique() %>%
-  mutate(
-    file = file.path(lda_dir, "pipeline", file),
-    method = revalue(method, c("gibbs" = "mcmc"))
-  )
+  mutate(file = file.path(lda_dir, "pipeline", file))
 
 ## ---- beta-samples ----
 beta <- get_truth_data(metadata, "beta") %>%
@@ -46,7 +43,9 @@ mcombined <- rbind(
 combined <- mcombined %>%
   gather(type, value, truth, estimate) %>%
   unite(temp, type, dimension) %>%
-  spread(temp, value)
+  spread(temp, value) %>%
+  ungroup() %>%
+  mutate(method = revalue(method, c("gibbs" = "mcmc")))
 
 ## ---- beta-contours-object ----
 unique_V <- unique(mcombined$V)
