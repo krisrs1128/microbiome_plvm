@@ -147,13 +147,13 @@ p <- ggcontours(combined, plot_opts) +
     ),
     size = 2, col = "#fc8d62") +
   ylim(0, 3) +
-  xlim(0, 3) +
+  xlim(0, 4.5) +
   facet_grid(method + inference + zero_inf_prob ~ N + EN) +
   labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2])))
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_contours_nmf.png"),
   p,
-  width = 7,
-  height = 8
+  width = 5.3,
+  height = 6.5
 )

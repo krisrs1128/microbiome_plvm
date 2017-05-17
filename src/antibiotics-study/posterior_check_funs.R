@@ -305,7 +305,7 @@ posterior_checks_plots <- function(input_data) {
     scale_y_continuous(breaks = scales::pretty_breaks(3)) +
     labs(x = "time", y = "asinh(abundance)") +
     guides(colour = guide_legend(nrow = 2, override.aes = list(alpha = 1, size = 2))) +
-    facet_wrap(~rsv, scales = "free", ncol = 3)
+    facet_wrap(~rsv, scales = "free", ncol = 4)
 
   plot_opts <- list(
     "x" = "V1",
@@ -314,21 +314,22 @@ posterior_checks_plots <- function(input_data) {
     "fill" = "method",
     "fill_type" = "category",
     "fill_colors" = c("#86B8B1","#b186b8"),
-    "h" = 2.5,
+    "h" = 1.5,
+    "coord_ratio" = 2.0,
     "theme_opts" = list("text_size" = 10, "subtitle_size" = 11, "key_width" = 1,
                         "border_size" = 1)
   )
 
+  plot_opts$theme_opts$legend_position <- "bottom"
   all_plots[["scores"]] <- summary_contours(input_data$scores_data, plot_opts, 2.3) +
-    labs(x = "Axis 1", y = "Axis 2") +
-    coord_fixed(0.8)
+    labs(x = "Axis 1", y = "Axis 2")
 
   plot_opts$h <- 0.01
+  plot_opts$coord_ratio <- 0.45
   plot_opts$theme_opts$legend_position <- "none"
   all_plots[["loadings"]] <- summary_contours(input_data$loadings_data, plot_opts, 2.3) +
     scale_x_continuous(breaks = c(0.05, 0, 0.05)) +
-    labs(x = "Axis 1", y = "Axis 2") +
-    coord_fixed(0.4)
+    labs(x = "Axis 1", y = "Axis 2")
 
   all_plots[["evals"]] <- ggplot() +
    geom_point(
@@ -351,7 +352,8 @@ posterior_checks_plots <- function(input_data) {
     labs(
       "x" = expression(i),
       "y" = expression(log[10](lambda[i]))
-    )
+    ) +
+    coord_fixed(15)
 
   all_plots
 }
