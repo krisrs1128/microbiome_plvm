@@ -120,7 +120,13 @@ mu_summary$Taxon_5 <- factor(
 )
 
 mu_summary$Taxon_5[!(mu_summary$Taxon_5 %in% sorted_taxa[1:7])] <- "other"
-p <- ggplot(mu_summary) +
+
+x_order <- names(sort(taxa_sums(abt)))
+mu_subset <- mu_summary %>%
+  filter(rsv %in% rev(x_order)[1:750])
+mu_subset$rsv_ix <- rep(seq_len(nrow(mu_subset) / 4), length.out = nrow(mu_subset))
+
+p <- ggplot(mu_subset) +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
   geom_point(aes(x = rsv_ix, y = median, col = Taxon_5), size = 0.1) +
   geom_errorbar(

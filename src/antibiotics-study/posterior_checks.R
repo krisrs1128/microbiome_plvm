@@ -58,6 +58,9 @@ dir.create(output_dir, recursive = TRUE)
 ggsave(sprintf("%s/posterior_check_quantiles-%s.png", output_dir, argv$subject), p[["quantiles"]], width = 4.5, height = 2.2)
 ggsave(sprintf("%s/posterior_check_margins-%s.png", output_dir, argv$subject), p[["margins"]], width = 6, height = 3.5)
 ggsave(sprintf("%s/posterior_check_ts-%s.png", output_dir, argv$subject), p[["ts"]], width = 6, height = 4)
-ggsave(sprintf("%s/posterior_check_scores-%s.png", output_dir, argv$subject), p[["scores"]], width = 5, height = 2.9)
-ggsave(sprintf("%s/posterior_check_loadings-%s.png", output_dir, argv$subject), p[["loadings"]], width = 2, height = 3.5)
-ggsave(sprintf("%s/posterior_check_evals-%s.png", output_dir, argv$subject), p[["evals"]], width = 6, height = 3.5)
+ggsave(
+  sprintf("%s/posterior_check_scores-loadings-%s.png", output_dir, argv$subject),
+  grid.arrange(p[["scores"]], p[["loadings"]], ncol = 2),
+  width = 7.3, height = 6.4
+)
+ggsave(sprintf("%s/posterior_check_evals-%s.png", output_dir, argv$subject), p[["evals"]], width = 6, height = 2.5)

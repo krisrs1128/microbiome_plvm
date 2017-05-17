@@ -221,11 +221,15 @@ beta_summary <- beta_hat %>%
     beta_upper = quantile(beta_logit, 0.975),
     beta_lower = quantile(beta_logit, 0.025)
   )
+
 levels(beta_summary$Taxon_5) <- append(levels(beta_summary$Taxon_5), "other")
 beta_summary$Taxon_5[!(beta_summary$Taxon_5 %in% levels(beta_summary$Taxon_5)[1:7])] <- "other"
-beta_summary$rsv_ix <- rep(seq_len(nrow(beta_summary) / 4), each = 4)
 
-p <- ggplot(beta_summary) +
+beta_subset <- beta_summary %>%
+  filter(rsv %in% rev(x_order)[1:750])
+beta_subset$rsv_ix <- rep(seq_len(nrow(beta_subset) / 4), each = 4)
+
+p <- ggplot(beta_subset) +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
   geom_point(aes(x = rsv_ix, y = beta_median, col = Taxon_5), size = 0.1) +
   geom_errorbar(

@@ -14,7 +14,7 @@ accepted for publication November 1, 2010}
 \title{Latent Variable Modeling for the Microbiome}
 
 \author{
-  KRIS SANKARAN$^\ast$, SUSAN HOLMES\\[4pt]
+  KRIS SANKARAN$^\ast$, SUSAN P. HOLMES\\[4pt]
   % Author addresses
   \textit{
     Department of Statistics
@@ -30,7 +30,7 @@ accepted for publication November 1, 2010}
 % Running headers of paper:
 \markboth
 % First field is the short list of authors
-{Sankaran and others}
+{Sankaran and Holmes}
 % Second field is the short title of the paper
 {Latent Variable Modeling for the Microbiome}
 
@@ -72,16 +72,16 @@ For example, a study may attempt to describe differences in bacterial
 communities between diseased and healthy states or after deliberately induced
 perturbations \citep{dethlefsen2011incomplete}.
 
-In the process, there tend to be two complementary difficulties. First, the data
-are often high-dimensional, measured over several hundreds or thousands of
-bacteria. Studying patterns at the level of individual bacteria is typically
-uninformative. Second, it can be important to study bacterial abundances in
+In the process, two complementary difficulties arise. First, the data are often
+high-dimensional, measured over several hundreds or thousands of bacteria.
+Studying patterns at the level of individual bacteria is typically
+uninformative. Second, it can be important to study bacterial abundances in the
 context of existing biological knowledge. For example, it is scientifically
 meaningful when a collection of bacteria that are known to be evolutionarily
-related have similar abundance profiles. These challenges motivate
-methodological work in the microbiome, including phylogenetically-informed
-techniques for dimensionality-reduction \citep{fukuyama2017adaptive,
-  chen2013structure} and high-dimensional regression
+related have either similar or opposed abundance profiles. These challenges
+motivate methodological work in the microbiome, including
+phylogenetically-informed techniques for dimensionality-reduction
+\citep{fukuyama2017adaptive, chen2013structure} and high-dimensional regression
 \citep{segata2011metagenomic, chen2013variable, shafiei2015biomico}.
 
 \section{Methods}
@@ -91,22 +91,73 @@ throughout this work. Many of these techniques have been borrowed from text
 analysis, thinking of the bacterial counts matrix as a biological analog of the
 document-term matrix. The idea of transferring these techniques to the
 microbiome is not new, though its appropriateness and usefulness has only been
-explored in relatively limited settings \citep{shafiei2015biomico,
-  chen2012estimating, holmes2012dirichlet, chen2013variable}.
+explored in relatively limited settings \citep{holmes2012dirichlet,
+  chen2012estimating, chen2013variable, shafiei2015biomico}.
+
+\subsection{Dirichlet Multinomial Mixture Model}
+
+While the multinomial distribution is the fundamental probability mechanism for
+sampling counts, multinomial models are only appropriate for relatively
+homogeneous data sets. An extension, Dirichlet multinomial mixture modeling,
+allows for count modeling in the presence of increased heterogeneity, and its
+relevance to the text and microbiome settings were key contributions of
+\cite{nigam2000text} and \cite{holmes2012dirichlet}, respectively. 
+In this section, we adopt text analysis terminology, where the count matrices of
+interest are counts of terms across documents. In section
+\ref{sec:microbiome_vs_text_analysis} we clarify the connection to microbiome
+analysis.
+
+Suppose there are $D$ documents across $V$ terms, and that these documents are
+assumed to belong to one of $K$ underlying topics, where a topic is defined as a
+distribution over words. The Dirichlet multinomial mixture model draws each
+topic from a distribution over probabilities. Then, for each document, a
+topic is chosen by flipping a $K$-sided coin with probability $\theta_{k}$ of
+coming up on side $k$. Conditional on the selected topic, all words are drawn
+independently from the probabilites associated with the selected topic.
+
+More formally, represent the topic for the
+$d^{th}$ document by $z_{d} \in \{1, \dots, K\}$ and the term in the $n_{th}$
+word of this document by $w_{dn}$. Suppose the $k^{th}$ topic places weight
+$\beta_{vk}$ on the $v^{th}$ term, so that $\beta_{k} \in \simplex^{V - 1}$.
+Suppose there are $N_{d}$ words in the $d^{th}$ document. Then, the generative
+mechanism for the observed data set is
+\begin{align*}
+  w_{dn} \vert \left(\beta_{k}\right)_{k = 1}^{K}, z_{d} &\overset{iid}{\sim}\Mult\left(1, \beta_{z_{d}}\right) \text{ for } d = 1, \dots, D \text{ and } n = 1, \dots, N_{d} \\
+  z_{d} \vert \theta &\overset{iid}{\sim} \Mult\left(1, \theta\right) \text{ for } d = 1, \dots, D \\
+  \beta_{k} &\overset{iid}{\sim} \Dir\left(\gamma\right) \text{ for } k = 1, \dots, K.
+\end{align*}
+Equivalently, we could write $w_{d} \vert \left(\beta_{k}\right)_{k = 1}^{K},
+z_{d} \sim \Mult\left(N_{d}, \beta_{z_{d}}\right)$, though the form above makes
+comparison with LDA more straightforwards. Further, while we treat $\theta$, and
+$\gamma$ as fixed parameters, it is possible to place priors on them as well.
+Geometrically, this model identifies each document with one of the $\beta_{k}$ on
+the $V$-dimensional simplex.
+
+In practice, interpretation revolves around the posterior topic memberships,
+$\Parg{z_{d} = k \vert \left(w_{dn}\right)}$, and probabilities,
+$\Parg{\beta_{kv}\vert \left(w_{dn}\right)\right)}$. While these
+estimates can be useful in guiding scientific analysis \citep{nigam2000text,
+  holmes2012dirichlet}, the assumption that each document belongs completely to
+one topic is sometimes unnecessarily restrictive. For example, in learning a
+Dirichlet multinomial mixture model on a collection of newspaper articles, we
+may recover separate topics related to science and personal health, but there
+would be no way to express the mixture of topics in an article about health
+research.
 
 \subsection{Latent Dirichlet Allocation}
 
-Latent Dirichlet Allocation (LDA) is a generalization of multinomial mixture
-modeling applicable to count matrices \citep{blei2003latent}. For now, we adopt
-the usual text analysis terminology, where the count matrices of interest are
-counts of terms across documents, though in section
-\ref{sec:microbiome_vs_text_analysis} we clarify the connection to 
-microbiome analysis. Suppose there are $D$ documents across $V$ terms, and
-that these documents are assumed to be mixtures of $K$ underlying topics, where
-a topic is defined as a distribution over words.
+Latent Dirichlet Allocation (LDA) is a generalization of Dirichlet multinomial
+mixture modeling where documents are allowed to have fractional membership
+across a set of topics \citep{blei2003latent}. This addresses the key limitation
+of Dirichlet multinomial mixture modeling, and one goal of the case study in
+section \ref{sec:data_analysis} is to demonstrate the usefulness of this
+additional flexibility in microbiome analysis.
 
-Let $\theta_{d} \in \simplex^{K - 1}$ represent the $d^{th}$ topic's mixture over the
-$K$ underlying topics. Represent the term in the $n_{th}$ word of this document
+Use the same notation as before, but instead of fixing a global $\theta$
+parameter, let $\theta_{d} \in \simplex^{K - 1}$ represent the $d^{th}$
+document's mixture over the $K$ underlying topics.
+
+Represent the term in the $n_{th}$ word of this document
 by $w_{dn}$, and the associated topic by $z_{dn}$. Suppose the $k^{th}$ topic
 places weight $\beta_{vk}$ on the $v^{th}$ term, so that $\beta_{k} \in
 \simplex^{V - 1}$. Suppose there are $N_{d}$ words in the $d^{th}$ document. Then,
@@ -115,7 +166,7 @@ the generative mechanism for the observed data set is
 w_{dn} \vert \left(\beta_{k}\right)_{k = 1}^{K}, z_{dn} &\overset{iid}{\sim} \Mult\left(1, \beta_{z_{dn}}\right) \text{ for } d = 1, \dots, D  \text{ and } n = 1, \dots,  N_{d} \\
 z_{dn} \vert \theta_{d} &\overset{iid}{\sim} \Mult\left(1, \theta_{d}\right) \text{ for } d = 1, \dots, D \text{ and } n = 1, \dots, N_{d}\\
 \theta_{d} &\overset{iid}{\sim} \Dir\left(\alpha\right) \text{ for } d = 1, \dots, D \\
-\beta_{\cdot k} &\overset{iid}{\sim} \Dir\left(\gamma\right) \text{ for } k = 1, \dots, K.
+\beta_{k} &\overset{iid}{\sim} \Dir\left(\gamma\right) \text{ for } k = 1, \dots, K.
 \end{align*}
 In microbiome applications, we will find a formulation that marginalizes over
 the $z_{dn}$ more convenient. Setting $x_{dv} = \sum_{n = 1}^{N_{d}}
@@ -126,9 +177,10 @@ x_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\overset{iid}{\sim} \Mult\left(
 \beta_{k} &\overset{iid}{\sim} \Dir\left(\gamma\right) \text{ for }k = 1, \dots, K,
 \end{align*}
 where we have introduced the $V \times K$ matrix concatenating all topics
-column-wise, $B = \begin{pmatrix}beta_{1}, \dots, \beta_{K}\end{pmatrix}$. Geometrically, LDA
-identifies samples with points in the convex hull of $K$ topics
-$\left(\beta_{k}\right)$ on the $V$-dimensional simplex.
+column-wise, $B = \begin{pmatrix}\beta_{1}, \dots, \beta_{K}\end{pmatrix}$.
+Geometrically, LDA identifies samples with points in the convex hull of $K$
+topics $\left(\beta_{k}\right)$ on the $V$-dimensional simplex, rather than the
+individual corners, as in the Dirichlet multinomial mixture model.
 
 \subsection{Dynamic Unigram model}
 
@@ -183,13 +235,12 @@ B &\sim \Gam\left(c_{0} 1_{V \times K}, d_{0} 1_{V \times K} \right),
 where our notation means that each entry in these matrices is sampled
 independently, with parameters given by the corresponding entry in the parameter
 matrix. As a consequence of the representation of the negative binomial
-distribution as a Gamma mixture of Poissons, this is a natural model to
-considering when facing overdispersed counts, which arise frequently in genomic
-and microbiome settings \citep{love2014moderated, mcmurdie2014waste}. In
-practice, the hyperparameters $a_{0}, b_{0}, c_{0}$, and $d_{0}$ are unknown.
-In all of our experiments, we optimize over them, though it would also be
-possible to add a level to the hierarchy and place vague nonnegative priors on
-these parameters.
+distribution as a Gamma mixture of Poissons, this is a natural model of
+overdispersed counts, which arise frequently in genomic and microbiome settings
+\citep{love2014moderated, mcmurdie2014waste}. In practice, the hyperparameters
+$a_{0}, b_{0}, c_{0}$, and $d_{0}$ are unknown. In all of our experiments, we
+optimize over them, though it would also be possible to add a level to the
+hierarchy and place vague nonnegative priors on these parameters.
 
 In our simulation studies, we also consider a slight variant of this model, 
 similar to the proposal of \citep{pierson2015zifa}, which independently sends
@@ -201,7 +252,7 @@ Z-NMF.
 \label{sec:ppc_overview}
 
 Model assessment is important for qualifying interpretations, and can further
-guide refinements in subsequent analysis. Indeed, part of the appeal of
+guide refinements in subsequent analyses. Indeed, part of the appeal of
 probabilistic modeling is the ease with which models can be adapted to better
 describe the data of interest. We briefly review model assessment via posterior
 predictive checks \citep{rubin1984bayesianly, gelman2013philosophy}, as they are
@@ -245,18 +296,19 @@ between the most common field-specific terms as follows,
     and biological samples (microbiome analysis). It is of interest to highlight
     similarities and differences across these units, often through some
     variation on clustering or dimensionality reduction.
-  \item \textbf{Term} $\iff$ \textbf{Bacteria}: The fundamental features
-    with which to describe samples are the counts of terms (text analysis) and
-    bacteria (microbiome analysis). More formally, by bacteria, we mean
-    Ribosomal Sequence Variants \citep{callahan2016dada2}, though we call these
-    bacteria for simplicity of exposition.
+  \item \textbf{Term} $\iff$ \textbf{Bacterial species}: The fundamental
+    features with which to describe samples are the counts of terms (text
+    analysis) and bacterial species (microbiome analysis). More formally, by
+    bacterial species, we mean Ribosomal Sequence Variants
+    \citep{callahan2016dada2}, though we avoid this terminology for simplicity
+    of exposition.
   \item \textbf{Topic} $\iff$ \textbf{Community}: For interpretation, it is
     common to imagine ``prototypical'' units which can be used as a point of
     reference for observed samples. In text analysis, these are called topics --
     for example, ``business'' or ``politics'' articles have their own specific
     vocabularies. On the other hand, in microbiome analysis, these are called
-    ``communities'' -- one common breakdown is healthy vs. diseased. Different
-    communities have different bacterial signatures.
+    ``communities'' -- different communities have different bacterial
+    signatures.
   \item \textbf{Word} $\iff$ \textbf{Sequencing Read}: A ``word'' in text analysis refers
     to a single instance of a term in a document, not its total count. The
     analog in microbiome analysis is an individual read that has been mapped to
@@ -267,7 +319,7 @@ between the most common field-specific terms as follows,
     groups \citep{teh2004sharing}. In the text analysis literature, a known group
     of documents -- for example, all articles coming from one newspaper -- is
     called a corpus. In the microbiome literature, the associated concept is the
-    environment -- for example, skin or soil -- from which a sample was
+    environment -- for example, skin, ocean, or soil -- from which a sample was
     obtained.
 \end{itemize}
 
@@ -281,7 +333,7 @@ highly-skewed -- some terms are far more common than others, and in the same
 way, some microbes are much more abundant than others. Finally, in both fields,
 contextual information beyond the raw sample-by-feature matrix is typically
 available. For example, timestamps are often available in both domains,
-$n$-grams have a natural analog in terms of small subnetworks of co-occuring
+$n$-grams have a natural analog in terms of small subnetworks of co-occurring
 bacteria, and phylogenetic similarity between species parallels apriori known
 linguistic characteristics of terms.
 
@@ -309,7 +361,7 @@ analysis. In both fields, data reduction can be informative for developing
 models of system behavior. However, an essential difference is that even
 unsupervised text analysis techniques are often embedded within automatic
 systems, for text classification \citep{blei2003latent} or information retrieval
-\citep{krestel2009latent}, for example, which do not require the intervention of
+\citep{krestel2009latent} for example, which do not require the intervention of
 a scientific investigator. In contrast, in microbiome studies, researchers often
 have control over specific experimental design structure, and collect and
 analyze data on a per-study basis. In this setting, success is defined somewhat
@@ -519,11 +571,11 @@ initially but are eliminated during the first time course, though there is a
 hint of a recovery at the end of sampling. This topic seems most closely related
 to the finding reported in \cite{dethlefsen2011incomplete} that Subject F
 experienced long-term antibiotic effects on bacterial community composition.
-Topics 2 seems to be overrepresented during the antibiotic treatments. Topic 2
-is elevated immediately after the antibiotic treatment. Topic 4 seems to
+Topics 2 and 4 seem to be overrepresented during the antibiotic treatments.
+Topic 2 is elevated immediately after the antibiotic treatment. Topic 4 seems to
 summarize those bacteria that are initially negatively impacted by the
 antibiotic treatments, but which recover relatively quickly. The fact that
-Topics 3 and 4 are learned from the data without enforcing any temporal
+Topics 2 and 4 are learned from the data without enforcing any temporal
 evolution structure on the samples suggests that under an antibiotic
 perturbation, the system exhibits differential recovery.
 
@@ -533,7 +585,7 @@ study the estimated topic distributions $\beta_{k}$. This is displayed in Figure
 estimated topics. Within a row, we show 95\% credible intervals associated with
 the posterior samples for each bacterium. Different colors identify different
 taxonomic families, and bacteria are sorted according to evolutionary
-relatedness.
+relatedness. For clarity, we have displayed only the 750 most abundant bacteria.
 
 Considering the mixture probabilities in Figure \ref{fig:antibiotics_lda_theta},
 those bacteria with large probabilities in the second and fourth rows of Figure
@@ -553,8 +605,10 @@ emerges in the fitted model.
 
 One disadvantage of plotting the posteriors for the $\beta_{k}$ in this way is
 that it is difficult to determine the identify of any particular bacterial
-species associated with a specific credible interval. To address this, we have
-designed an interactive version, available online at
+species associated with a specific credible interval. It also hides any
+interesting variation that may be occurring among species not among the 750 most
+abundant. To address these issues, we have designed an interactive version,
+available online at
 \url{https://statweb.stanford.edu/~kriss1/microbiome_plvm/vis.html}.
 
 \subsection{Dynamic Unigram model}
@@ -707,6 +761,10 @@ Dockerfile is provided in the github repository.
 
 \section*{Acknowledgments}
 
+KS is supported by a Stanford University Weiland fellowship and the National
+Institute of Health T32 grant 5T32GM096982-04. SPH is supported by the National
+Institute of Health TR01 grant AI112401.
+
 {\it Conflict of Interest}: None declared.
 
 \bibliographystyle{biorefs}
@@ -715,7 +773,7 @@ Dockerfile is provided in the github repository.
 \section{Figures}
 
 \begin{figure}[!p]
-  \centering\includegraphics[scale=0.15]{figure/beta_contours_v10}
+  \centering\includegraphics[width=\textwidth]{figure/beta_contours_v10}
   \caption{Different inference algorithms for LDA produce different uncertainty
     assessments in small sample sizes, but become comparable as more data arrives.
     Within each panel, we display the true pairs $\left(\sqrt{\beta_{v1}},
@@ -731,7 +789,7 @@ Dockerfile is provided in the github repository.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=0.9]{figure/beta_errors_lda}
+  \includegraphics[width=\textwidth]{figure/beta_errors_lda}
   \caption{A summary of the errors and uncertainty across models and regimes for
     the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v10}. On the $x$-axis,
     we plot the difference between posterior means and the true value, after
@@ -744,7 +802,7 @@ Dockerfile is provided in the github repository.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=0.9]{figure/beta_errors_nmf}
+  \includegraphics[width=\textwidth]{figure/beta_errors_nmf}
   \caption{A version of Figure \ref{fig:beta_errors_lda} for the NMF simulation
     experiment. The figures are read similarly, except there are a larger number
     of experimental configurations -- rows now distinguish the assumed model and
@@ -778,25 +836,27 @@ Dockerfile is provided in the github repository.
     during antibiotic treatments. Each row of panels corresponds to one of the
     four topics, the $x$-axis indexes species, sorted according to phylogenetic
     relatedness, and the $y$-axis give transformed values of the species probability
-    under that topic. In particular, before transforming, the sum of points
-    across a single row would always be 1. Note the low diversity within Topic
-    4.} \label{fig:antibiotics_lda_beta}
+    under that topic. Only the 750 most abundant species are shown. Note the
+    disappearance of otherwise abundant species within Topics 2, 4, and to some
+    extent, 1.} \label{fig:antibiotics_lda_beta}
 \end{figure}
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=1]{figure/antibiotics_unigram_mu-F}
+  \includegraphics{figure/antibiotics_unigram_mu-F}
   \caption{Each posterior credible interval refers to one $\mu_{vt}$. The rows
-    are a subset of times $t$ around the first antibiotic time course.
-    Otherwise, this display is read in the same way as Figure
-    \ref{fig:antibiotics_lda_beta}. This view provides one way of smoothing
-    abundance time series, to see how different species respond to antibiotic
-    treatment. \label{fig:antibiotics_unigram_theta} }
+    are a subset of times $t$ around the first antibiotic time course. The first
+    row corresponds to a timepoint from before the treatment, the middle two
+    from during the antibiotics time course, and the bottom from after the time
+    course was stopped. Otherwise, this display is read in the same way as
+    Figure \ref{fig:antibiotics_lda_beta}. This view provides one way of
+    smoothing abundance time series, to see how different species respond to
+    antibiotic treatment. \label{fig:antibiotics_unigram_theta} }
 \end{figure}
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=0.2]{figure/posterior_check_ts-F}
+  \includegraphics[width=\textwidth]{figure/posterior_check_ts-F}
   \caption{We can visualize the simulated time series for a subset of species
     and compare them with the observed ones, as a posterior check. Each panel
     represents one species. The black lines represent the observed
@@ -808,7 +868,7 @@ Dockerfile is provided in the github repository.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=0.15]{figure/posterior_check_evals-F}
+  \includegraphics[width=\textwidth]{figure/posterior_check_evals-F}
   \caption{As a posterior predictive check, we compute eigenvalues of data
     simulated from the fitted LDA model. The clouds of points summarize the
     posterior predictive distribution, while the black circles represent
@@ -822,7 +882,7 @@ Dockerfile is provided in the github repository.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=0.2]{figure/beta_contours_v50}
+  \includegraphics[width=\textwidth]{figure/beta_contours_v50}
   \caption{The analog of Figure \ref{fig:beta_contours_v10} in the case that $V = 50$. \label{fig:beta_contours_v50}}
 \end{figure}
 
@@ -839,16 +899,14 @@ Dockerfile is provided in the github repository.
     almost exactly. \label{fig:antibiotics_posterior_quantiles} }
 \end{figure}
 
-
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=0.15]{figure/posterior_check_loadings-F}
-  \includegraphics[scale=0.15]{figure/posterior_check_scores-F}
+  \includegraphics[width=\textwidth]{figure/posterior_check_scores-loadings-F}
   \caption{The eigenvalues displayed in Figure
     \ref{fig:antibiotics_posterior_evals} correspond to PCA results computed on
     posterior predictive samples, which are aligned and overlaid here. The left
-    pair of panels give loadings for each timepoint, while the right pair
-    provide scores for each species. The individual posterior samples have been
+    pair of panels give scores for each species, while the right pair provide
+    loadings for each timepoint. The individual posterior samples have been
     smoothed into contours, while the posterior means are displayed as shaded
     text. The observed data PCA results, after alignment with posterior samples,
     are displayed as black text. \label{fig:antibiotics_posterior_pca} }
@@ -856,7 +914,7 @@ Dockerfile is provided in the github repository.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=0.15]{figure/beta_contours_nmf}
+  \includegraphics[width=\textwidth]{figure/beta_contours_nmf}
   \caption{The results across all simulation configurations in the NMF
     experiment are displayed here. Within each panel, we display the true value
     of $\sqrt{\beta_{v}}$ as black text, while orange gives posterior means.
