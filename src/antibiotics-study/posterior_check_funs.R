@@ -305,7 +305,8 @@ posterior_checks_plots <- function(input_data) {
     scale_y_continuous(breaks = scales::pretty_breaks(3)) +
     labs(x = "time", y = "asinh(abundance)") +
     guides(colour = guide_legend(nrow = 2, override.aes = list(alpha = 1, size = 2))) +
-    facet_wrap(~rsv, scales = "free", ncol = 4)
+    facet_wrap(~rsv, scales = "free", ncol = 4) +
+    theme(panel.spacing = unit(0.5, "lines"))
 
   plot_opts <- list(
     "x" = "V1",
@@ -344,9 +345,8 @@ posterior_checks_plots <- function(input_data) {
       aes(x = as.factor(row_ix), y = log(value, 10)),
       col = "#000000", size = 0.9
     ) +
-    ylim(log(0.25, 10), log(11, 10)) +
     scale_color_manual(values = c("#86B8B1", "#b186b8")) +
-    scale_y_continuous(breaks = pretty_breaks(n = 2)) +
+    scale_y_continuous(breaks = c(-0.5, 0, 0.5, 1), limits = c(log(0.25, 10), log(11, 10))) +
     guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1), ncol = 1)) +
     theme(axis.text.x = element_blank()) +
     labs(

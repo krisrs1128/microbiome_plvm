@@ -45,7 +45,22 @@ combined <- mcombined %>%
   unite(temp, type, dimension) %>%
   spread(temp, value) %>%
   ungroup() %>%
-  mutate(method = revalue(method, c("gibbs" = "mcmc")))
+  mutate(
+    method = revalue(method, c("gibbs" = "mcmc")),
+    D = paste0("D = ", D),
+    N = paste0("N = ", N),
+    V = paste0("V = ", V)
+  )
+
+sort_levels <- function(x) {
+  new_levels <- sort(as.numeric(gsub("[^0-9]+", "", unique(x))))
+  prefix <- gsub("[0-9]+", "", x[1])
+  factor(x, levels = paste0(prefix, new_levels))
+}
+
+combined$D <- sort_levels(combined$D)
+combined$N <- sort_levels(combined$N)
+combined$V <- sort_levels(combined$V)
 
 ## ---- beta-contours-object ----
 unique_V <- unique(mcombined$V)
@@ -53,7 +68,7 @@ p <- list()
 for (i in seq_along(unique_V)) {
   p[[i]] <- experiment_contours(
     combined %>%
-    filter_(sprintf("V == %s", unique_V[i]))
+    filter_(sprintf("V == 'V = %s'", unique_V[i]))
   )
 }
 
