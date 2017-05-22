@@ -3,9 +3,9 @@
 \usepackage[section]{placeins}
 
 % Add history information for the article if required
-\history{Received August 1, 2010;
-revised October 1, 2010;
-accepted for publication November 1, 2010}
+\history{Received XXXXXX, 2017;
+revised XXXXXX
+accepted for publication XXXXXX}
 \input{preamble.tex}
 
 \begin{document}
@@ -73,22 +73,45 @@ communities between diseased and healthy states or after deliberately induced
 perturbations \citep{dethlefsen2011incomplete}.
 
 In the process, two complementary difficulties arise. First, the data are often
-high-dimensional, measured over several hundreds or thousands of bacteria.
-Studying patterns at the level of individual bacteria is typically
+high-dimensional, measured over several hundreds or thousands types of bacteria.
+Studying patterns at the level of particular bacteria is typically
 uninformative. Second, it can be important to study bacterial abundances in the
 context of existing biological knowledge. For example, it is scientifically
 meaningful when a collection of bacteria that are known to be evolutionarily
 related have either similar or opposed abundance profiles. These challenges
 motivate methodological work in the microbiome, including
-phylogenetically-informed techniques for dimensionality-reduction
-\citep{fukuyama2017adaptive, chen2013structure} and high-dimensional regression
-\citep{segata2011metagenomic, chen2013variable, shafiei2015biomico}.
+phylogenetically-informed techniques for dimensionality-reduction and
+high-dimensional regression.
+
+Towards phylogenetically-informed dimensionality reduction,
+\cite{fukuyama2017adaptive} describes a hierarchical bayesian approach to
+microbiome ordination, designed to place loadings for closely-related species
+near to one another. By varying the strength of the prior, it is possible to
+encourage different degrees of smoothness with respect to phylogeny. A similar
+effect can be obtained through structured regularization, and this approach was
+pursued by \cite{chen2013structure}, who applied a penalty in sparse CCA to
+incorporate phylogenetic information.
+
+High-dimensional classification is popular in the microbiome literature, because
+one approach to identifying bacteria for further study is to use their
+abundances as features to predict sample characteristics -- treatment vs.
+control, for example. \cite{segata2011metagenomic} provided an approach for
+accounting for phylogenetic structure in this problem, by prescreening for
+according to independent biological interest and then applying Linear
+Discriminant Analysis. Alterantively, \cite{chen2013variable} applied a 
+Dirichlet Multinomial regression model to study the relationship between
+bacterial counts and sample characteristics in a fully generative fashion, and
+then added a sparsity penalty to facilitate interpretability.
+\cite{shafiei2015biomico} designed a different generative supervised model,
+based on ideas from mixed-membership modeling \citep{blei2003latent}.
+Development of structured modeling techniques tailored to the microbiome remains
+an active area of current research.
 
 \section{Methods}
 
-We review a few of the statistical modeling techniques that are applied
-throughout this work. Many of these techniques have been borrowed from text
-analysis, thinking of the bacterial counts matrix as a biological analog of the
+We review a few of the statistical modeling techniques that are the focus of
+this work. Many of these techniques have been borrowed from text analysis,
+thinking of the bacterial counts matrix as a biological analog of the
 document-term matrix. The idea of transferring these techniques to the
 microbiome is not new, though its appropriateness and usefulness has only been
 explored in relatively limited settings \citep{holmes2012dirichlet,
@@ -98,29 +121,28 @@ explored in relatively limited settings \citep{holmes2012dirichlet,
 
 While the multinomial distribution is the fundamental probability mechanism for
 sampling counts, multinomial models are only appropriate for relatively
-homogeneous data sets. An extension, Dirichlet multinomial mixture modeling,
-allows for count modeling in the presence of increased heterogeneity, and its
-relevance to the text and microbiome settings were key contributions of
-\cite{nigam2000text} and \cite{holmes2012dirichlet}, respectively. 
-In this section, we adopt text analysis terminology, where the count matrices of
-interest are counts of terms across documents. In section
-\ref{sec:microbiome_vs_text_analysis} we clarify the connection to microbiome
-analysis.
+homogeneous data sets, where categories are nearly independent. An extension,
+Dirichlet multinomial mixture modeling, allows for count modeling in the
+presence of increased heterogeneity, and its relevance to the text and
+microbiome settings were key contributions of \cite{nigam2000text} and
+\cite{holmes2012dirichlet}, respectively. In this section, we adopt text
+analysis terminology, where the count matrices of interest are counts of terms
+across documents. In section \ref{sec:microbiome_vs_text_analysis} we clarify
+the connection to microbiome analysis.
 
 Suppose there are $D$ documents across $V$ terms, and that these documents are
 assumed to belong to one of $K$ underlying topics, where a topic is defined as a
 distribution over words. The Dirichlet multinomial mixture model draws each
-topic from a distribution over probabilities. Then, for each document, a
-topic is chosen by flipping a $K$-sided coin with probability $\theta_{k}$ of
-coming up on side $k$. Conditional on the selected topic, all words are drawn
+topic from a distribution over probabilities. Then, for each document, a topic
+is chosen by flipping a $K$-sided coin with probability $\theta_{k}$ of coming
+up on side $k$. Conditional on the selected topic, all words are drawn
 independently from the probabilites associated with the selected topic.
 
-More formally, represent the topic for the
-$d^{th}$ document by $z_{d} \in \{1, \dots, K\}$ and the term in the $n_{th}$
-word of this document by $w_{dn}$. Suppose the $k^{th}$ topic places weight
-$\beta_{vk}$ on the $v^{th}$ term, so that $\beta_{k} \in \simplex^{V - 1}$.
-Suppose there are $N_{d}$ words in the $d^{th}$ document. Then, the generative
-mechanism for the observed data set is
+More formally, represent the topic for the $d^{th}$ document by $z_{d} \in \{1,
+\dots, K\}$ and the term in the $n_{th}$ word of this document by $w_{dn}$.
+Suppose the $k^{th}$ topic places weight $\beta_{vk}$ on the $v^{th}$ term, so
+that $\beta_{k} \in \simplex^{V - 1}$. Suppose there are $N_{d}$ words in the
+$d^{th}$ document. Then, the generative mechanism for the observed data set is
 \begin{align*}
   w_{dn} \vert \left(\beta_{k}\right)_{k = 1}^{K}, z_{d} &\overset{iid}{\sim}\Mult\left(1, \beta_{z_{d}}\right) \text{ for } d = 1, \dots, D \text{ and } n = 1, \dots, N_{d} \\
   z_{d} \vert \theta &\overset{iid}{\sim} \Mult\left(1, \theta\right) \text{ for } d = 1, \dots, D \\
@@ -225,8 +247,8 @@ in the Nonnegative Matrix Factorization (NMF) literature
 \citep{wang2013nonnegative, berry2007algorithms, lee2001algorithms}
 
 We focus on the Gamma-Poisson factorization model (GaP)
-\citep{kucukelbir2015automatic, carpenter2016stan, canny2004gap} which proposes
-the hierarchical model
+\citep{kucukelbir2015automatic, carpenter2016stan, zhou2015negative,
+  canny2004gap} which posits the hierarchical model
 \begin{align*}
 X &\sim \Poi\left(\Theta B^{T}\right) \\
 \Theta &\sim \Gam\left(a_{0} 1_{D \times K}, b_{0} 1_{D \times K}\right) \\
