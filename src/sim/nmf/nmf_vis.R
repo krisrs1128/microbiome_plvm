@@ -136,7 +136,8 @@ combined <- zinf_data %>%
   filter(P == 10)
 
 plot_opts <- list(x = "sqrt(value_1)", y = "sqrt(value_2)",
-                  group = "j", fill_type = "gradient", h = 0.1)
+                  group = "j", fill_type = "gradient", h = 0.1,
+                  theme_opts = list(border_size = 0.7))
 
 p <- ggcontours(combined, plot_opts) +
   geom_text(
@@ -151,7 +152,7 @@ p <- ggcontours(combined, plot_opts) +
   ) +
   geom_text(
     data = combined %>%
-      group_by(j, N, a, b, zero_inf_prob, inference, method) %>%
+      group_by(j, D, a, b, zero_inf_prob, inference, method) %>%
       summarise(value_mean_1 = mean(value_1), value_mean_2 = mean(value_2)),
     aes(
       x = sqrt(value_mean_1),
@@ -161,7 +162,7 @@ p <- ggcontours(combined, plot_opts) +
     size = 2, col = "#fc8d62") +
   ylim(0, 3) +
   xlim(0, 4.5) +
-  facet_grid(method + inference + zero_inf_prob ~ N + EN) +
+  facet_grid(method + inference + zero_inf_prob ~ D + EN) +
   labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2])))
 
 ggsave(
