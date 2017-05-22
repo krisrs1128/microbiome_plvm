@@ -17,8 +17,10 @@ library("ggplot2")
 library("scales")
 library("feather")
 library("tidyr")
+library("gridExtra")
 source("./posterior_check_funs.R")
-theme_set(ggscaffold::min_theme(list(text_size = 10, subtitle_size = 11)))
+theme_opts <- list(text_size = 10, subtitle_size = 11, border_size = 0.8)
+theme_set(ggscaffold::min_theme(theme_opts))
 set.seed(11242016)
 
 ## ---- read-reshape ----
