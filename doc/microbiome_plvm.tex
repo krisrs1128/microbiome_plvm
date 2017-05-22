@@ -84,28 +84,29 @@ phylogenetically-informed techniques for dimensionality-reduction and
 high-dimensional regression.
 
 Towards phylogenetically-informed dimensionality reduction,
-\cite{fukuyama2017adaptive} describes a hierarchical bayesian approach to
-microbiome ordination, designed to place loadings for closely-related species
-near to one another. By varying the strength of the prior, it is possible to
-encourage different degrees of smoothness with respect to phylogeny. A similar
-effect can be obtained through structured regularization, and this approach was
-pursued by \cite{chen2013structure}, who applied a penalty in sparse CCA to
-incorporate phylogenetic information.
+\cite{chen2013structure}, who applied a structured regularization penalty in
+sparse CCA to incorporate phylogenetic information, encouraging scores for
+similar species to be placed close to one another. A similar effect can be
+obtained by placing an appropriate prior in a Bayesian model, an approach
+explored in \cite{fukuyama2017adaptive}. By varying the strength of the prior,
+it is possible to encourage different degrees of smoothness with respect to
+phylogeny, and Empirical Bayes estimation allows for a certain type of
+adaptivity.
 
-High-dimensional classification is popular in the microbiome literature, because
-one approach to identifying bacteria for further study is to use their
-abundances as features to predict sample characteristics -- treatment vs.
-control, for example. \cite{segata2011metagenomic} provided an approach for
-accounting for phylogenetic structure in this problem, by prescreening for
-according to independent biological interest and then applying Linear
-Discriminant Analysis. Alterantively, \cite{chen2013variable} applied a 
-Dirichlet Multinomial regression model to study the relationship between
-bacterial counts and sample characteristics in a fully generative fashion, and
-then added a sparsity penalty to facilitate interpretability.
-\cite{shafiei2015biomico} designed a different generative supervised model,
-based on ideas from mixed-membership modeling \citep{blei2003latent}.
-Development of structured modeling techniques tailored to the microbiome remains
-an active area of current research.
+In addition to dimensionality reduction, high-dimensional classification is
+popular in the microbiome literature. Often interesting species can be
+identified by searching for important features in models that predict sample
+characteristics -- treatment vs. control, for example -- from species
+abundances. \cite{segata2011metagenomic} provided an approach for accounting for
+phylogenetic structure in this problem by initially prescreening for according
+to independent biological interest. Alterantively, \cite{chen2013variable}
+applied a Dirichlet Multinomial regression model to study the relationship
+between bacterial counts and sample characteristics in a fully generative
+fashion, and then added an $\ell^{1}$-penalty to induce sparsity and facilitate
+interpretability. \cite{shafiei2015biomico} designed a different generative
+supervised model, based on ideas from mixed-membership modeling
+\citep{blei2003latent}. The development of structured modeling techniques
+tailored to the microbiome remains an active area of current research.
 
 \section{Methods}
 
