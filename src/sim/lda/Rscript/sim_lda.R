@@ -12,9 +12,7 @@ theta_path <- args[[5]]
 
 ## ---- libraries ----
 library("feather")
-library("plyr")
-library("dplyr")
-library("data.table")
+library("tidyverse")
 library("ldaSim")
 set.seed(3141596)
 
@@ -34,7 +32,7 @@ n <- generate_data(N, theta, beta) %>%
 
 output_path <- file.path(output_dir, paste0("n-", output_id, ".feather"))
 write_feather(
-  data.table(n),
+  as_data_frame(n),
   output_path
 )
 

@@ -10,16 +10,11 @@
 
 ## ---- libraries-boot-expers ----
 library("feather")
-library("readr")
-library("plyr")
-library("dplyr")
-library("tidyr")
-library("ggplot2")
+library("tidyverse")
 library("ldaSim")
 
 ## ---- paths ----
-#base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
-base_dir <- "~/Desktop/microbiome_plvm"
+base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 lda_dir <- file.path(base_dir, "src", "sim", "lda")
 output_path <- file.path(lda_dir, "fits")
 metadata <- read_csv(file.path(output_path, "metadata.csv")) %>%
@@ -46,7 +41,7 @@ combined <- mcombined %>%
   spread(temp, value) %>%
   ungroup() %>%
   mutate(
-    method = revalue(method, c("gibbs" = "mcmc")),
+    method = recode(method, "gibbs" = "mcmc"),
     D = paste0("D = ", D),
     N = paste0("N = ", N),
     V = paste0("V = ", V)
