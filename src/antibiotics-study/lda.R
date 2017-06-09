@@ -14,12 +14,9 @@ argv <- parse_args(parser)
 ## ---- setup ----
 library("rstan")
 library("reshape2")
-library("plyr")
-library("dplyr")
-library("ggplot2")
+library("tidyverse")
 library("phyloseq")
-library("RColorBrewer")
-library("ggscaffold")
+=library("ggscaffold")
 library("feather")
 theme_set(min_theme(list(text_size = 7, subtitle_size = 9)))
 source("./posterior_check_funs.R")
@@ -36,14 +33,14 @@ abt <- abt %>%
 releveled_sample_data <- abt %>%
   sample_data %>%
   mutate(
-    condition = revalue(
+    condition = recode(
       condition,
-      c("Pre Cp" = "Pre",
-        "1st Cp" = "1st Course",
-        "1st WPC" = "1st Course",
-        "2nd Cp" = "2nd Course",
-        "2nd WPC" = "2nd Course",
-        "Post Cp" = "Post")
+      "Pre Cp" = "Pre",
+      "1st Cp" = "1st Course",
+      "1st WPC" = "1st Course",
+      "2nd Cp" = "2nd Course",
+      "2nd WPC" = "2nd Course",
+      "Post Cp" = "Post"
     )
   )
 rownames(releveled_sample_data) <- abt %>%
@@ -72,7 +69,9 @@ y_order <- names(sort(sample_sums(abt)))
 ordered_map <- function(x) {
   ggheatmap(
     x %>%
-    melt(value.name = "fill", varnames = c("x", "y")),
+    as.data.frame() %>%
+    rownames_to_column("x") %>%
+    gather(y, fill, -x),
     list("x_order" = x_order, "y_order" = y_order)
   ) +
     min_theme(list(text_size = 0)) +
@@ -139,7 +138,7 @@ beta_hat <- beta_hat %>%
   left_join(taxa) %>%
   mutate(
     topic = paste("Topic", topic),
-    Taxon_5 = stringr::str_extract(Taxon_5, "[^_]+")
+    Taxon_5 = str_extract(Taxon_5, "[^_]+")
   )
 
 sorted_taxa <- names(sort(table(beta_hat$Taxon_5), decreasing = TRUE))

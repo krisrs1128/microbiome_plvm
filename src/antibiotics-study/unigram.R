@@ -11,11 +11,7 @@ argv <- parse_args(parser)
 ## ---- setup ----
 library("rstan")
 library("reshape2")
-library("plyr")
-library("dplyr")
-library("tidyr")
-library("ggplot2")
-library("RColorBrewer")
+library("tidyverse")
 library("phyloseq")
 library("feather")
 library("ggscaffold")
@@ -69,9 +65,9 @@ taxa <- as_data_frame(tax_table(abt)@.Data)
 taxa$rsv <- rownames(tax_table(abt))
 taxa$Taxon_5[which(taxa$Taxon_5 == "")] <- taxa$Taxon_4[which(taxa$Taxon_5 == "")]
 taxa$Taxon_5 <- taxa$Taxon_5 %>%
-  revalue(
-    c("Bacteroidaceae_Bacteroides" = "Bacteroidaceae",
-      "Peptostreptococcaceae_1" = "Peptostreptococcaceae")
+  recode(
+    "Bacteroidaceae_Bacteroides" = "Bacteroidaceae",
+    "Peptostreptococcaceae_1" = "Peptostreptococcaceae"
   )
 
 ## subset to small number of times, and center the mus
@@ -94,16 +90,24 @@ mu_summary <- apply(mu, c(2, 3), quantile, c(0.025, 0.5, 0.975)) %>%
   ) %>%
   left_join(sample_data(abt)[, c("time", "condition")]) %>%
   mutate(
-    condition = revalue(
+    time = paste0("day ", time),
+    condition = recode(
       condition,
-      c("Pre Cp" = "Pre",
-        "1st Cp" = "1st Course",
-        "1st WPC" = "1st Course",
-        "2nd Cp" = "2nd Course",
-        "2nd WPC" = "2nd Course",
-        "Post Cp" = "Post")
+      "Pre Cp" = "Pre",
+      "1st Cp" = "1st Course",
+      "1st WPC" = "1st Course",
+      "2nd Cp" = "2nd Course",
+      "2nd WPC" = "2nd Course",
+      "Post Cp" = "Post"
     )
   )
+
+sort_levels <- function(x) {
+  new_levels <- sort(as.numeric(gsub("[^0-9]+", "", unique(x))))
+  prefix <- gsub("[0-9]+", "", x[1])
+  factor(x, levels = paste0(prefix, new_levels))
+}
+mu_summary$time <- sort_levels(mu_summary$time)
 
 colnames(mu_summary) <- c("time", "rsv_ix", "lower", "median", "upper", "condition")
 mu_summary$rsv <- factor(

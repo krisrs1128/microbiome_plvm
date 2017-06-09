@@ -8,19 +8,15 @@
 
 ## ---- libraries-nmf-vis ----
 ## assumed running from NMF directory
-library("data.table")
 library("jsonlite")
-library("ggplot2")
+library("tidyverse")
 library("nmfSim")
-library("plyr")
-library("dplyr")
 library("ggscaffold")
-theme_set(ggscaffold::min_theme(list(border_size = 0.7)))
+theme_set(min_theme(list(border_size = 0.7)))
 
 ## ---- beta-reshape ----
 ## extract beta information from the fits
-#base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
-base_dir <- "~/Desktop/microbiome_plvm"
+base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 nmf_dir <- file.path(base_dir, "src", "sim", "nmf")
 fits_dir <- file.path(nmf_dir, "fits")
 figure_dir <- file.path(base_dir, "doc", "figure")
@@ -39,7 +35,7 @@ beta_fits <- reshape_all_samples(
   c("j", "k")
 ) %>%
   mutate(
-    inference = revalue(inference, c("gibbs" = "mcmc")),
+    inference = recode(inference, "gibbs" = "mcmc"),
     D = paste0("D = ", N),
     V = paste0("V = ", P)
   )
@@ -55,11 +51,9 @@ beta_fits$V <- sort_levels(beta_fits$V)
 
 beta_fits$method <- basename(as.character(beta_fits$method))
 beta_fits$method <- beta_fits$method %>%
-  revalue(
-    c(
-      "nmf_gamma_poisson.stan" = "GaP",
-      "nmf_gamma_poisson_zero.stan" = "Z-GaP"
-    )
+  recode(
+    "nmf_gamma_poisson.stan" = "GaP",
+    "nmf_gamma_poisson_zero.stan" = "Z-GaP"
   )
 
 ## ---- visualizebetas-prep -----

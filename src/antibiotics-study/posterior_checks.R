@@ -11,12 +11,9 @@ parser <- add_argument(parser, "--subject", help = "Subject on which to perform 
 argv <- parse_args(parser)
 
 ## ---- setup ----
-library("plyr")
-library("dplyr")
-library("ggplot2")
+library("tidyverse")
 library("scales")
 library("feather")
-library("tidyr")
 library("gridExtra")
 source("./posterior_check_funs.R")
 theme_opts <- list(text_size = 10, subtitle_size = 11, border_size = 0.8)
