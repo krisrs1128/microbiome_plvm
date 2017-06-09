@@ -1,4 +1,3 @@
-template/*
 src/sim/nmf/fits/*
 src/sim/nmf/*.json
 src/sim/lda/fits/*
@@ -9,3 +8,5 @@ doc/*.aux
 doc/*.log
 doc/*.pdf
 doc/figure/*
+doc/*.bbl
+doc/*.blg

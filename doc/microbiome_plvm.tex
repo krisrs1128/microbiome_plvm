@@ -128,7 +128,7 @@ presence of increased heterogeneity, and its relevance to the text and
 microbiome settings were key contributions of \cite{nigam2000text} and
 \cite{holmes2012dirichlet}, respectively. In this section, we adopt text
 analysis terminology, where the count matrices of interest are counts of terms
-across documents. In section \ref{sec:microbiome_vs_text_analysis} we clarify
+across documents. In Section \ref{sec:microbiome_vs_text_analysis} we clarify
 the connection to microbiome analysis.
 
 Suppose there are $D$ documents across $V$ terms, and that these documents are
@@ -173,7 +173,7 @@ Latent Dirichlet Allocation (LDA) is a generalization of Dirichlet multinomial
 mixture modeling where documents are allowed to have fractional membership
 across a set of topics \citep{blei2003latent}. This addresses the key limitation
 of Dirichlet multinomial mixture modeling, and one goal of the case study in
-section \ref{sec:data_analysis} is to demonstrate the usefulness of this
+Section \ref{sec:data_analysis} is to demonstrate the usefulness of this
 additional flexibility in microbiome analysis.
 
 Use the same notation as before, but instead of fixing a global $\theta$
@@ -279,7 +279,7 @@ guide refinements in subsequent analyses. Indeed, part of the appeal of
 probabilistic modeling is the ease with which models can be adapted to better
 describe the data of interest. We briefly review model assessment via posterior
 predictive checks \citep{rubin1984bayesianly, gelman2013philosophy}, as they are
-applied in section \ref{sec:antibiotics_ppc}. In this approach, some statistics
+applied in Section \ref{sec:antibiotics_ppc}. In this approach, some statistics
 $T_{k}\left(x\right)$ of the data are defined which, in some sense,
 ``characterize'' the data. If the data $x^{\ast}$ simulated from the fitted
 model have statistics $T_{k}\left(x^{\ast}\right)$ with values similar to those
@@ -572,7 +572,7 @@ less meaningful, since there are only 56 timepoints.
 Note that we plot the fitted probabilities on a logit scale -- for a raw vector
 of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right) \in
 \simplex{D - 1}$, we plot $g\left(\mathbf{p}\right) := \left(\log p_{1} -
-\overline{\log \mathbf{p}}, \dots, \log p_{K} - \overline{\log
+\bar{\log \mathbf{p}}, \dots, \log p_{K} - \bar{\log
   \mathbf{p}}\right)$, which are similar to log-odds, but centered according to
 the average log probability, rather than any reference class.
 
@@ -675,13 +675,13 @@ have low values of $\mu_{tv}$.
 
 While we have found both LDA and the Dynamic Unigram model qualitatively useful,
 it is still important to seek more formal diagnostics of model fit. Here, we
-consider several posterior predictive checks, as explained in section
+consider several posterior predictive checks, as explained in Section
 \ref{sec:ppc_overview}.
 
 To this end, in Figure \ref{fig:antibiotics_posterior_ts}, we plot observed time
 series for a random subset of the 350 most abundant bacteria and contrast them
 with samples from the posterior predictive according to the four topic LDA model
-of section \ref{sec:antibiotics_lda} and the unigram model of section
+of Section \ref{sec:antibiotics_lda} and the unigram model of Section
 \ref{sec:antibiotics_unigram}. Each subpanel corresponds to a single species. The
 black lines represent observed time series. Note that the $y$-axis scales vary,
 as some species are much more abundant than others. Each dot is a simulated
@@ -732,7 +732,7 @@ have comparable top four eigenvalues, but rapidly drop-off between the fourth
 and fifth eigenvalues. On the other hand, the observed data have a more steady
 decline. This is likely a consequence of using $K = 4$ topics in the LDA model,
 which would be consistent with the matrix factorization view of LDA described in
-section \ref{sec:nmf}. Considering these scree plots, it may be safe to increase
+Section \ref{sec:nmf}. Considering these scree plots, it may be safe to increase
 $K$ in follow-up analysis, as long as topics remain interpretable. In contrast,
 the eigenvalues for the Dynamic Unigram model closely match those in the
 observed data -- even overestimating the size of small eigenvalues -- lending
@@ -844,8 +844,8 @@ Institute of Health TR01 grant AI112401.
     of panels provides a different sequence of $\theta_{dk}$ for a single $k$,
     and different columns distinguish different phases of sampling. Note that
     the $y$-axis is on the $g$-scale, which is defined as a translated logit,
-    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \overline{\log \mathbf{p}},
-    \dots,\log p_{K} - \overline{\log \mathbf{p}}\right)$. Note that the first
+    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \bar{\log \mathbf{p}},
+    \dots,\log p_{K} - \bar{\log \mathbf{p}}\right)$. Note that the first
     and second antibiotic time courses result in meaningful shifts in these
     sequences, and that there appear to be long-term effects of treatment among
     bacteria in Topic 3. \label{fig:antibiotics_lda_theta}}
