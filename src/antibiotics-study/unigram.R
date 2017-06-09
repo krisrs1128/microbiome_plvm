@@ -11,7 +11,6 @@ argv <- parse_args(parser)
 ## ---- setup ----
 library("rstan")
 library("reshape2")
-library("plyr")
 library("tidyverse")
 library("phyloseq")
 library("feather")

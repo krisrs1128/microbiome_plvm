@@ -53,7 +53,7 @@ write_configs(
   output_dir = fits_dir
 )
 
-## ---- submit-jobs ----
+## ---- run-rscripts ----
 ## loop over unique values in the "batch" field of the json file
 configs <- fromJSON(config_path, simplifyVector = FALSE)
 batches <- sapply(configs, function(x) { x$batch })
