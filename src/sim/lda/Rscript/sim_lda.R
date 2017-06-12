@@ -12,6 +12,7 @@ theta_path <- args[[5]]
 
 ## ---- libraries ----
 library("feather")
+library("reshape2")
 library("tidyverse")
 library("ldaSim")
 set.seed(3141596)
@@ -28,13 +29,7 @@ theta <- read_feather(theta_path) %>%
   as.matrix()
 
 n <- generate_data(N, theta, beta) %>%
-  as_data_frame() %>%
-  rownames_to_column("i") %>%
-  gather(v, n, -i) %>%
-  mutate(
-    i = as.integer(i),
-    v = as.integer(gsub("V", "", v))
-  )
+  melt(varnames = c("i", "v"), value.name = "n")
 
 output_path <- file.path(output_dir, paste0("n-", output_id, ".feather"))
 write_feather(
