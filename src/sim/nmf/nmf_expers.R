@@ -14,8 +14,7 @@ library("nmfSim")
 
 ## ---- configuration ----
 ## create the configuration JSON file
-#base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
-base_dir <- "~/Desktop/microbiome_plvm/"
+base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 nmf_dir <- file.path(base_dir, "src", "sim", "nmf")
 config_path <- file.path(nmf_dir, "config.json")
 stan_path <- file.path(.libPaths()[1], "nmfSim", "extdata")
