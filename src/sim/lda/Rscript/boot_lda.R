@@ -16,20 +16,19 @@ gamma <- as.numeric(args[[8]])
 n_samples <- as.integer(args[[9]])
 
 ## ---- libraries ----
-library("rstan")
 library("feather")
+library("reshape2")
 library("tidyverse")
+library("rstan")
 library("ldaSim")
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 dir.create(output_dir)
 set.seed(3141596)
 
-## ---- utils ----
-
 ## --- get-fit ---
 fit <- get(load(input_path))
-samples <- extract(fit)
+samples <- rstan::extract(fit)
 
 beta_hat <- posterior_mean(samples$beta, c("v", "k"))
 theta_hat <- posterior_mean(aperm(samples$theta, c(1, 3, 2)), c("i", "k"))
@@ -51,7 +50,7 @@ for (i in seq(start_iter, end_iter)) {
         stan_data,
         iter = n_samples
     ) %>%
-        extract()
+        rstan::extract()
 
     beta_boot <- posterior_mean(vb_fit$beta, c("v", "k")) %>%
       melt(varnames = c("v", "k"), value.name = "beta")

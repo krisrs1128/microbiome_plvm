@@ -12,18 +12,19 @@ theta_path <- args[[5]]
 
 ## ---- libraries ----
 library("feather")
+library("reshape2")
 library("tidyverse")
 library("ldaSim")
 set.seed(3141596)
 
 ## ---- simulate ----
 beta <- read_feather(beta_path) %>%
-  dcast(v ~ k) %>%
+  spread(k, beta) %>%
   select(-v) %>%
   as.matrix()
 
 theta <- read_feather(theta_path) %>%
-  dcast(i ~ k) %>%
+  spread(k, theta) %>%
   select(-i) %>%
   as.matrix()
 
