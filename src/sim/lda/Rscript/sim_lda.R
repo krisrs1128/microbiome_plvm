@@ -18,17 +18,23 @@ set.seed(3141596)
 
 ## ---- simulate ----
 beta <- read_feather(beta_path) %>%
-  dcast(v ~ k) %>%
+  spread(k, beta) %>%
   select(-v) %>%
   as.matrix()
 
 theta <- read_feather(theta_path) %>%
-  dcast(i ~ k) %>%
+  spread(k, theta) %>%
   select(-i) %>%
   as.matrix()
 
 n <- generate_data(N, theta, beta) %>%
-  melt(varnames = c("i", "v"), value.name = "n")
+  as_data_frame() %>%
+  rownames_to_column("i") %>%
+  gather(v, n, -i) %>%
+  mutate(
+    i = as.integer(i),
+    v = as.integer(gsub("V", "", v))
+  )
 
 output_path <- file.path(output_dir, paste0("n-", output_id, ".feather"))
 write_feather(
