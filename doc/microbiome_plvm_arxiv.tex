@@ -34,16 +34,16 @@
   {
     The human microbiome is a complex ecological system, and describing its
     structure and function under different environmental conditions is important
-    from both basic scientific and medical perspectives. From a biostatistical
-    point of view, many microbiome analysis goals can be formulated as latent
-    variable modeling problems. However, although probabilistic latent variable
-    models are a cornerstone of modern unsupervised learning, they are rarely
-    applied in the context of microbiome data analysis, in spite of the
-    evolutionary, temporal, and count structure that could be directly incorporated
-    through such models. We explore the application of
-    probabilistic latent variable models to microbiome data, with a
-    focus on Latent Dirichlet Allocation, Nonnegative Matrix Factorization, and
-    Dynamic Unigram models. To develop guidelines for when different methods are
+    from both basic scientific and medical perspectives. Viewed through a
+    biostatistical lens, many microbiome analysis goals can be formulated as
+    latent variable modeling problems. However, although probabilistic latent
+    variable models are a cornerstone of modern unsupervised learning, they are
+    rarely applied in the context of microbiome data analysis, in spite of the
+    evolutionary, temporal, and count structure that could be directly
+    incorporated through such models. We explore the application of
+    probabilistic latent variable models to microbiome data, with a focus on
+    Latent Dirichlet Allocation, Nonnegative Matrix Factorization, and Dynamic
+    Unigram models. To develop guidelines for when different methods are
     appropriate, we perform a simulation study. We further illustrate and
     compare these techniques using the data of \cite{dethlefsen2011incomplete},
     a study on the effects of antibiotics on bacterial community composition.
@@ -440,7 +440,7 @@ number of samples $D$. The analogous figure when $V = 50$ is provided in
 Supplementary Figure \ref{fig:beta_contours_v50}.
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{beta_contours_v10}
+  \centering\includegraphics[width=\textwidth]{beta_contours_v10.png}
   \caption{Different inference algorithms for LDA produce different uncertainty
     assessments in small sample sizes, but become comparable as more data arrives.
     Within each panel, we display the true pairs $\left(\sqrt{\beta_{v1}},
@@ -888,7 +888,7 @@ Institute of Health TR01 grant AI112401.
 
 {\it Conflict of Interest}: None declared.
 
-\bibliographystyle{biorefs}
+\bibliographystyle{plainnat}
 \bibliography{refs}
 
 \section{Supplementary Figures}
