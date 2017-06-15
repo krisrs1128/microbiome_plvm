@@ -8,5 +8,6 @@ doc/*.aux
 doc/*.log
 doc/*.pdf
 doc/figure/*
+!doc/figure/convert.sh
 doc/*.bbl
 doc/*.blg
