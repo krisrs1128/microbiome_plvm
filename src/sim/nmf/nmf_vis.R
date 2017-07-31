@@ -119,7 +119,7 @@ p <- ggplot(perf) +
   labs(x = "Root Mean Squared Error", y = "Standard Deviation (k = 1)", col = "Inference", shape = expression(p[0]))
 
 ggsave(
-  file.path(base_dir, "doc", "figure/beta_errors_nmf.pdf"),
+  file.path(base_dir, "doc", "figure/beta_errors_nmf.png"),
   p,
   width = 5,
   height = 3
