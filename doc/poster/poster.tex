@@ -1,6 +1,6 @@
 \documentclass[final]{beamer}
 
-\usepackage[scale=1.24]{beamerposter}
+\usepackage{beamerposter}
 \usetheme{confposter}
 
 \newlength{\sepwid}
@@ -9,7 +9,6 @@
 \newlength{\threecolwid}
 \setlength{\paperwidth}{48in} % A0 width: 46.8in
 \setlength{\paperheight}{36in} % A0 height: 33.1in
-\setlength{\sepwid}{0.024\paperwidth}
 \setlength{\onecolwid}{0.22\paperwidth}
 \setlength{\twocolwid}{0.464\paperwidth}
 \setlength{\threecolwid}{0.708\paperwidth}
@@ -25,14 +24,12 @@
 
 
 \begin{document}
-\addtobeamertemplate{block end}{}{\vspace*{2ex}}
-\addtobeamertemplate{block alerted end}{}{\vspace*{2ex}}
+%% \addtobeamertemplate{block end}{}{\vspace*{2ex}}
+%% \addtobeamertemplate{block alerted end}{}{\vspace*{2ex}}
 
 \begin{frame}
 
 \begin{columns}
-
-\begin{column}{\sepwid}\end{column}
 \begin{column}{\onecolwid}
 
 \begin{block}{Abstract}
@@ -48,44 +45,27 @@ Allocation, Nonnegative Matrix Factorization, and Dynamic Unigrams to the
 microbiome. To develop guidelines for when different methods are appropriate, we
 perform a simulation study. We further illustrate and compare techniques using
 the data of \citep{dethlefsen2011incomplete}, a study on the effects of
-antibiotics on bacterial community composition. Code and data for all
-simulations and case studies are available publicly.
+antibiotics on bacterial community composition.
 \end{block}
 
 \begin{block}{Methods}
-We review a few of the statistical modeling techniques that are the focus of
-this work. Many of these techniques have been borrowed from text analysis. The
-idea of transferring these techniques to the microbiome is not new, though its
-appropriateness and usefulness has only been explored in relatively limited
-settings \citep{holmes2012dirichlet, chen2012estimating, chen2013variable,
-  shafiei2015biomico}.
+  \begin{itemize}
 
-\subsection{Latent Dirichlet Allocation}
-\label{subsec:latent_dirichlet_allocation}
 
-Latent Dirichlet Allocation (LDA) is a generalization of Dirichlet multinomial
-mixture modeling where documents are allowed to have fractional membership
-across a set of topics \citep{blei2003latent}.
-
-Let $x_{dv}$ be the number of times word $v$ occurs in document $d$. Suppose the
-$k^{th}$ topic places weight $\beta_{vk}$ on the $v^{th}$ term, so that
-$\beta_{k} \in \simplex^{V - 1}$. Suppose there are $N_{d}$ words in the
-$d^{th}$ document. Then, the generative mechanism for the observed data set is
-
+\item Latent Dirichlet Allocation: Let $x_{dv}$ be the number of times word $v$
+  occurs in document $d$. Suppose the $k^{th}$ topic places weight $\beta_{vk}$
+  on the $v^{th}$ term, so that $\beta_{k} \in \simplex^{V - 1}$. Suppose there
+  are $N_{d}$ words in the $d^{th}$ document. Then,
 \begin{align*}
 x_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\overset{iid}{\sim} \Mult\left(N_{d}, B\theta_{d}\right) \text{ for } d = 1, \dots, D\\
 \theta_{d} &\overset{iid}{\sim} \Dir\left(\alpha\right) \text{ for } d = 1, \dots, D \\
 \beta_{k} &\overset{iid}{\sim} \Dir\left(\gamma\right) \text{ for }k = 1, \dots, K,
 \end{align*}
-Where $B = \begin{pmatrix}\beta_{1}, \dots, \beta_{K}\end{pmatrix}$.
+where $B = \begin{pmatrix}\beta_{1}, \dots, \beta_{K}\end{pmatrix}$.
 
-\subsection{Dynamic Unigram model}
-\label{subsec:dynamic_unigram_model}
-
-Upon examining this geometric interpretation, we might consider in some
-situations a model that identifies samples with a continuous curve on this
-$V$-dimensional simplex. This reasoning leads naturally to the Dynamic
-Unigram model \citep{blei2006dynamic}, which proposes
+\item Dynamic Unigram model: In light of LDA's geometric interpretation, we
+  might consider in some situations a model that identifies samples with a
+  continuous curve on this $V$-dimensional simplex \citep{blei2006dynamic},
 \begin{align*}
 x_{d\cdot} \vert \mu_{t\left(d\right)}  &\overset{iid}{\sim} \Mult\left(N_{d}, S\left(\mu_{t\left(d\right)}\right)\right) \text{ for } d = 1, \dots, D\\
 \mu_{t} \vert \mu_{t - 1} &\overset{iid}{\sim} \Gsn\left(\mu_{t - 1}, \sigma^{2}I_{V}\right) \text{ for } t = 1, \dots, T \\
@@ -96,6 +76,7 @@ where $S$ is the multilogit link
 \left[S\left(\mu\right)\right]_{v} = \frac{\exp{\mu_{v}}}{\sum_{v^{\prime}} \exp{\mu_{v^{\prime}}}},
 \end{align*}
 and $t\left(d\right)$ maps document $d$ to the time it was sampled.
+\end{itemize}
 \end{block}
 
 \begin{figure}[!p]
@@ -125,68 +106,67 @@ and $t\left(d\right)$ maps document $d$ to the time it was sampled.
     now rows provide different values of $V$.
     \label{fig:beta_errors_lda} }
 \end{figure}
-\end{column} 
+\end{column}
 
-\begin{column}{\sepwid}\end{column}
-%% \begin{column}
+\begin{column}{\onecolwid}
 
-%% \begin{block}{Microbiome vs. Text Analysis}
+\begin{block}{Microbiome vs. Text Analysis}
+One of the primary contributions of our work is to develop the observation that
+methods popular in text analysis can be adapted to the microbiome setting in a
+way that produces useful summaries.
 
-%% One of the primary contributions of our work is to develop the observation that
-%% methods popular in text analysis can be adapted to the microbiome setting in a
-%% way that produces useful summaries. We develop the analogy between these text
-%% and microbiome analysis and also draw attention to points where the parallels
-%% break down.
+\begin{itemize}
+  \item \textbf{Document} $\iff$ \textbf{Biological Sample}: The basic sampling
+    units, over which conclusions are generalized, are documents (text analysis)
+    and biological samples (microbiome analysis). It is of interest to highlight
+    similarities and differences across these units, often through some
+    variation on clustering or dimensionality reduction.
+  \item \textbf{Term} $\iff$ \textbf{Bacterial species}: The fundamental
+    features with which to describe samples are the counts of terms (text
+    analysis) and bacterial species (microbiome analysis). More formally, by
+    bacterial species, we mean Amplicon Sequence Variants
+    \citep{callahan2017exact}.
+  \item \textbf{Topic} $\iff$ \textbf{Community}: For interpretation, it is
+    common to imagine ``prototypical'' units which can be used as a point of
+    reference for observed samples. In text analysis, these are called topics --
+    for example, ``business'' or ``politics'' articles have their own specific
+    vocabularies. On the other hand, in microbiome analysis, these are called
+    ``communities'' -- different communities have different bacterial
+    signatures.
+  \item \textbf{Word} $\iff$ \textbf{Sequencing Read}: A ``word'' in text analysis refers
+    to a single instance of a term in a document, not its total count. The
+    analog in microbiome analysis is an individual read that has been mapped to
+    a unique sequence variant, though this is rarely an object of intrinsic interest.
+\end{itemize}
+\end{block}
+\end{column}
 
-%% \begin{itemize}
-%%   \item \textbf{Document} $\iff$ \textbf{Biological Sample}: The basic sampling
-%%     units, over which conclusions are generalized, are documents (text analysis)
-%%     and biological samples (microbiome analysis). It is of interest to highlight
-%%     similarities and differences across these units, often through some
-%%     variation on clustering or dimensionality reduction.
-%%   \item \textbf{Term} $\iff$ \textbf{Bacterial species}: The fundamental
-%%     features with which to describe samples are the counts of terms (text
-%%     analysis) and bacterial species (microbiome analysis). More formally, by
-%%     bacterial species, we mean Amplicon Sequence Variants
-%%     \citep{callahan2017exact}.
-%%   \item \textbf{Topic} $\iff$ \textbf{Community}: For interpretation, it is
-%%     common to imagine ``prototypical'' units which can be used as a point of
-%%     reference for observed samples. In text analysis, these are called topics --
-%%     for example, ``business'' or ``politics'' articles have their own specific
-%%     vocabularies. On the other hand, in microbiome analysis, these are called
-%%     ``communities'' -- different communities have different bacterial
-%%     signatures.
-%%   \item \textbf{Word} $\iff$ \textbf{Sequencing Read}: A ``word'' in text analysis refers
-%%     to a single instance of a term in a document, not its total count. The
-%%     analog in microbiome analysis is an individual read that has been mapped to
-%%     a unique sequence variant, though this is rarely an object of intrinsic interest.
-%%   \item \textbf{Corpus} $\iff$ \textbf{Environment}: Sometimes a grouping
-%%     structure is known apriori among sampling units. In this case, it can be
-%%     informative to describe whether topics are or are not shared across these
-%%     groups \citep{teh2004sharing}. In the text analysis literature, a known group
-%%     of documents -- for example, all articles coming from one newspaper -- is
-%%     called a corpus. In the microbiome literature, the associated concept is the
-%%     environment -- for example, skin, ocean, or soil -- from which a sample was
-%%     obtained.
-%% \end{itemize}
+\begin{column}{\onecolwid}
+\begin{block}{ }
+\begin{itemize}
+  \item \textbf{Corpus} $\iff$ \textbf{Environment}: Sometimes a grouping
+    structure is known apriori among sampling units \citep{teh2004sharing}. In
+    the text analysis literature, a known group of documents -- for example, all
+    articles coming from one newspaper -- is called a corpus. In the microbiome
+    literature, the associated concept is the environment -- for example, skin,
+    ocean, or soil -- from which a sample was obtained.
+\end{itemize}
+\end{block}
 
-%% \end{block}
-
-%% \section{Figures}
-%% \begin{figure}[!p]
-%%   %% \centering\includegraphics{../figure/visualize_lda_theta_boxplot-F}
-%%   \caption{Boxplots represent approximate posteriors for estimated mixture
-%%     memberships $\theta_{d}$, and their evolution over time. That is, each row
-%%     of panels provides a different sequence of $\theta_{dk}$ for a single $k$,
-%%     and different columns distinguish different phases of sampling. Note that
-%%     the $y$-axis is on the $g$-scale, which is defined as a translated logit,
-%%     $g\left(\mathbf{p}\right) := \left(\log p_{1} - \bar{\log \mathbf{p}},
-%%     \dots,\log p_{K} - \bar{\log \mathbf{p}}\right)$. Note that the first
-%%     and second antibiotic time courses result in meaningful shifts in these
-%%     sequences, and that there appear to be long-term effects of treatment among
-%%     bacteria in Topic 3. \label{fig:antibiotics_lda_theta}}
-%% \end{figure}
-%% \end{column}
+\begin{figure}[!p]
+  %% \centering\includegraphics{../figure/visualize_lda_theta_boxplot-F}
+  \caption{Boxplots represent approximate posteriors for estimated mixture
+    memberships $\theta_{d}$, and their evolution over time. That is, each row
+    of panels provides a different sequence of $\theta_{dk}$ for a single $k$,
+    and different columns distinguish different phases of sampling. Note that
+    the $y$-axis is on the $g$-scale, which is defined as a translated logit,
+    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \bar{\log \mathbf{p}},
+    \dots,\log p_{K} - \bar{\log \mathbf{p}}\right)$. Note that the first
+    and second antibiotic time courses result in meaningful shifts in these
+    sequences, and that there appear to be long-term effects of treatment among
+    bacteria in Topic 3. \label{fig:antibiotics_lda_theta}}
+\end{figure}
+\end{column}
 \end{columns}
 
 \end{frame}
