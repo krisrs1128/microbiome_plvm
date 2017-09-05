@@ -1,0 +1,109 @@
+\documentclass[final]{beamer}
+
+\usepackage[scale=1.24]{beamerposter}
+\usetheme{confposter}
+
+\newlength{\sepwid}
+\newlength{\onecolwid}
+\newlength{\twocolwid}
+\newlength{\threecolwid}
+\setlength{\paperwidth}{48in} % A0 width: 46.8in
+\setlength{\paperheight}{36in} % A0 height: 33.1in
+\setlength{\sepwid}{0.024\paperwidth}
+\setlength{\onecolwid}{0.22\paperwidth}
+\setlength{\twocolwid}{0.464\paperwidth}
+\setlength{\threecolwid}{0.708\paperwidth}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{natbib}
+
+
+\title{Text Modeling meets the Microbiome}
+\author{Kris Sankaran and Susan P. Holmes}
+\institute{Department of Statistics, Stanford University}
+
+
+\begin{document}
+\addtobeamertemplate{block end}{}{\vspace*{2ex}}
+\addtobeamertemplate{block alerted end}{}{\vspace*{2ex}}
+
+\begin{frame}
+
+\begin{columns}
+
+\begin{column}{\sepwid}\end{column}
+\begin{column}{\onecolwid}
+
+\begin{block}{Abstract}
+The human microbiome is a complex ecological system, and describing its
+structure and function under different environmental conditions is important
+from both basic scientific and medical perspectives. Viewed through a
+biostatistical lens, many microbiome analysis goals can be approached through
+latent variable modeling, for which a range of techniques are available. We
+develop the analogy between text modeling, where documents are approximated as
+mixtures of topics, and bacterial count modeling, where samples are approximated
+as mixtures of ecological states, focusing on applications of Latent Dirichlet
+Allocation, Nonnegative Matrix Factorization, and Dynamic Unigrams to the
+microbiome. To develop guidelines for when different methods are appropriate, we
+perform a simulation study. We further illustrate and compare techniques using
+the data of \citep{dethlefsen2011incomplete}, a study on the effects of
+antibiotics on bacterial community composition. Code and data for all
+simulations and case studies are available publicly.
+\end{block}
+
+\begin{figure}[!p]
+  %% \centering\includegraphics[width=\textwidth]{../figure/beta_contours_v10}
+  \caption{Different inference algorithms for LDA produce different uncertainty
+    assessments in small sample sizes, but become comparable as more data arrives.
+    Within each panel, we display the true pairs $\left(\sqrt{\beta_{v1}},
+    \sqrt{\beta_{v2}}\right)$ as black labels $v$. The purple clouds are
+    posterior samples from the inference procedure, which are given as row labels. The
+    posterior means are labeled in orange. Different columns index different $D$
+    (top column label) vs. $N$ (bottom column label) pairs. Here, we have
+    subsetted to $V = 10$ -- the corresponding figure for $V = 50$ is given by
+    \ref{fig:beta_contours_v50}.
+  }
+  \label{fig:beta_contours_v10}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  %% \includegraphics[width=\textwidth]{../figure/beta_errors_lda}
+  \caption{A summary of the errors and uncertainty across models and regimes for
+    the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v10}. On the $x$-axis,
+    we plot the difference between posterior means and the true value, after
+    having square-root transformed. On the $y$-axis, we provide the standard
+    deviation of the posterior samples for each $v$, along the first dimension
+    $K = 1$. Columns are indexed as in Figure \ref{fig:beta_contours_v10}, but
+    now rows provide different values of $V$.
+    \label{fig:beta_errors_lda} }
+\end{figure}
+
+\end{column} 
+
+\begin{column}{\sepwid}\end{column}
+\end{columns}
+\begin{column}
+
+\section{Figures}
+\begin{figure}[!p]
+  \centering\includegraphics{../figure/visualize_lda_theta_boxplot-F}
+  \caption{Boxplots represent approximate posteriors for estimated mixture
+    memberships $\theta_{d}$, and their evolution over time. That is, each row
+    of panels provides a different sequence of $\theta_{dk}$ for a single $k$,
+    and different columns distinguish different phases of sampling. Note that
+    the $y$-axis is on the $g$-scale, which is defined as a translated logit,
+    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \bar{\log \mathbf{p}},
+    \dots,\log p_{K} - \bar{\log \mathbf{p}}\right)$. Note that the first
+    and second antibiotic time courses result in meaningful shifts in these
+    sequences, and that there appear to be long-term effects of treatment among
+    bacteria in Topic 3. \label{fig:antibiotics_lda_theta}}
+\end{figure}
+\end{column}
+
+\end{frame}
+\bibliographystyle{plainnat}
+\bibliography{../refs.bib}
+
+\end{document}
