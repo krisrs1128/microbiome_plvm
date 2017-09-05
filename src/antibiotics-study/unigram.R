@@ -152,7 +152,7 @@ p <- ggplot(mu_subset) +
     legend.text = element_text(size = 6.1)
   )
 ggsave(
-  sprintf("../../doc/figure/antibiotics_unigram_mu-%s.pdf", argv$subject),
+  sprintf("../../doc/figure/antibiotics_unigram_mu-%s.png", argv$subject),
   p, width = 6, height = 3.5
 )
 
