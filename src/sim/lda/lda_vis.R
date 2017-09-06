@@ -114,7 +114,7 @@ p <- ggplot(perf) +
   facet_grid(V ~ D + N)
 
 ggsave(
-  file.path(base_dir, "doc", "figure/beta_errors_lda.pdf"),
+  file.path(base_dir, "doc", "figure/beta_errors_lda.png"),
   p,
   width = 5,
   height = 3

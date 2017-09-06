@@ -62,7 +62,7 @@ p <- ggplot(transformed_counts) +
   geom_histogram(aes(x = count)) +
   facet_grid(. ~ transformation, scale = "free_x") +
   min_theme(list(text_size = 8, subtitle_size = 12))
-ggsave("../../doc/figure/histograms-1.pdf", p)
+ggsave("../../doc/figure/histograms-1.png", p)
 
 ## ---- heatmaps ----
 x_order <- names(sort(taxa_sums(abt)))
@@ -80,10 +80,10 @@ ordered_map <- function(x) {
 }
 
 p <- ordered_map(get_taxa(abt)) + ggtitle("Raw")
-ggsave("../../doc/figure/heatmaps-1.pdf", p)
+ggsave("../../doc/figure/heatmaps-1.png", p)
 
 p <- ordered_map(asinh(get_taxa(abt))) + ggtitle("asinh")
-ggsave("../../doc/figure/heatmaps-2.pdf", p)
+ggsave("../../doc/figure/heatmaps-2.png", p)
 
 ## ---- lda ----
 x <- t(get_taxa(abt))
@@ -186,7 +186,7 @@ p <- ggheatmap(
 ) +
   labs(fill = "g(theta)")
 ggsave(
-  sprintf("../../doc/figure/visualize_lda_theta_heatmap-%s.pdf", argv$subject),
+  sprintf("../../doc/figure/visualize_lda_theta_heatmap-%s.png", argv$subject),
   p, width = 7, height = 0.9
 )
 
@@ -197,7 +197,8 @@ p <- ggplot(theta_hat) +
     fill = "#C9C9C9",
     outlier.size = 0.05,
     size = 0.1,
-    notchwidth = 0.1
+    notchwidth = 0.1,
+    position = position_dodge(width = 0)
   ) +
   scale_y_continuous(breaks = scales::pretty_breaks(3)) +
   min_theme(list(border_size = 0.7, text_size = 10, subtitle_size = 11)) +
@@ -207,7 +208,7 @@ p <- ggplot(theta_hat) +
   theme(legend.position = "none") +
   scale_x_discrete(breaks = seq(1, 60, by = 10) - 1)
 ggsave(
-  sprintf("../../doc/figure/visualize_lda_theta_boxplot-%s.pdf", argv$subject),
+  sprintf("../../doc/figure/visualize_lda_theta_boxplot-%s.png", argv$subject),
   p, width = 6, height = 2.9
 )
 
@@ -250,7 +251,7 @@ p <- ggplot(beta_subset) +
     legend.position = "bottom"
   )
 ggsave(
-  sprintf("../../doc/figure/visualize_lda_beta-%s.pdf", argv$subject),
+  sprintf("../../doc/figure/visualize_lda_beta-%s.png", argv$subject),
   p, width = 6, height = 3.5
 )
 

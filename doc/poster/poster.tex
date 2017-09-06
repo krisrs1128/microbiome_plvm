@@ -1,0 +1,259 @@
+\documentclass[final]{beamer}
+
+\usepackage[scale=0.8]{beamerposter}
+\usetheme{confposter}
+
+\newlength{\sepwid}
+\newlength{\onecolwid}
+\newlength{\twocolwid}
+\newlength{\threecolwid}
+\setlength{\paperwidth}{30in} % A0 width: 46.8in
+\setlength{\paperheight}{40in} % A0 height: 33.1in
+\setlength{\onecolwid}{0.48\paperwidth}
+\setlength{\twocolwid}{0.464\paperwidth}
+\setlength{\threecolwid}{0.708\paperwidth}
+\setbeamersize{text margin left=0.1cm,text margin right=0.1cm, text margin top=0.0cm}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{natbib}
+\input{../preamble.tex}
+
+\title{Text Modeling meets the Microbiome}
+\author{Kris Sankaran and Susan P. Holmes}
+\institute{Department of Statistics, Stanford University}
+
+\begin{document}
+
+\begin{frame}
+
+\begin{columns}
+\begin{column}{\onecolwid}
+
+\begin{block}{Abstract}
+The human microbiome is a complex ecological system, and describing its
+structure and function under different environmental conditions is important
+from both basic scientific and medical perspectives. Viewed through a
+biostatistical lens, many microbiome analysis goals can be approached through
+latent variable modeling, for which a range of techniques are available. We
+develop the analogy between text modeling, where documents are approximated as
+mixtures of topics, and bacterial count modeling, where samples are approximated
+as mixtures of ecological states, focusing on applications of Latent Dirichlet
+Allocation (LDA), Nonnegative Matrix Factorization (NMF), and Dynamic Unigrams
+to the microbiome. We further illustrate and compare techniques using the data
+of \citep{dethlefsen2011incomplete}, a study on the effects of antibiotics on
+bacterial community composition. A complete preprint is available
+\citep{sankaran2017latent}, and code and data for reproducing model estimates
+and figures can be found at
+\url{https://github.com/krisrs1128/microbiome_plvm/}.
+\end{block}
+
+\begin{block}{Methods}
+  \begin{itemize}
+\item LDA: Let $x_{dv}$ be the number of times word $v$
+  occurs in document $d$. Suppose the $k^{th}$ topic places weight $\beta_{vk}$
+  on the $v^{th}$ term, so that $\beta_{k} \in \simplex^{V - 1}$. Suppose there
+  are $N_{d}$ words in the $d^{th}$ document. Then,
+\begin{align*}
+x_{d\cdot} \vert \left(\beta_{k}\right)_{1}^{K} &\overset{iid}{\sim} \Mult\left(N_{d}, B\theta_{d}\right) \text{ for } d = 1, \dots, D\\
+\theta_{d} &\overset{iid}{\sim} \Dir\left(\alpha\right) \text{ for } d = 1, \dots, D \\
+\beta_{k} &\overset{iid}{\sim} \Dir\left(\gamma\right) \text{ for }k = 1, \dots, K,
+\end{align*}
+where $B = \begin{pmatrix}\beta_{1}, \dots, \beta_{K}\end{pmatrix}$.
+
+\item Dynamic Unigrams: In light of LDA's geometric interpretation, we
+  might consider in some situations a model that identifies samples with a
+  continuous curve on this $V$-dimensional simplex \citep{blei2006dynamic},
+\begin{align*}
+x_{d\cdot} \vert \mu_{t\left(d\right)}  &\overset{iid}{\sim} \Mult\left(N_{d}, S\left(\mu_{t\left(d\right)}\right)\right) \text{ for } d = 1, \dots, D\\
+\mu_{t} \vert \mu_{t - 1} &\overset{iid}{\sim} \Gsn\left(\mu_{t - 1}, \sigma^{2}I_{V}\right) \text{ for } t = 1, \dots, T \\
+\mu_{0} &\overset{iid}{\sim} \Gsn\left(0, \sigma^{2}I_{V}\right),
+\end{align*}
+where $S$ is the multilogit link
+\begin{align*}
+\left[S\left(\mu\right)\right]_{v} = \frac{\exp{\mu_{v}}}{\sum_{v^{\prime}} \exp{\mu_{v^{\prime}}}},
+\end{align*}
+and $t\left(d\right)$ maps document $d$ to the time it was sampled.
+\item NMF: We consider a Gamma-Poisson factorization model
+  \citep{zhou2015negative} that models the $D \times V$ counts matrix $X$ by
+  \begin{align*}
+    X &\sim \Poi\left(\Theta B^{T}\right) \\
+    \Theta &\sim \Gam\left(a_{0} 1_{D \times K}, b_{0} 1_{D \times K}\right) \\
+    B &\sim \Gam\left(c_{0} 1_{V \times K}, d_{0} 1_{V \times K} \right),
+  \end{align*}
+  where our notation means that each entry in these matrices is sampled
+  independently, with parameters given by the corresponding entry in the parameter
+  matrix. In our simulation studies, we also consider a slight variant, which
+  independently sends entries of $X$ to zero with probability $p_{0}$.
+\end{itemize}
+\end{block}
+
+\begin{block}{Microbiome vs. Text Analysis}
+Methods popular in text analysis can be adapted to the microbiome setting, upon
+making the following connections.
+
+\begin{itemize}
+  \item \textbf{Document} $\iff$ \textbf{Biological Sample}: The basic sampling
+    units, over which conclusions are generalized, are documents (text analysis)
+    and biological samples (microbiome analysis). It is of interest to highlight
+    similarities and differences across these units, often through some
+    variation on clustering or dimensionality reduction.
+  \item \textbf{Term} $\iff$ \textbf{Bacterial species}: The fundamental
+    features with which to describe samples are the counts of terms (text
+    analysis) and bacterial species (microbiome analysis). More formally, by
+    bacterial species, we mean Amplicon Sequence Variants
+    \citep{callahan2017exact}.
+  \item \textbf{Topic} $\iff$ \textbf{Community}: For interpretation, it is
+    common to imagine ``prototypical'' units which can be used as a point of
+    reference for observed samples. In text analysis, these are called topics --
+    for example, ``business'' or ``politics'' articles have their own specific
+    vocabularies. On the other hand, in microbiome analysis, these are called
+    ``communities'' -- different communities have different bacterial
+    signatures.
+  \item \textbf{Word} $\iff$ \textbf{Sequencing Read}: A ``word'' in text analysis refers
+    to a single instance of a term in a document, not its total count. The
+    analog in microbiome analysis is an individual read that has been mapped to
+    a unique sequence variant, though this is rarely an object of intrinsic interest.
+\end{itemize}
+\end{block}
+
+\begin{block}{Case Study}
+
+We reanalyze the data of \cite{dethlefsen2011incomplete}, a study of bacterial
+dynamics in response to antibiotic treatment. This study monitored three
+patients over time, with two antibiotics time courses introduced, in order to
+study the effect of antibiotic perturbations within the context of natural
+long-term dynamics.
+
+Variation in bacterial signatures tends to be dominated by strong inter-subject
+effects \citep{eckburg2005diversity}, and with only three subjects, there is
+little reason to cluster across subjects. We focus on Subject F,
+who had been reported to exhibit incomplete recovery of the pre-antibiotic
+treatment bacterial community. 
+\end{block}
+\end{column}
+
+\begin{column}{\onecolwid}
+
+\begin{block}{}
+Figure \ref{fig:antibiotics_lda_theta} draws attention to the two antibiotic
+time courses, which took place between days 12-23 and 41-51. Topic 1 appears to
+represent the bacterial community filling niches left empty during the first
+time course, 3 are those that fail to recover after time course 1, while 2 and 4
+reflect those that thrive during antibiotic time courses, with different
+response times. To interpret topics in terms of their bacterial community
+fingerprints, we display the $\beta_{k}$ in Figure
+\ref{fig:antibiotics_lda_beta}.
+
+Figure \ref{fig:antibiotics_unigram_theta} displays the results of the
+alternative Dynamic Unigrams approach instead. Differential responses to
+antibiotic treatment is reflected in the change in $\mu_{tv}$ during time
+courses.
+
+\end{block}
+
+\begin{figure}[!p]
+  \centering\includegraphics[width=0.85\textwidth]{../figure/visualize_lda_theta_boxplot-F}
+  \caption{Boxplots represent approximate posteriors for estimated mixture
+    memberships $\theta_{d}$, and their evolution over time. Each row of panels
+    provides a different sequence of $\theta_{dk}$ for a single $k$, and
+    different columns distinguish different phases of sampling. Note that the
+    $y$-axis is on the $g$-scale, which is defined as a translated logit,
+    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \bar{\log \mathbf{p}},
+    \dots,\log p_{K} - \bar{\log \mathbf{p}}\right)$. The first and second
+    antibiotic time courses result in meaningful shifts in these sequences, and
+    that there appear to be long-term effects of treatment among bacteria in
+    Topic 3. \label{fig:antibiotics_lda_theta}}
+\end{figure}
+
+%% To interpret topics in terms of their bacterial community fingerprints, we study
+%% the $\beta_{k}$, displayed in Figure \ref{fig:antibiotics_lda_beta}. Those
+%% bacteria with large probabilities in the second and fourth rows of Figure
+%% constitute a large fraction of the samples taken during antibiotics time
+%% courses, reflecting those whose abundances increase rapidly (Topic 2) or are
+%% initially drop but then increase gradually (Topic 4) during the antibiotics time
+%% courses. This could be due to these bacteria
+
+\begin{figure}[!p]
+  \centering\includegraphics[width=0.85\textwidth]{../figure/visualize_lda_beta-F}
+  \caption{Each credible interval describes an approximate posterior for one
+    $\beta_{vk}$. Coupled with Figure \ref{fig:antibiotics_lda_theta}, this
+    guides the interpretation of which bacterial taxa are more or less prevalent
+    during antibiotic treatments. The $x$-axis indexes species, sorted according
+    to phylogenetic relatedness, and the $y$-axis give transformed values of the
+    species probability under that topic. Only the 750 most abundant species are
+    shown. Note the disappearance of otherwise abundant species within Topics 2,
+    4, and to some extent, 1.} \label{fig:antibiotics_lda_beta}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.85\textwidth]{../figure/antibiotics_unigram_mu-F}
+  \caption{Each posterior credible interval refers to one $\mu_{vt}$. The rows
+    are a subset of times $t$ around the first antibiotic time course. This
+    display is read in the same way as Figure \ref{fig:antibiotics_lda_beta}.
+    This view provides one way of smoothing abundance time series, to see how
+    different species respond to antibiotic
+    treatment. \label{fig:antibiotics_unigram_theta} }
+\end{figure}
+
+
+\end{column}
+
+\begin{column}{\onecolwid}
+
+\begin{block}{Posterior Predictive Checks}
+Model assessment is important for qualifying interpretations, and can further
+guide refinements in subsequent analyses. Two example checks are provided in
+Figures \ref{fig:antibiotics_posterior_ts} and
+\ref{fig:antibiotics_posterior_pca}. For LDA, the posterior predictive time
+series are on the appropriate scale with approximately the correct shape.
+However, for series with larger counts, the posterior predictive tends to
+oversmooth. For example, the drop to 0 in species 343 is not captured in any
+posterior predictive samples.
+
+On the other hand, for the Dynamic Unigram model, the posterior predictive
+distribution places most of its support close to the observed species series.
+This is reason for concern -- the unigram model may not do much more than fit
+empirical proportions at each timepoint, and there may be potential to produce
+more succinct summaries that still preserve the essential structure of the data.
+
+\end{block}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.7\textwidth]{../figure/posterior_check_ts-F}
+  \caption{We can visualize simulated time series for a subset of species and
+    compare them with the observed ones, as a posterior check. Each panel
+    represents one species. The black lines give observed $\asinh$-transformed
+    abundances for subject F over time. The blue and purple dots give posterior
+    predictive realizations for species over time, according to LDA and Dynamic
+    Unigrams, respectively.
+    \label{fig:antibiotics_posterior_ts}}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/posterior_check_scores-loadings-F}
+  \caption{
+    The PCA results computed on posterior predictive samples are aligned and
+    overlaid here. The left pair of panels give scores for each species, while
+    the right pair provide loadings for each timepoint. The individual posterior
+    samples have been smoothed into contours, while the posterior means are
+    displayed as shaded text. The observed data PCA results, after alignment
+    with posterior samples, are displayed as black
+    text. \label{fig:antibiotics_posterior_pca} }
+\end{figure}
+
+
+\begin{block}{References}
+\bibliographystyle{plainnat}
+\bibliography{../refs.bib}
+\end{block}
+
+\end{column}
+\end{columns}
+
+
+\end{frame}
+\end{document}
