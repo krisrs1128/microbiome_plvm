@@ -197,7 +197,8 @@ p <- ggplot(theta_hat) +
     fill = "#C9C9C9",
     outlier.size = 0.05,
     size = 0.1,
-    notchwidth = 0.1
+    notchwidth = 0.1,
+    position = position_dodge(width = 0)
   ) +
   scale_y_continuous(breaks = scales::pretty_breaks(3)) +
   min_theme(list(border_size = 0.7, text_size = 10, subtitle_size = 11)) +
