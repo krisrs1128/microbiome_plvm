@@ -12,7 +12,7 @@
 \setlength{\onecolwid}{0.48\paperwidth}
 \setlength{\twocolwid}{0.464\paperwidth}
 \setlength{\threecolwid}{0.708\paperwidth}
-\setbeamersize{text margin left=0.1cm,text margin right=0.1cm, text margin top=0.0cm}
+\setbeamersize{text margin left=0.1cm,text margin right=0.1cm}
 
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -159,8 +159,8 @@ courses.
     provides a different sequence of $\theta_{dk}$ for a single $k$, and
     different columns distinguish different phases of sampling. Note that the
     $y$-axis is on the $g$-scale, which is defined as a translated logit,
-    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \bar{\log \mathbf{p}},
-    \dots,\log p_{K} - \bar{\log \mathbf{p}}\right)$. The first and second
+    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \overline{\log \mathbf{p}},
+    \dots,\log p_{K} - \overline{\log \mathbf{p}}\right)$. The first and second
     antibiotic time courses result in meaningful shifts in these sequences, and
     that there appear to be long-term effects of treatment among bacteria in
     Topic 3. \label{fig:antibiotics_lda_theta}}
@@ -214,15 +214,14 @@ posterior predictive samples.
 
 On the other hand, for the Dynamic Unigram model, the posterior predictive
 distribution places most of its support close to the observed species series.
-This is reason for concern -- the unigram model may not do much more than fit
-empirical proportions at each timepoint, and there may be potential to produce
-more succinct summaries that still preserve the essential structure of the data.
+This is reason for concern -- there may be potential to produce more succinct
+summaries that still preserve the essential structure of the data.
 
 \end{block}
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=0.7\textwidth]{../figure/posterior_check_ts-F}
+  \includegraphics[width=0.76\textwidth]{../figure/posterior_check_ts-F}
   \caption{We can visualize simulated time series for a subset of species and
     compare them with the observed ones, as a posterior check. Each panel
     represents one species. The black lines give observed $\asinh$-transformed
