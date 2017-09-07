@@ -321,16 +321,23 @@ posterior_checks_plots <- function(input_data) {
                         "border_size" = 1)
   )
 
+  axis_ratio <- input_data$evals %>%
+    filter(type == "true", row_ix %in% c(1, 2)) %>%
+    group_by(row_ix) %>%
+    summarise(mean = mean(value))
+
   plot_opts$theme_opts$legend_position <- "bottom"
   all_plots[["scores"]] <- summary_contours(input_data$scores_data, plot_opts, 2.3) +
-    labs(x = "Axis 1", y = "Axis 2")
+    labs(x = "Axis 1", y = "Axis 2") +
+    coord_fixed(ratio = sqrt(axis_ratio$mean[2] / axis_ratio$mean[1]))
 
   plot_opts$h <- 0.01
   plot_opts$coord_ratio <- 0.45
   plot_opts$theme_opts$legend_position <- "none"
   all_plots[["loadings"]] <- summary_contours(input_data$loadings_data, plot_opts, 2.3) +
     scale_x_continuous(breaks = c(0.05, 0, 0.05)) +
-    labs(x = "Axis 1", y = "Axis 2")
+    labs(x = "Axis 1", y = "Axis 2") +
+    coord_fixed(ratio = sqrt(axis_ratio$mean[2] / axis_ratio$mean[1]))
 
   all_plots[["evals"]] <- ggplot() +
    geom_point(
