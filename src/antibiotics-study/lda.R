@@ -255,6 +255,44 @@ ggsave(
   p, width = 6, height = 3.5
 )
 
+## ---- beta-commentary ----
+inv_logit <- function(x) {
+  exp(x) / sum(exp(x))
+}
+
+beta_probs <- beta_summary %>%
+  group_by(topic) %>%
+  mutate(prob = inv_logit(beta_median)) %>%
+  select(rsv_ix, rsv, Taxon_5, prob) %>%
+  spread(topic, prob)
+
+p_topic <- beta_probs %>%
+  select(starts_with("Topic")) %>%
+  as.matrix()
+rownames(p_topic) <- beta_probs$rsv
+
+for (k in seq_len(stan_data$K)) {
+  contrast <- rep(-1, stan_data$K)
+  contrast[k] <- 1
+  beta_probs[, sprintf("topic_%s_diff", k)] <- p_topic %*% contrast %>%
+    as.numeric()
+}
+
+sp <- beta_probs %>%
+  top_n(10, topic_3_diff) %>%
+  .[["rsv"]]
+
+topic_species <- list()
+topic_species[[2]] <- get_taxa(abt)[sp, ] %>%
+  melt(varnames = c("rsv", "sample")) %>%
+  mutate(sample_order = as.numeric(gsub("F", "", sample)))
+
+ggplot(topic_species[[2]]) +
+  geom_line(
+    aes(x = sample_order, y = value, group = rsv)
+  ) +
+  facet_wrap(~ rsv, scale = "free_y")
+
 ## ---- posterior-checks ----
 checks_data <- posterior_checks_input(
   x,
