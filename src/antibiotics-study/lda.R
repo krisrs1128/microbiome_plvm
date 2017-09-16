@@ -260,6 +260,8 @@ inv_logit <- function(x) {
   exp(x) / sum(exp(x))
 }
 
+## extract contrasts indicating whether most membership
+## comes from one topic
 beta_probs <- beta_summary %>%
   group_by(topic) %>%
   mutate(prob = inv_logit(beta_median)) %>%
@@ -278,6 +280,7 @@ for (k in seq_len(stan_data$K)) {
     as.numeric()
 }
 
+## join taxa, sample, and count data, for some plots
 samples <- abt %>%
   sample_data() %>%
   data.frame() %>%
@@ -291,6 +294,8 @@ mabt <- get_taxa(abt) %>%
   left_join(beta_summary %>% select(rsv, Taxon_5)) %>%
   mutate(prototypical = NA)
 
+## plot individual species that are representative
+## ("prototypical") of given topics
 prototypes <- list()
 for (k in seq_len(stan_data$K)) {
   prototypes[[k]] <- beta_probs %>%
@@ -299,7 +304,7 @@ for (k in seq_len(stan_data$K)) {
   mabt[mabt$rsv %in% prototypes[[k]][1:50], "prototypical"] <- paste0("Topic ", k)
 }
 
-ggplot(mabt %>% filter(!is.na(prototypical))) +
+p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
   geom_line(
     aes(x = time, y = value, group = rsv, col = Taxon_5),
     alpha = 0.3
@@ -307,6 +312,7 @@ ggplot(mabt %>% filter(!is.na(prototypical))) +
   scale_y_continuous(breaks = scales::pretty_breaks(3)) +
   scale_color_brewer(palette = "Set2") +
   facet_grid(Taxon_5 ~ prototypical, scale = "free_y")
+ggsave("../../doc/figure/topic_prototypes.png", p)
 
 for (k in seq_len(stan_data$K)) {
   cur_prototypes <- mabt %>%
@@ -316,6 +322,7 @@ for (k in seq_len(stan_data$K)) {
     geom_line(aes(x = time, y = value, col = Taxon_5)) +
     scale_color_brewer(palette = "Set2") +
     facet_wrap(~rsv, scale = "free_y", nrow = 3)
+  ggsave(sprintf("../../doc/figure/species_prototypes_%s.png", k), p)
 }
 
 ## ---- posterior-checks ----
