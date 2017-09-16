@@ -278,20 +278,45 @@ for (k in seq_len(stan_data$K)) {
     as.numeric()
 }
 
-sp <- beta_probs %>%
-  top_n(10, topic_3_diff) %>%
-  .[["rsv"]]
+samples <- abt %>%
+  sample_data() %>%
+  data.frame() %>%
+  rownames_to_column("sample") %>%
+  as_data_frame()
 
-topic_species <- list()
-topic_species[[2]] <- get_taxa(abt)[sp, ] %>%
+mabt <- get_taxa(abt) %>%
   melt(varnames = c("rsv", "sample")) %>%
-  mutate(sample_order = as.numeric(gsub("F", "", sample)))
+  as_data_frame() %>%
+  left_join(samples) %>%
+  left_join(beta_summary %>% select(rsv, Taxon_5)) %>%
+  mutate(prototypical = NA)
 
-ggplot(topic_species[[2]]) +
+prototypes <- list()
+for (k in seq_len(stan_data$K)) {
+  prototypes[[k]] <- beta_probs %>%
+    arrange_(sprintf("desc(topic_%s_diff)", k)) %>%
+    .[["rsv"]]
+  mabt[mabt$rsv %in% prototypes[[k]][1:50], "prototypical"] <- paste0("Topic ", k)
+}
+
+ggplot(mabt %>% filter(!is.na(prototypical))) +
   geom_line(
-    aes(x = sample_order, y = value, group = rsv)
+    aes(x = time, y = value, group = rsv, col = Taxon_5),
+    alpha = 0.3
   ) +
-  facet_wrap(~ rsv, scale = "free_y")
+  scale_y_continuous(breaks = scales::pretty_breaks(3)) +
+  scale_color_brewer(palette = "Set2") +
+  facet_grid(Taxon_5 ~ prototypical, scale = "free_y")
+
+for (k in seq_len(stan_data$K)) {
+  cur_prototypes <- mabt %>%
+    filter(rsv %in% prototypes[[k]][1:15])
+  cur_prototypes$rsv <- factor(cur_prototypes$rsv, levels = prototypes[[k]][1:15])
+  p <- ggplot(cur_prototypes) +
+    geom_line(aes(x = time, y = value, col = Taxon_5)) +
+    scale_color_brewer(palette = "Set2") +
+    facet_wrap(~rsv, scale = "free_y", nrow = 3)
+}
 
 ## ---- posterior-checks ----
 checks_data <- posterior_checks_input(
