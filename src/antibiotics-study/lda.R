@@ -255,6 +255,139 @@ ggsave(
   p, width = 6, height = 3.5
 )
 
+## ---- beta-commentary ----
+inv_logit <- function(x) {
+  exp(x) / sum(exp(x))
+}
+
+## extract contrasts indicating whether most membership
+## comes from one topic
+beta_probs <- beta_summary %>%
+  group_by(topic) %>%
+  mutate(prob = inv_logit(beta_median)) %>%
+  select(rsv_ix, rsv, Taxon_5, prob) %>%
+  spread(topic, prob)
+
+p_topic <- beta_probs %>%
+  select(starts_with("Topic")) %>%
+  as.matrix()
+rownames(p_topic) <- beta_probs$rsv
+
+for (k in seq_len(stan_data$K)) {
+  contrast <- rep(-1, stan_data$K)
+  contrast[k] <- 1
+  beta_probs[, sprintf("topic_%s_diff", k)] <- p_topic %*% contrast %>%
+    as.numeric()
+}
+
+## join taxa, sample, and count data, for some plots
+samples <- abt %>%
+  sample_data() %>%
+  data.frame() %>%
+  rownames_to_column("sample") %>%
+  as_data_frame()
+
+mabt <- get_taxa(abt) %>%
+  melt(varnames = c("rsv", "sample")) %>%
+  as_data_frame() %>%
+  left_join(samples) %>%
+  left_join(beta_summary %>% select(rsv, Taxon_5)) %>%
+  mutate(prototypical = NA)
+
+## plot individual species that are representative
+## ("prototypical") of given topics
+prototypes <- list()
+for (k in seq_len(stan_data$K)) {
+  prototypes[[k]] <- beta_probs %>%
+    arrange_(sprintf("desc(topic_%s_diff)", k)) %>%
+    .[["rsv"]]
+  mabt[mabt$rsv %in% prototypes[[k]][1:50], "prototypical"] <- paste0("Topic ", k)
+}
+
+p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
+  geom_line(
+    aes(x = time, y = value, group = rsv, col = Taxon_5),
+    alpha = 0.3
+  ) +
+  scale_y_continuous(breaks = scales::pretty_breaks(3)) +
+  scale_color_brewer(palette = "Set2") +
+  facet_grid(Taxon_5 ~ prototypical, scale = "free_y")
+ggsave("../../doc/figure/topic_prototypes.png", p)
+
+for (k in seq_len(stan_data$K)) {
+  cur_prototypes <- mabt %>%
+    filter(rsv %in% prototypes[[k]][1:15])
+  cur_prototypes$rsv <- factor(cur_prototypes$rsv, levels = prototypes[[k]][1:15])
+  p <- ggplot(cur_prototypes) +
+    geom_line(aes(x = time, y = value, col = Taxon_5)) +
+    scale_color_brewer(palette = "Set2") +
+    facet_wrap(~rsv, scale = "free_y", nrow = 3)
+  ggsave(sprintf("../../doc/figure/species_prototypes_%s.png", k), p)
+}
+
+## make comparisons at the family level, by studying
+## the average probability assigned to each topic,
+## across all species within that family.
+taxa_df <- tax_table(abt) %>%
+  data.frame() %>%
+  rownames_to_column("rsv")
+ave_probs <- beta_summary %>%
+  group_by(topic) %>%
+  mutate(prob = inv_logit(beta_median)) %>%
+  select(-Taxon_5) %>%
+  left_join(taxa_df) %>%
+  filter(Taxon_5 != "") %>%
+  group_by(topic, Taxon_5) %>%
+  summarise(n_prob = n(), ave_prob = mean(prob)) %>%
+  arrange(topic, desc(ave_prob))
+
+uneven_probs <- ave_probs %>%
+  filter(ave_prob > 0.0001)
+mbt_uneven_taxa <- mabt %>%
+  select(-Taxon_5) %>%
+  left_join(taxa_df) %>%
+  filter(Taxon_5 %in% uneven_probs$Taxon_5)
+
+Taxon_5_order <- uneven_probs %>%
+  group_by(Taxon_5) %>%
+  summarise(max_ave = max(ave_prob)) %>%
+  arrange(desc(max_ave)) %>%
+  .[["Taxon_5"]]
+uneven_probs$Taxon_5 <- factor(
+  uneven_probs$Taxon_5,
+  levels = Taxon_5_order
+)
+
+## visualize the unevenness in topic
+## assignments across taxa
+p <- ggplot(uneven_probs) +
+  geom_point(
+    aes(
+      x = Taxon_5,
+      y = ave_prob,
+      col = topic,
+      size = n_prob
+    )
+  ) +
+  theme(
+    axis.text.x = element_text(angle = -90, hjust = 0)
+  )
+ggsave("../../doc/figure/uneven_taxa_ordered.png", p)
+
+mbt_uneven_taxa$Taxon_5 <- factor(mbt_uneven_taxa$Taxon_5, levels = Taxon_5_order)
+p <- ggplot(mbt_uneven_taxa) +
+  geom_line(
+    aes(x = time, y = value, group = rsv, col = prototypical),
+    alpha = 0.6
+  ) +
+  scale_y_continuous(breaks = scales::pretty_breaks(3)) +
+  scale_color_hue(guide = guide_legend(override.aes = list(alpha = 1, size = 2))) +
+  facet_wrap(~ Taxon_5, scale = "free_y") +
+  theme(
+    strip.text = element_text(size = 6.5)
+  )
+ggsave("../../doc/figure/uneven_taxa_facet.png", p)
+
 ## ---- posterior-checks ----
 checks_data <- posterior_checks_input(
   x,
