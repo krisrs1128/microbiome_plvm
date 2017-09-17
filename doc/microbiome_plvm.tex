@@ -615,16 +615,14 @@ those bacteria with large probabilities in the second and fourth rows of Figure
 \ref{fig:antibiotics_lda_beta} constitute a large fraction of the samples taken
 during antibiotics time courses, reflecting those whose abundances increase
 rapidly (Topic 2) or are initially drop but then increase gradually (Topic 4)
-during the antibiotics time courses. This could be due to these bacteria
-thriving during the regimen or other bacteria being more negatively impacted --
-viewing the raw data directly supports the latter interpretation. These distributions
-are relatively more concentrated on a small subset of bacteria with high
-probabilities, reflected by the drop in logitted probabilities far below zero.
-This corresponds to a decrease in community diversity during antibiotic time
-courses. We also note groups of neighboring bacteria with similarly elevated
-topic probabilities. It is encouraging that, even without specifying smoothness
-along the phylogenetic tree in the prior for the $\beta_{k}$s, such smoothness
-emerges in the fitted model.
+during the antibiotics time courses. These distributions are relatively more
+concentrated on a small subset of bacteria with high probabilities, reflected by
+the drop in logitted probabilities far below zero. This corresponds to a
+decrease in community diversity during antibiotic time courses. We also note
+groups of neighboring bacteria with similarly elevated topic probabilities. It
+is encouraging that, even without specifying smoothness along the phylogenetic
+tree in the prior for the $\beta_{k}$s, such smoothness emerges in the fitted
+model.
 
 One disadvantage of plotting the posteriors for the $\beta_{k}$ in this way is
 that it is difficult to determine the identify of any particular bacterial
@@ -632,7 +630,26 @@ species associated with a specific credible interval. It also hides any
 interesting variation that may be occurring among species not among the 750 most
 abundant. To address these issues, we have designed an interactive version,
 available online at
-\url{https://statweb.stanford.edu/~kriss1/microbiome_plvm/vis.html}.
+\url{https://statweb.stanford.edu/~kriss1/microbiome_plvm/vis.html}. Alternatively,
+individual species that are primarily assigned to individual topics can be used
+to characterize the topics. For example, in Figure \ref{fig:topic_prototypes} we
+have screened all species for those that seem primarily associated with a single
+topic, and plotted them along with the topic for they are representative.
+Specifically, representatives of the $k^{th}$ topic were found by choosing the
+50 species $v$ with the largest values of $\beta_{kv} - \sum_{k^{\prime} \neq k}
+\beta_{k^{\prime} v}$. This allows an interpretation of the topics in terms of
+the raw data, and the display reinforces the findings of Figures
+\ref{fig:antibiotics_lda_theta} and \ref{fig:antibiotics_lda_beta}. Instead of
+displaying all species together, Supplementary Figures
+\ref{fig:species_prototypes_1} through \ref{fig:species_prototypes_4} sort
+individual species by the topic representativeness measure.
+
+Similar approaches can be employed to identify taxa that disproportionately
+contain species with high membership in particular topics. For example, we can
+compute the average topic representativeness statistic defined above across all
+species within a taxonomic family in order to characterize that family. Families
+that are highly associated with individual topics are displayed in Supplementary
+Figures \ref{fig:uneven_taxa_ordered} and \ref{fig:uneven_taxa_facet}.
 
 \subsection{Dynamic Unigram model}
 \label{sec:antibiotics_unigram}
@@ -866,6 +883,21 @@ Institute of Health TR01 grant AI112401.
 \end{figure}
 
 \begin{figure}[!p]
+  \centering\includegraphics[width=\textwidth]{figure/topic_prototypes}
+  \caption{Individual species that have been identified as prototypical of
+    single topics are highlighted here, to provide a characterization of topics
+    linked to the original bacterial abundance data. Rows and columns of panels
+    correspond to taxonomic families and estimated topics,
+    respectively, and each trajectory gives the abundance of a single species
+    over time. Note that the $y$-axis is on a square root scale. This view
+    provides more evidence for the interpretation of the four topics as (1)
+    decreased abundance during antibiotic time courses (2) increased abundance during
+    antibiotic time courses (3) disappearance after first time course, and (4)
+    delayed but sustained increase after first time
+    course. \label{fig:topic_prototypes}}
+\end{figure}
+
+\begin{figure}[!p]
   \centering
   \includegraphics{figure/antibiotics_unigram_mu-F}
   \caption{Each posterior credible interval refers to one $\mu_{vt}$. The rows
@@ -969,6 +1001,68 @@ Institute of Health TR01 grant AI112401.
 \begin{figure}[!p]
   \centering\includegraphics{figure/visualize_lda_beta-E}
   \caption{The analog of Figure \ref{fig:antibiotics_lda_beta} for Subject E. \label{fig:antibiotics_lda_beta_E}}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figure/uneven_taxa_ordered}
+  \caption{We can search for entire taxonomic families that seem associated with
+    individual topics. Here we calculate the average of the topic
+    representativeness statistic $\beta_{kv} - \sum_{k^{\prime} \neq k}
+    \beta_{k^{\prime} v}$ across all species $v$ within each
+    Family. Only those families that are most associated with a topic are
+    displayed here. The sizes of circles represents the number of species within
+    the family, which can be used to gauge the variability of the
+    estimate. Compare this view with Supplementary Figure
+    \ref{fig:uneven_taxa_facet}. \label{fig:uneven_taxa_ordered} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figure/uneven_taxa_facet}
+  \caption{All species within the families screened out from Figure
+    \ref{fig:uneven_taxa_ordered} are displayed here. Species among the
+    representatives displayed in Figure \ref{fig:topic_prototypes} are colored
+    according to the topics of they are prototypical. Grey series still
+    contribute to the average family-topic association measure, but were not
+    among the 50 prototypes for each topic. This view suggests that the
+    Rhodospillaceae, Alcaligenaceaeand Parabacteroides may have a large
+    fractions of representatives from Topics 3, 1, and 2,
+    respectively. Note that as before, abundances are plotted on a square root
+    scale. \label{fig:uneven_taxa_facet} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_1}
+  \caption{Rather than displaying all representative species together, as in
+    Figure \ref{topic_prototypes}, we can sort species according to how
+    representative they are of an individual topic. Here, the 15 species most
+    strongly associated with Topic 1 are given. THe panels are to be read from
+    left to right and from top to bottom, to go in decreasing value of
+    association. Note that the $y$-axis is on a square root
+    scale. \label{fig:species_prorotypes_1} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_2}
+  \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
+    2.\label{fig:species_prorotypes_2}. }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_3}
+  \caption{The analog of Figure \ref{fig:species_prorotypes_1} for Topic
+    3. \label{fig:species_prorotypes_3} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_4}
+  \caption{The analog of Figure \ref{fig:species_1} for Topic
+    4. \label{fig:species_prorotypes_4} }
 \end{figure}
 
 \end{document}

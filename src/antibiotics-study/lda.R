@@ -307,11 +307,19 @@ for (k in seq_len(stan_data$K)) {
 p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
   geom_line(
     aes(x = time, y = value, group = rsv, col = Taxon_5),
-    alpha = 0.3
+    alpha = 0.6
   ) +
-  scale_y_continuous(breaks = scales::pretty_breaks(3)) +
-  scale_color_brewer(palette = "Set2") +
-  facet_grid(Taxon_5 ~ prototypical, scale = "free_y")
+  scale_y_sqrt(breaks = scales::pretty_breaks(3)) +
+  scale_color_manual(
+    "Family",
+    values = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "grey"),
+    guide = guide_legend(override.aes = list(alpha = 1, size = 3))
+  ) +
+  facet_grid(Taxon_5 ~ prototypical, scale = "free_y") +
+  theme(
+    strip.text.y = element_text(size = 5),
+    legend.position = "bottom"
+  )
 ggsave("../../doc/figure/topic_prototypes.png", p)
 
 for (k in seq_len(stan_data$K)) {
@@ -320,7 +328,14 @@ for (k in seq_len(stan_data$K)) {
   cur_prototypes$rsv <- factor(cur_prototypes$rsv, levels = prototypes[[k]][1:15])
   p <- ggplot(cur_prototypes) +
     geom_line(aes(x = time, y = value, col = Taxon_5)) +
-    scale_color_brewer(palette = "Set2") +
+    scale_y_sqrt(breaks = scales::pretty_breaks(3)) +
+    scale_color_manual(
+      "Family",
+      values = c("Lachnospiraceae" = "#66C2A5", "Ruminococcaceae" = "#FC8D62",
+                 "Bacteroidaceae" = "#8DA0CB", "uncultured" = "#E78AC3",
+                 "other" = "grey"),
+      guide = guide_legend(override.aes = list(alpha = 1, size = 3))
+    ) +
     facet_wrap(~rsv, scale = "free_y", nrow = 3)
   ggsave(sprintf("../../doc/figure/species_prototypes_%s.png", k), p)
 }
@@ -380,7 +395,7 @@ p <- ggplot(mbt_uneven_taxa) +
     aes(x = time, y = value, group = rsv, col = prototypical),
     alpha = 0.6
   ) +
-  scale_y_continuous(breaks = scales::pretty_breaks(3)) +
+  scale_y_sqrt(breaks = scales::pretty_breaks(3)) +
   scale_color_hue(guide = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   facet_wrap(~ Taxon_5, scale = "free_y") +
   theme(
