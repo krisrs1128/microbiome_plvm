@@ -1,6 +1,6 @@
-\documentclass[final]{beamer}
+\documentclass[final, 8pt]{beamer}
 
-\usepackage[scale=0.8]{beamerposter}
+\usepackage[size=custom,width=76.2,height=101.6,scale=0.85]{beamerposter}
 \usetheme{confposter}
 
 \newlength{\sepwid}
@@ -9,10 +9,10 @@
 \newlength{\threecolwid}
 \setlength{\paperwidth}{30in} % A0 width: 46.8in
 \setlength{\paperheight}{40in} % A0 height: 33.1in
-\setlength{\onecolwid}{0.48\paperwidth}
+\setlength{\onecolwid}{0.3\paperwidth}
 \setlength{\twocolwid}{0.464\paperwidth}
 \setlength{\threecolwid}{0.708\paperwidth}
-\setbeamersize{text margin left=0.1cm,text margin right=0.1cm}
+\setbeamersize{text margin left=0.05cm,text margin right=0.05cm}
 
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -117,43 +117,27 @@ making the following connections.
 \end{itemize}
 \end{block}
 
-\begin{block}{Case Study}
-
-We reanalyze the data of \cite{dethlefsen2011incomplete}, a study of bacterial
-dynamics in response to antibiotic treatment. This study monitored three
-patients over time, with two antibiotics time courses introduced, in order to
-study the effect of antibiotic perturbations within the context of natural
-long-term dynamics.
-
-Variation in bacterial signatures tends to be dominated by strong inter-subject
-effects \citep{eckburg2005diversity}, and with only three subjects, there is
-little reason to cluster across subjects. We focus on Subject F,
-who had been reported to exhibit incomplete recovery of the pre-antibiotic
-treatment bacterial community. 
-\end{block}
 \end{column}
 
 \begin{column}{\onecolwid}
 
-\begin{block}{}
-Figure \ref{fig:antibiotics_lda_theta} draws attention to the two antibiotic
-time courses, which took place between days 12-23 and 41-51. Topic 1 appears to
-represent the bacterial community filling niches left empty during the first
-time course, 3 are those that fail to recover after time course 1, while 2 and 4
-reflect those that thrive during antibiotic time courses, with different
-response times. To interpret topics in terms of their bacterial community
-fingerprints, we display the $\beta_{k}$ in Figure
-\ref{fig:antibiotics_lda_beta}.
+\begin{block}{Case Study}
+We reanalyze the data of \cite{dethlefsen2011incomplete}, a study of bacterial
+dynamics in response to antibiotic treatment. This study monitored three
+patients over time, with two antibiotics time courses introduced within small
+windows, in order to study the effect of antibiotic perturbations within the
+context of natural long-term dynamics.
 
-Figure \ref{fig:antibiotics_unigram_theta} displays the results of the
-alternative Dynamic Unigrams approach instead. Differential responses to
-antibiotic treatment is reflected in the change in $\mu_{tv}$ during time
-courses.
+Variation in bacterial signatures tends to be dominated by strong inter-subject
+effects \citep{eckburg2005diversity}, and with only three subjects, there is
+little reason to cluster across subjects. Instead, we focus on Subject F, who
+had been reported to exhibit incomplete recovery of the pre-antibiotic treatment
+bacterial community.
 
 \end{block}
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=0.85\textwidth]{../figure/visualize_lda_theta_boxplot-F}
+  \centering\includegraphics[width=\textwidth]{../figure/visualize_lda_theta_boxplot-F}
   \caption{Boxplots represent approximate posteriors for estimated mixture
     memberships $\theta_{d}$, and their evolution over time. Each row of panels
     provides a different sequence of $\theta_{dk}$ for a single $k$, and
@@ -173,9 +157,24 @@ courses.
 %% courses, reflecting those whose abundances increase rapidly (Topic 2) or are
 %% initially drop but then increase gradually (Topic 4) during the antibiotics time
 %% courses. This could be due to these bacteria
+\begin{block}{}
+Figure \ref{fig:antibiotics_lda_theta} draws attention to the two antibiotic
+time courses, which took place between days 12-23 and 41-51. Topic 1 appears to
+represent the bacterial community filling niches left empty during the first
+time course, 3 are those that fail to recover after time course 1, while 2 and 4
+reflect those that thrive during antibiotic time courses, with different
+response times. To interpret topics in terms of their bacterial community
+fingerprints, we display the $\beta_{k}$ in Figure
+\ref{fig:antibiotics_lda_beta}.
+
+Figure \ref{fig:antibiotics_unigram_theta} displays a subset of the results of
+the alternative Dynamic Unigrams approach instead. Differential responses to
+antibiotic treatment is reflected in the differential change in $\mu_{tv}$
+across different $v$'s, as time is varied.
+\end{block}
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=0.85\textwidth]{../figure/visualize_lda_beta-F}
+  \centering\includegraphics[width=1.01\textwidth]{../figure/visualize_lda_beta-F}
   \caption{Each credible interval describes an approximate posterior for one
     $\beta_{vk}$. Coupled with Figure \ref{fig:antibiotics_lda_theta}, this
     guides the interpretation of which bacterial taxa are more or less prevalent
@@ -188,7 +187,7 @@ courses.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.85\textwidth]{../figure/antibiotics_unigram_mu-F}
+  \includegraphics[width=1.01\textwidth]{../figure/antibiotics_unigram_mu-F}
   \caption{Each posterior credible interval refers to one $\mu_{vt}$. The rows
     are a subset of times $t$ around the first antibiotic time course. This
     display is read in the same way as Figure \ref{fig:antibiotics_lda_beta}.
@@ -221,7 +220,7 @@ summaries that still preserve the essential structure of the data.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=0.76\textwidth]{../figure/posterior_check_ts-F}
+  \includegraphics[width=\textwidth]{../figure/posterior_check_ts-F}
   \caption{We can visualize simulated time series for a subset of species and
     compare them with the observed ones, as a posterior check. Each panel
     represents one species. The black lines give observed $\asinh$-transformed
@@ -233,7 +232,7 @@ summaries that still preserve the essential structure of the data.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=0.6\textwidth]{../figure/posterior_check_scores-loadings-F}
+  \includegraphics[width=\textwidth]{../figure/posterior_check_scores-loadings-F}
   \caption{
     The PCA results computed on posterior predictive samples are aligned and
     overlaid here. The left pair of panels give scores for each species, while

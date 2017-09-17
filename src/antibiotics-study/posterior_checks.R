@@ -59,7 +59,7 @@ ggsave(sprintf("%s/posterior_check_margins-%s.png", output_dir, argv$subject), p
 ggsave(sprintf("%s/posterior_check_ts-%s.png", output_dir, argv$subject), p[["ts"]], width = 6, height = 4)
 ggsave(
   sprintf("%s/posterior_check_scores-loadings-%s.png", output_dir, argv$subject),
-  grid.arrange(p[["scores"]], p[["loadings"]], ncol = 2),
+  grid.arrange(p[["scores"]], p[["loadings"]], widths = c(0.7, 0.3), ncol = 2),
   width = 7.3, height = 6.4
 )
 ggsave(sprintf("%s/posterior_check_evals-%s.png", output_dir, argv$subject), p[["evals"]], width = 6, height = 2.5)
