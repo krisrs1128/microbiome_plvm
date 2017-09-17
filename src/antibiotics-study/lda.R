@@ -307,7 +307,7 @@ for (k in seq_len(stan_data$K)) {
 p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
   geom_line(
     aes(x = time, y = value, group = rsv, col = Taxon_5),
-    alpha = 0.3
+    alpha = 0.6
   ) +
   scale_y_sqrt(breaks = scales::pretty_breaks(3)) +
   scale_color_manual(
@@ -320,7 +320,6 @@ p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
     strip.text.y = element_text(size = 5),
     legend.position = "bottom"
   )
-
 ggsave("../../doc/figure/topic_prototypes.png", p)
 
 for (k in seq_len(stan_data$K)) {
