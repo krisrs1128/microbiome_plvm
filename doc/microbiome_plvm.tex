@@ -615,16 +615,14 @@ those bacteria with large probabilities in the second and fourth rows of Figure
 \ref{fig:antibiotics_lda_beta} constitute a large fraction of the samples taken
 during antibiotics time courses, reflecting those whose abundances increase
 rapidly (Topic 2) or are initially drop but then increase gradually (Topic 4)
-during the antibiotics time courses. This could be due to these bacteria
-thriving during the regimen or other bacteria being more negatively impacted --
-viewing the raw data directly supports the latter interpretation. These distributions
-are relatively more concentrated on a small subset of bacteria with high
-probabilities, reflected by the drop in logitted probabilities far below zero.
-This corresponds to a decrease in community diversity during antibiotic time
-courses. We also note groups of neighboring bacteria with similarly elevated
-topic probabilities. It is encouraging that, even without specifying smoothness
-along the phylogenetic tree in the prior for the $\beta_{k}$s, such smoothness
-emerges in the fitted model.
+during the antibiotics time courses. These distributions are relatively more
+concentrated on a small subset of bacteria with high probabilities, reflected by
+the drop in logitted probabilities far below zero. This corresponds to a
+decrease in community diversity during antibiotic time courses. We also note
+groups of neighboring bacteria with similarly elevated topic probabilities. It
+is encouraging that, even without specifying smoothness along the phylogenetic
+tree in the prior for the $\beta_{k}$s, such smoothness emerges in the fitted
+model.
 
 One disadvantage of plotting the posteriors for the $\beta_{k}$ in this way is
 that it is difficult to determine the identify of any particular bacterial
@@ -632,7 +630,9 @@ species associated with a specific credible interval. It also hides any
 interesting variation that may be occurring among species not among the 750 most
 abundant. To address these issues, we have designed an interactive version,
 available online at
-\url{https://statweb.stanford.edu/~kriss1/microbiome_plvm/vis.html}.
+\url{https://statweb.stanford.edu/~kriss1/microbiome_plvm/vis.html}. Alternatively,
+individual species that are primarily assigned to individual topics can be used
+to characterize the topics. For example, in Figure \ref{fig:
 
 \subsection{Dynamic Unigram model}
 \label{sec:antibiotics_unigram}
@@ -863,6 +863,21 @@ Institute of Health TR01 grant AI112401.
     under that topic. Only the 750 most abundant species are shown. Note the
     disappearance of otherwise abundant species within Topics 2, 4, and to some
     extent, 1.} \label{fig:antibiotics_lda_beta}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering\includegraphics[width=\textwidth]{figure/topic_prototypes}
+  \caption{Individual species that have been identified as prototypical of
+    single topics are highlighted here, to provide a characterization of topics
+    linked to the original bacterial abundance data. Rows and columns of panels
+    correspond to taxonomic families and estimated topics,
+    respectively, and each trajectory gives the abundance of a single species
+    over time. Note that the $y$-axis is on a square root scale. This view
+    provides more evidence for the interpretation of the four topics as (1)
+    decreased abundance during antibiotic time courses (2) increased abundance during
+    antibiotic time courses (3) disappearance after first time course, and (4)
+    delayed but sustained increase after first time
+    course. \label{fig:topic_prototypes}}
 \end{figure}
 
 \begin{figure}[!p]
