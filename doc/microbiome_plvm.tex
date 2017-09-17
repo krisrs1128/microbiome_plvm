@@ -632,7 +632,24 @@ abundant. To address these issues, we have designed an interactive version,
 available online at
 \url{https://statweb.stanford.edu/~kriss1/microbiome_plvm/vis.html}. Alternatively,
 individual species that are primarily assigned to individual topics can be used
-to characterize the topics. For example, in Figure \ref{fig:
+to characterize the topics. For example, in Figure \ref{fig:topic_prototypes} we
+have screened all species for those that seem primarily associated with a single
+topic, and plotted them along with the topic for they are representative.
+Specifically, representatives of the $k^{th}$ topic were found by choosing the
+50 species $v$ with the largest values of $\beta_{kv} - \sum_{k^{\prime} \neq k}
+\beta_{k^{\prime} v}$. This allows an interpretation of the topics in terms of
+the raw data, and the display reinforces the findings of Figures
+\ref{fig:antibiotics_lda_theta} and \ref{fig:antibiotics_lda_beta}. Instead of
+displaying all species together, Supplementary Figures
+\ref{fig:species_prototypes_1} through \ref{fig:species_prototypes_4} sort
+individual species by the topic representativeness measure.
+
+Similar approaches can be employed to identify taxa that disproportionately
+contain species with high membership in particular topics. For example, we can
+compute the average topic representativeness statistic defined above across all
+species within a taxonomic family in order to characterize that family. Families
+that are highly associated with individual topics are displayed in Supplementary
+Figures \ref{fig:uneven_taxa_ordered} and \ref{fig:uneven_taxa_facet}.
 
 \subsection{Dynamic Unigram model}
 \label{sec:antibiotics_unigram}
@@ -984,6 +1001,34 @@ Institute of Health TR01 grant AI112401.
 \begin{figure}[!p]
   \centering\includegraphics{figure/visualize_lda_beta-E}
   \caption{The analog of Figure \ref{fig:antibiotics_lda_beta} for Subject E. \label{fig:antibiotics_lda_beta_E}}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figure/uneven_taxa_ordered}
+  \caption{We can search for entire taxonomic families that seem associated with
+    individual topics. Here we calculate the average of the topic
+    representativeness statistic $\beta_{kv} - \sum_{k^{\prime} \neq k}
+    \beta_{k^{\prime} v}$ across all species $v$ within each
+    Family. Only those families that are most associated with a topic are
+    displayed here. The sizes of circles represents the number of species within
+    the family, which can be used to gauge the variability of the
+    estimate. Compare this view with Supplementary Figure
+    \ref{fig:uneven_taxa_facet}. \label{fig:uneven_taxa_ordered} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figure/uneven_taxa_facet}
+  \caption{All species within the families screened out from Figure
+    \ref{fig:uneven_taxa_ordered} are displayed here. Species among the
+    representatives displayed in Figure \ref{fig:topic_prototypes} are colored
+    according to the topics of they are prototypical. Grey series still
+    contribute to the average family-topic association measure, but were not
+    among the 50 prototypes for each topic. This view suggests that the
+    Rhodospillaceae, Alcaligenaceaeand Parabacteroides may have a large
+    fractions of representatives from Topics 3, 1, and 2,
+    respectively. \label{fig:uneven_taxa_facet} }
 \end{figure}
 
 \end{document}
