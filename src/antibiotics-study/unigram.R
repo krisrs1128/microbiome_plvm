@@ -55,8 +55,8 @@ stan_fit <- vb(
   adapt_engaged = FALSE
 )
 cat(sprintf(
-  "Finished in %s minutes\n",
-  round((Sys.time() - start_fit) / 60, 4)
+  "Finished in %f minutes\n",
+  round(Sys.time() - start_fit, 4)
 ))
 
 save(
