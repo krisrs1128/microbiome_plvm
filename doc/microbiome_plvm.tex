@@ -561,6 +561,22 @@ available as Supplementary Figures \ref{fig:antibiotics_lda_theta_D} through
 samples, and we perform no pre-filtering, though most species are present in
 very low numbers.
 
+It is possible that future studies may consider a similar design, but involve
+many more subjects. In this case, it would be possible to do better than model
+each subject separately. The simplest way to share information across subjects
+would be to still have separate topics $\beta_{k}^{s}$ for each individual $s$,
+but to place a common prior across all $\left(\beta_{k}^{s}\right_{k, s}$. This
+approach has the disadvantage that topics are not directly comparable across
+subjects. An alternative that mitigates this issue would be to share topics
+$\left(\beta_{k}\right)_{k}$ across all individuals, choosing $K$ to be larger
+than would be appropriate for any single subject. In this case, it would be
+expected that some $\theta_{ik}$ would be near zero for some topics for all
+samples within a subject -- that subject may never have samples drawn from a
+particular topic. It is possible to directly incorporate this behavior, in which
+some but not all topics are shared across subjects, into the model form by
+considering a hierarchical Dirichlet prior, rather than a standard one
+\citep{wallach2006topic, teh2005sharing}.
+
 In this case study, we focus on LDA and the Dynamic Unigram model. A similar
 study using GaP and Z-GaP is omitted, in light of the difficulties in estimation
 during the simulation studies. Throughout, we apply VB, though considering the
