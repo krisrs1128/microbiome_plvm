@@ -115,8 +115,9 @@ this work. Many of these techniques have been borrowed from text analysis,
 thinking of the bacterial counts matrix as a biological analog of the
 document-term matrix. The idea of transferring these techniques to the
 microbiome is not new, though its appropriateness and usefulness has only been
-explored in relatively limited settings \citep{holmes2012dirichlet,
-  chen2012estimating, chen2013variable, shafiei2015biomico}.
+explored in relatively limited settings \citep{schloss2007last,
+  holmes2012dirichlet, chen2012estimating, chen2013variable,
+  shafiei2015biomico, jiang2017microbiome}.
 
 \subsection{Dirichlet Multinomial Mixture Model}
 
@@ -294,11 +295,20 @@ posterior predictive probability distribution $p\left(x^{\ast}\vert x\right)
 x\right)$ is an estimate of the posterior. For each of these simulated data
 sets, the characterizing statistics $T_{k}\left(x_{s}\right)$ are computed.
 Graphically comparing the $T_{k}\left(x\right)$ calculated on the true data with
-the histogram of model-fit simulated $T_{k}\left(x^{\ast}\right)$ suggests ways
-in which the posited model fits -- the case where the observed
+the histogram of model-fit simulated $T_{k}\left(x_{s}^{\ast}\right)$ suggests
+ways in which the posited model fits -- the case where the observed
 $T_{k}\left(x\right)$ lie in the bulk of the $T_{k}\left(x^{\ast}_{s}\right)$ --
 or fails to fit -- the case where $T_{k}\left(x\right)$ lie far from the bulk of
 $T_{k}\left(x^{\ast}_{s}\right)$ -- the data well.
+
+For example, it is common to set $T_{k}\left(x\right) = \bar{x}_d$ or
+$\frac{1}{n}\sum_{i} \left(x_{id} - \bar{x}_d\right)^{2}$ to see whether
+simulated samples approximately match the moments of the $d^{th}$ dimension in
+the observed data. Alternatively, histograms of raw data or raw data subsetted
+to certain groups can guide evaluation. This corresponds to setting a
+multidimensional $T_{k}\left(x\right)$. For example, $T_k\left(x_{s}^\ast\right)
+= \left(n_{s1}, \dots, n_{sB}\right)$ could count the number of observations in
+the $s^{th}$ simulated data set falling into histogram bins $b = 1, \dots, B$.
 
 \subsection{Microbiome vs. Text Analysis}
 \label{sec:microbiome_vs_text_analysis}
@@ -561,6 +571,22 @@ available as Supplementary Figures \ref{fig:antibiotics_lda_theta_D} through
 samples, and we perform no pre-filtering, though most species are present in
 very low numbers.
 
+It is possible that future studies may consider a similar design, but involve
+many more subjects. In this case, it would be possible to do better than model
+each subject separately. The simplest way to share information across subjects
+would be to still have separate topics $\beta_{k}^{s}$ for each individual $s$,
+but to place a common prior across all $\left(\beta_{k}^{s}\right_{k, s}$. This
+approach has the disadvantage that topics are not directly comparable across
+subjects. An alternative that mitigates this issue would be to share topics
+$\left(\beta_{k}\right)_{k}$ across all individuals, choosing $K$ to be larger
+than would be appropriate for any single subject. In this case, it would be
+expected that some $\theta_{ik}$ would be near zero for some topics for all
+samples within a subject -- that subject may never have samples drawn from a
+particular topic. It is possible to directly incorporate this behavior, in which
+some but not all topics are shared across subjects, into the model form by
+considering a hierarchical Dirichlet prior, rather than a standard one
+\citep{wallach2006topic, teh2005sharing}.
+
 In this case study, we focus on LDA and the Dynamic Unigram model. A similar
 study using GaP and Z-GaP is omitted, in light of the difficulties in estimation
 during the simulation studies. Throughout, we apply VB, though considering the
@@ -587,6 +613,18 @@ of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right) \in
 \bar{\log \mathbf{p}}, \dots, \log p_{K} - \bar{\log
   \mathbf{p}}\right)$, which are similar to log-odds, but centered according to
 the average log probability, rather than any reference class.
+
+We note that both LDA and the Dynamic Unigram model are more computationally
+intensive than more common approaches, like principal components analysis (PCA)
+or multidimensional scaling (MDS), but are still amenable to routine
+application. For example, in the case studies below, LDA and the Dynamic Unigram
+model can both be compiled and run on a standard laptop\footnote{1.4GHz Intel
+  Core i5 processor and 4GB RAM} in 5.62 and 30.0 minutes, respectively -- the
+longer runtime of the Dynamic Unigram model is due to its larger number of
+parameters. Further, both approaches can be scaled to much larger datasets
+without requiring substantially more memory (but requiring somewhat longer
+training time) by applying stochastic variational inference
+\citep{hoffman2013stochastic, kucukelbir2015automatic}.
 
 \subsection{Latent Dirichlet Allocation}
 \label{sec:antibiotics_lda}
@@ -714,7 +752,9 @@ of Section \ref{sec:antibiotics_lda} and the unigram model of Section
 \ref{sec:antibiotics_unigram}. Each subpanel corresponds to a single species. The
 black lines represent observed time series. Note that the $y$-axis scales vary,
 as some species are much more abundant than others. Each dot is a simulated
-timepoint from a posterior predictive time series.
+timepoint from a posterior predictive time series. Formally, this corresponds to
+the choice $T\left(x\right) = \left(x_{\cdot v}\right)_{v \in \mathcal{V}}$
+where the random subset $\mathcal{V}$ indexes the displayed species.
 
 For LDA, the posterior predictive time series are on the appropriate scale with
 approximately the correct shape. However, we observe two substantial types of
@@ -743,9 +783,12 @@ input.
 
 An alternative posterior predictive check compares PCA scores and loadings in
 the true and posterior predictive data. Our motivation is that many microbiome
-studies base their findings on views generated by PCA, so it would be encouraging
-if our probabilistic summaries typically agree with the reductions produced by
-PCA.
+studies base their findings on views generated by PCA, so it would be
+encouraging if our probabilistic summaries typically agree with the reductions
+produced by PCA. Formally, we construct $T\left(x\right) = \left(u_{1}, u_{2},
+\lambda_{1}, \lambda_{2}, v_{1}, v_{2}\right)$ where $\left(u_{i}\right)$,
+$\left(\lambda_{i}\right)$ and $\left(v_{j}\right)$ are left singular vectors,
+eigenvalues, and right singular vectors of $x$, respectively.
 
 Figure \ref{fig:antibiotics_posterior_evals} gives the PCA eigenvalues between
 the true and posterior predictive samples, after applying an

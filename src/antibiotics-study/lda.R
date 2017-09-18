@@ -97,6 +97,7 @@ stan_data <- list(
   gamma = rep(0.5, ncol(x))
 )
 
+start_fit <- Sys.time()
 f <- stan_model(file = "../stan/lda_counts.stan")
 stan_fit <- vb(
   f,
@@ -105,6 +106,11 @@ stan_fit <- vb(
   eta = 1,
   adapt_engaged = FALSE
 )
+cat(sprintf(
+  "Finished in %f minutes\n",
+  Sys.time() - start_fit, 4)
+)
+
 save(
   stan_fit,
   file = sprintf("../../data/fits/lda-%s-%s.rda", argv$subject, gsub("[:|| ||-]", "", Sys.time()))

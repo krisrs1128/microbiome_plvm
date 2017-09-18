@@ -45,6 +45,7 @@ stan_data <- list(
   b0 = 0.5
 )
 
+start_fit <- Sys.time()
 m <- stan_model("../stan/unigram.stan")
 stan_fit <- vb(
   m,
@@ -53,6 +54,11 @@ stan_fit <- vb(
   eta = 0.5,
   adapt_engaged = FALSE
 )
+cat(sprintf(
+  "Finished in %f minutes\n",
+  round(Sys.time() - start_fit, 4)
+))
+
 save(
   stan_fit,
   file = sprintf("../../data/fits/unigram-%s-%s.rda", argv$subject, gsub("[:|| ||-]", "", Sys.time()))
