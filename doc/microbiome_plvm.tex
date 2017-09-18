@@ -115,8 +115,9 @@ this work. Many of these techniques have been borrowed from text analysis,
 thinking of the bacterial counts matrix as a biological analog of the
 document-term matrix. The idea of transferring these techniques to the
 microbiome is not new, though its appropriateness and usefulness has only been
-explored in relatively limited settings \citep{holmes2012dirichlet,
-  chen2012estimating, chen2013variable, shafiei2015biomico}.
+explored in relatively limited settings \citep{schloss2007last,
+  holmes2012dirichlet, chen2012estimating, chen2013variable,
+  shafiei2015biomico, jiang2017microbiome}.
 
 \subsection{Dirichlet Multinomial Mixture Model}
 
@@ -612,6 +613,18 @@ of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right) \in
 \bar{\log \mathbf{p}}, \dots, \log p_{K} - \bar{\log
   \mathbf{p}}\right)$, which are similar to log-odds, but centered according to
 the average log probability, rather than any reference class.
+
+We note that both LDA and the Dynamic Unigram model are more computationally
+intensive than more common approaches, like principal components analysis (PCA)
+or multidimensional scaling (MDS), but are still amenable to routine
+application. For example, in the case studies below, LDA and the Dynamic Unigram
+model can both be compiled and run on a standard laptop\footnote{1.4GHz Intel
+  Core i5 processor and 4GB RAM} in 5.62 and y minutes, respectively -- the longer
+runtime of the Dynamic Unigram model is due to its larger number of parameters.
+Further, both approaches can be scaled to much larger datasets without requiring
+substantially more memory (but requiring somewhat longer training time) by
+applying stochastic variational inference \citep{hoffman2013stochastic,
+  kucukelbir2015automatic}.
 
 \subsection{Latent Dirichlet Allocation}
 \label{sec:antibiotics_lda}
