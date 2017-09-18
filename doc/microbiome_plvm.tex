@@ -436,7 +436,6 @@ and so forth. Judging from the aligned densities in Figures
 \ref{fig:beta_contours_v10}, \ref{fig:beta_contours_v50}, and
 \ref{fig:beta_contours_nmf}, this ad-hoc alignment procedure seems sufficient.
 
-
 Figure \ref{fig:beta_contours_v10} displays the true and posterior $\beta_{k}$ for
 the LDA experiment with $V = 10$ features, while varying other simulation
 characteristics. Each panel represents a single experimental configuration, with
@@ -567,7 +566,20 @@ study using GaP and Z-GaP is omitted, in light of the difficulties in estimation
 during the simulation studies. Throughout, we apply VB, though considering the
 results of the simulation study, we exercise caution when interpreting estimated
 uncertainties. We set $K = 4$, based on the heuristic that a larger $K$ would be
-less meaningful, since there are only 56 timepoints.
+less meaningful, since there are only 56 timepoints. In cases where it is of
+interest to choose $K$ automatically, it would be possible to evaluate the
+likelihood of fitted models on a hold-out set, for a range of values of $K$, by
+fixing $\left(\hat{\beta}_{k}\right)_{k = 1}^{K}$ and estimating new
+$\hat{\theta}_{i}$ for the hold-out samples \citep{blei2003latent}. Indeed, this
+process reflects an advantage of probabilistic modeling: the Bayesian Occam's
+razor ensures that the posterior probability of a model won't always go up as
+$K$ increases -- contrast this with ordinary $K$-means, where tailored methods
+like the Gap or Silhouette statistics must be studied
+\citep{rasumussen2001occam, tibshirani2001estimating, kaufman2009finding}.
+Alternatively, the proposals of \citep{wallach2009evaluation} could be carried
+out. However, in this study, we guide the choice of $K$ based on what we find
+most useful for scientific interpretation, rather than that which necessarily
+gives the best fit over the entire population.
 
 Note that we plot the fitted probabilities on a logit scale -- for a raw vector
 of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right) \in
