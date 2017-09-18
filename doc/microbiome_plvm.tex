@@ -436,7 +436,6 @@ and so forth. Judging from the aligned densities in Figures
 \ref{fig:beta_contours_v10}, \ref{fig:beta_contours_v50}, and
 \ref{fig:beta_contours_nmf}, this ad-hoc alignment procedure seems sufficient.
 
-
 Figure \ref{fig:beta_contours_v10} displays the true and posterior $\beta_{k}$ for
 the LDA experiment with $V = 10$ features, while varying other simulation
 characteristics. Each panel represents a single experimental configuration, with
@@ -567,7 +566,20 @@ study using GaP and Z-GaP is omitted, in light of the difficulties in estimation
 during the simulation studies. Throughout, we apply VB, though considering the
 results of the simulation study, we exercise caution when interpreting estimated
 uncertainties. We set $K = 4$, based on the heuristic that a larger $K$ would be
-less meaningful, since there are only 56 timepoints.
+less meaningful, since there are only 56 timepoints. In cases where it is of
+interest to choose $K$ automatically, it would be possible to evaluate the
+likelihood of fitted models on a hold-out set, for a range of values of $K$, by
+fixing $\left(\hat{\beta}_{k}\right)_{k = 1}^{K}$ and estimating new
+$\hat{\theta}_{i}$ for the hold-out samples \citep{blei2003latent}. Indeed, this
+process reflects an advantage of probabilistic modeling: the Bayesian Occam's
+razor ensures that the posterior probability of a model won't always go up as
+$K$ increases -- contrast this with ordinary $K$-means, where tailored methods
+like the Gap or Silhouette statistics must be studied
+\citep{rasumussen2001occam, tibshirani2001estimating, kaufman2009finding}.
+Alternatively, the proposals of \citep{wallach2009evaluation} could be carried
+out. However, in this study, we guide the choice of $K$ based on what we find
+most useful for scientific interpretation, rather than that which necessarily
+gives the best fit over the entire population.
 
 Note that we plot the fitted probabilities on a logit scale -- for a raw vector
 of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right) \in
@@ -856,7 +868,7 @@ Institute of Health TR01 grant AI112401.
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics{figure/visualize_lda_theta_boxplot-F}
+  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-F}
   \caption{Boxplots represent approximate posteriors for estimated mixture
     memberships $\theta_{d}$, and their evolution over time. That is, each row
     of panels provides a different sequence of $\theta_{dk}$ for a single $k$,
@@ -870,7 +882,7 @@ Institute of Health TR01 grant AI112401.
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics{figure/visualize_lda_beta-F}
+  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-F}
   \caption{Each credible interval describes an approximate posterior for one
     $\beta_{vk}$. Coupled with Figure \ref{fig:antibiotics_lda_theta}, this
     guides the interpretation of which bacterial taxa are more or less prevalent
@@ -899,7 +911,7 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics{figure/antibiotics_unigram_mu-F}
+  \includegraphics[width=\textwidth]{figure/antibiotics_unigram_mu-F}
   \caption{Each posterior credible interval refers to one $\mu_{vt}$. The rows
     are a subset of times $t$ around the first antibiotic time course. The first
     row corresponds to a timepoint from before the treatment, the middle two
@@ -983,25 +995,59 @@ Institute of Health TR01 grant AI112401.
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics{figure/visualize_lda_theta_boxplot-D}
+  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-D}
   \caption{The analog of Figure \ref{fig:antibiotics_lda_theta} for Subject
     D. \label{fig:antibiotics_lda_theta_D}}
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics{figure/visualize_lda_beta-D}
+  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-D}
   \caption{The analog of Figure \ref{fig:antibiotics_lda_beta} for Subject D.}
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics{figure/visualize_lda_theta_boxplot-E}
+  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-E}
   \caption{The analog of Figure \ref{fig:antibiotics_lda_theta} for Subject E.}
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics{figure/visualize_lda_beta-E}
+  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-E}
   \caption{The analog of Figure \ref{fig:antibiotics_lda_beta} for Subject E. \label{fig:antibiotics_lda_beta_E}}
 \end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_1}
+  \caption{Rather than displaying all representative species together, as in
+    Figure \ref{topic_prototypes}, we can sort species according to how
+    representative they are of an individual topic. Here, the 15 species most
+    strongly associated with Topic 1 are given. THe panels are to be read from
+    left to right and from top to bottom, to go in decreasing value of
+    association. Note that the $y$-axis is on a square root
+    scale. \label{fig:species_prototypes_1} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_2}
+  \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
+    2.\label{fig:species_prototypes_2}. }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_3}
+  \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
+    3. \label{fig:species_prototypes_3} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_4}
+  \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
+    4. \label{fig:species_prototypes_4} }
+\end{figure}
+
 
 \begin{figure}[!p]
   \centering
@@ -1031,38 +1077,4 @@ Institute of Health TR01 grant AI112401.
     respectively. Note that as before, abundances are plotted on a square root
     scale. \label{fig:uneven_taxa_facet} }
 \end{figure}
-
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_1}
-  \caption{Rather than displaying all representative species together, as in
-    Figure \ref{topic_prototypes}, we can sort species according to how
-    representative they are of an individual topic. Here, the 15 species most
-    strongly associated with Topic 1 are given. THe panels are to be read from
-    left to right and from top to bottom, to go in decreasing value of
-    association. Note that the $y$-axis is on a square root
-    scale. \label{fig:species_prorotypes_1} }
-\end{figure}
-
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_2}
-  \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
-    2.\label{fig:species_prorotypes_2}. }
-\end{figure}
-
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_3}
-  \caption{The analog of Figure \ref{fig:species_prorotypes_1} for Topic
-    3. \label{fig:species_prorotypes_3} }
-\end{figure}
-
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_4}
-  \caption{The analog of Figure \ref{fig:species_1} for Topic
-    4. \label{fig:species_prorotypes_4} }
-\end{figure}
-
 \end{document}
