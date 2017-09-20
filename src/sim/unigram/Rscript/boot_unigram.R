@@ -15,7 +15,7 @@ library("rstan")
 library("feather")
 library("tidyverse")
 library("reshape2")
-source("../src/unigram_utils.R") # assumed running from pipeline dir
+source("../Rscript/unigram_utils.R") # assumed running from pipeline dir
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 set.seed(3141596)

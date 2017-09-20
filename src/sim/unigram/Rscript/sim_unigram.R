@@ -14,7 +14,7 @@
 library("feather")
 library("tidyverse")
 library("reshape2")
-source("../src/unigram_utils.R") # assumed running from pipeline dir
+source("../Rscript/unigram_utils.R") # assumed running from pipeline dir
 
 args <- commandArgs(trailingOnly = TRUE)
 argv <- list()
