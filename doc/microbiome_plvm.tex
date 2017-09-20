@@ -575,7 +575,7 @@ It is possible that future studies may consider a similar design, but involve
 many more subjects. In this case, it would be possible to do better than model
 each subject separately. The simplest way to share information across subjects
 would be to still have separate topics $\beta_{k}^{s}$ for each individual $s$,
-but to place a common prior across all $\left(\beta_{k}^{s}\right_{k, s}$. This
+but to place a common prior across all $\left(\beta_{k}^{s}\right)_{k, s}$. This
 approach has the disadvantage that topics are not directly comparable across
 subjects. An alternative that mitigates this issue would be to share topics
 $\left(\beta_{k}\right)_{k}$ across all individuals, choosing $K$ to be larger
@@ -810,6 +810,53 @@ the eigenvalues for the Dynamic Unigram model closely match those in the
 observed data -- even overestimating the size of small eigenvalues -- lending
 further evidence to the claim that this model is over-parameterized.
 
+\subsection{Comparison with principal coordinates}
+\label{subsec:comparison_with_pcoa}
+
+There is value in comparing this text-modeling based approach to the data from
+\citep{dethlefsen2011} with the analysis carried out in the original
+publication, based on principal coordinates analysis (PCoA) using a UniFrac
+distance. Both approaches accentuate the dramatic change in microbiome
+composition immediately following the administration of antibiotics, and both
+suggest the overall resilience of the microbiome, in the sense that the
+community returns to the preantibiotic state after several days. Further, both
+distinguish subject F as only making an incomplete recovery after the first
+antibiotic treatment.
+
+On the other hand, some findings are more easily accessible when using the
+probabilistic approach. For example, the availability of topics with mixed
+memberships strikes a balance between the continuous gradient representation of
+principle coordinate analysis of \citep{dethlefsen2011} and the discrete
+clusters provided by standard clustering techniques, which appear elsewhere in
+the microbiome literature \citep{diguilio2015temporal, mcmurdie2014waste}. This
+simplifies the taxonomic characterization of different communities -- with
+principal coordinates, it would be necessary to find species correlated with the
+principal coordinate axes, and indeed no visual representations of taxa ever
+appear in the figures of \ref{dethlefsen2011}. Further, through posterior
+predictive checks, we can perform model assessment in a way that is not so
+straightforwards with PCoA, and more broadly speaking, we by adopting
+probabilistic methods, we are able to describe the uncertainty associated with
+mixed membership and topic estimate.
+
+That said, PCoA enjoys certain advantages over the probabilistic approaches that
+have been the focus of this work. Perhaps most importantly, PCoA can be run in
+seconds, which makes it much more useful for interactive analysis. Second, by
+using the UniFrac distance, PCoA is able to account for the phylogenetic
+relatedness between taxa, encouraging phylogenetically similar taxa to play
+similar roles in the resulting ordination. Finally, the visual representation of
+samples provided by PCoA -- simply a two-dimensional scatter of the samples --
+is more easily digestible than the simultaneous display of all parameters in
+probability models.
+
+Broadly speaking, it seems valuable to have both types of tools available for
+practical scientific work. Ordination techniques like PCoA are useful for
+describing the relationship between sets of samples, in a way that requires
+little effort in either estimation or display. However, for more richly
+structured summaries, which are amenable to uncertainty quantification and model
+evaluation, probabilistic methods are ideal. We imagine a workflow in which
+researchers quickly develop a sense of their data using ordination, and then
+refine and critique their analysis using latent variables models.
+
 \section{Discussion}
 
 We have described the utility of taking a probabilistic modeling perspective in
@@ -824,7 +871,9 @@ techniques. Rather than focusing on any single model, like most earlier work, we
 have emphasized the practice of contrasting, critiquing, and learning from
 multiple alternatives. Throughout, we have emphasized both insights, in terms of
 estimated parameters, as well as uncertainty, in the form of full approximate
-posterior distributions.
+posterior distributions. We hope our efforts help to widen the biostatistician's
+toolbox and clarify the practical advantages and limitations of different
+approaches to microbiome data.
 
 Microbiome studies are a source of richly structured, high-dimensional data,
 coupled with novel scientific problem setups. For example, in the antibiotics
@@ -1060,9 +1109,9 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_1}
+  \includegraphics[width=\textwidth]{figure/species_prototypes_1}
   \caption{Rather than displaying all representative species together, as in
-    Figure \ref{topic_prototypes}, we can sort species according to how
+    Figure \ref{fig:topic_prototypes}, we can sort species according to how
     representative they are of an individual topic. Here, the 15 species most
     strongly associated with Topic 1 are given. THe panels are to be read from
     left to right and from top to bottom, to go in decreasing value of
@@ -1072,21 +1121,21 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_2}
+  \includegraphics[width=\textwidth]{figure/species_prototypes_2}
   \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
     2.\label{fig:species_prototypes_2}. }
 \end{figure}
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_3}
+  \includegraphics[width=\textwidth]{figure/species_prototypes_3}
   \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
     3. \label{fig:species_prototypes_3} }
 \end{figure}
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=0.7\textwidth]{figure/species_prototypes_4}
+  \includegraphics[width=\textwidth]{figure/species_prototypes_4}
   \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
     4. \label{fig:species_prototypes_4} }
 \end{figure}
@@ -1108,7 +1157,7 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=0.8\textwidth]{figure/uneven_taxa_facet}
+  \includegraphics[width=\textwidth]{figure/uneven_taxa_facet}
   \caption{All species within the families screened out from Figure
     \ref{fig:uneven_taxa_ordered} are displayed here. Species among the
     representatives displayed in Figure \ref{fig:topic_prototypes} are colored
