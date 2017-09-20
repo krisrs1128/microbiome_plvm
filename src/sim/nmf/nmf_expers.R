@@ -18,22 +18,23 @@ base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 nmf_dir <- file.path(base_dir, "src", "sim", "nmf")
 config_path <- file.path(nmf_dir, "config.json")
 stan_path <- file.path(.libPaths()[1], "nmfSim", "extdata")
-fits_dir = file.path(nmf_dir, "fits")
+fits_dir <- file.path(nmf_dir, "fits")
 dir.create(fits_dir, recursive = TRUE)
 
 sim_factors <- list(
   "N" = c(20, 100),
-  "P" = 10,
-  "prior_params" = list(c(10, 10, 1, 1), c(4/0.1, 10/0.1, 1, 1), c(1/0.1, 5/0.1, 1, 1)),
+  "P" = 750,
+  ## chosen so that means are 5, 10, 20 for each y[i, j]
+  "prior_params" = list(c(4, 1, 0.015, 0.15), c(2, 1, 0.015, 0.15), c(1, 1, 0.015, 0.15)),
   "zero_inf_prob" = c(0, 0.2)
 )
 
 sim_factors_high <- sim_factors
-sim_factors_high$P <- 50
-sim_factors_high$prior_params <- list(c(5/0.1, 1/0.1, 1, 1), c(4/0.1, 2/0.1, 1, 1), c(10, 10, 1, 1))
+sim_factors_high$P <- 1500
+sim_factors$prior_params <- list(c(8, 1, 0.015, 0.15), c(4, 1, 0.015, 0.15), c(2, 1, 0.015, 0.15))
 
 model_factors <- list(
-  "inference" = c("gibbs", "vb", "bootstrap"),
+  "inference" = c("vb", "bootstrap"),
   "method" = c(
     file.path(stan_path, "nmf_gamma_poisson.stan"),
     file.path(stan_path, "nmf_gamma_poisson_zero.stan")
@@ -47,7 +48,7 @@ config_df <- rbind(
 
 write_configs(
   config_df,
-  n_batches = 3,
+  n_batches = 4,
   config_path = config_path,
   output_dir = fits_dir
 )

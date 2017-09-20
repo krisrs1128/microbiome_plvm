@@ -4,19 +4,20 @@ df <- expand.grid(
   V = c(750, 1500),
   K = 2,
   N = c(3750, 7500, 15000),
-  alpha0 = 1,
-  gamma0 = 1
+  a0 = 1,
+  b0 = 1,
+  sigma0 = 1
 )
 
 df$id <- seq_len(nrow(df))
-lda_dir <- file.path(
+unigram_dir <- file.path(
   Sys.getenv("MICROBIOME_PLVM_DIR"),
   "src",
   "sim",
-  "lda"
+  "unigram"
 )
 
 cat(
   toJSON(df, auto_unbox = TRUE),
-  file = file.path(lda_dir, "pipeline", "experiment.json")
+  file = file.path(unigram_dir, "pipeline", "experiment.json")
 )
