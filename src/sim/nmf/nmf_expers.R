@@ -24,14 +24,14 @@ dir.create(fits_dir, recursive = TRUE)
 sim_factors <- list(
   "N" = c(20, 100),
   "P" = 750,
-  ## chosen so that means are 5, 10, 15 for each y[i, j]
-  "prior_params" = list(c(4, 1, 0.015, 0.15), c(2, 1, 0.015, 0.15), c(4/3, 1, 0.015, 0.15)),
+  ## chosen so that means are 5, 10, 20 for each y[i, j]
+  "prior_params" = list(c(4, 1, 0.015, 0.15), c(2, 1, 0.015, 0.15), c(1, 1, 0.015, 0.15)),
   "zero_inf_prob" = c(0, 0.2)
 )
 
 sim_factors_high <- sim_factors
 sim_factors_high$P <- 1500
-sim_factors$prior_params <- list(c(8, 1, 0.015, 0.15), c(4, 1, 0.015, 0.15), c(8/3, 1, 0.015, 0.15))
+sim_factors$prior_params <- list(c(8, 1, 0.015, 0.15), c(4, 1, 0.015, 0.15), c(2, 1, 0.015, 0.15))
 
 model_factors <- list(
   "inference" = c("vb", "bootstrap"),
