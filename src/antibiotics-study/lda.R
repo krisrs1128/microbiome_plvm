@@ -327,6 +327,7 @@ p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
   facet_grid(Taxon_5 ~ prototypical, scale = "free_y") +
   theme(
     strip.text.y = element_text(size = 6),
+    panel.border = element_rect(fill = "transparent", size = 0.75),
     legend.position = "bottom"
   )
 ggsave(
@@ -348,7 +349,11 @@ for (k in seq_len(stan_data$K)) {
                  "other" = "grey"),
       guide = guide_legend(override.aes = list(alpha = 1, size = 3))
     ) +
-    facet_wrap(~rsv, scale = "free_y", nrow = 3)
+    facet_wrap(~rsv, scale = "free_y", nrow = 3) +
+    theme(
+      panel.border = element_rect(fill = "transparent", size = 0.75),
+      legend.position = "bottom"
+    )
   ggsave(
     sprintf("../../doc/figure/species_prototypes_%s.png", k),
     p, width = 6.5, height = 3.5
@@ -416,11 +421,14 @@ p <- ggplot(mbt_uneven_taxa) +
     alpha = 0.6
   ) +
   scale_y_sqrt(breaks = scales::pretty_breaks(3)) +
-  scale_color_hue(guide = guide_legend(override.aes = list(alpha = 1, size = 2))) +
+  scale_color_hue("Prototype", guide = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   facet_wrap(~ Taxon_5, scale = "free_y") +
-  labs(y = "abundance (sqrt scale)")
+  labs(y = "abundance (sqrt scale)") +
   theme(
-    strip.text = element_text(size = 6.5)
+    strip.text = element_text(size = 6.5),
+    axis.text = element_text(size = 6),
+    legend.position = "bottom",
+    panel.border = element_rect(fill = "transparent", size = 0.75)
   )
 ggsave(
   "../../doc/figure/uneven_taxa_facet.png",
