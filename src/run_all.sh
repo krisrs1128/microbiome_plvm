@@ -14,8 +14,14 @@ Rscript $MICROBIOME_PLVM_DIR/src/sim/nmf/nmf_vis.R
 ## Run simulations and generate figures for LDA experiment
 cd $MICROBIOME_PLVM_DIR/src/sim/lda/pipeline
 Rscript ../Rscript/build_config.R
-python3 pipeline.py LDAExperiment --local-scheduler --workers=2
+python pipeline.py LDAExperiment --local-scheduler --workers=2
 Rscript ../lda_vis.R
+
+## Run simulations and generate figures for Unigram experiment
+cd $MICROBIOME_PLVM_DIR/src/sim/lda/pipeline
+Rscript ../Rscript/build_config.R
+python pipeline.py Unigramexperiment --local-scheduler --workers=2
+# Rscript ../unigram_vis.R
 
 cd $MICROBIOME_PLVM_DIR
 
