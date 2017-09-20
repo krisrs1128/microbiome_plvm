@@ -647,10 +647,11 @@ experienced long-term antibiotic effects on bacterial community composition.
 Topics 2 and 4 seem to be overrepresented during the antibiotic treatments.
 Topic 2 is elevated immediately after the antibiotic treatment. Topic 4 seems to
 summarize those bacteria that are initially negatively impacted by the
-antibiotic treatments, but which recover relatively quickly. The fact that
-Topics 2 and 4 are learned from the data without enforcing any temporal
-evolution structure on the samples suggests that under an antibiotic
-perturbation, the system exhibits differential recovery.
+antibiotic treatments, but which recover relatively quickly and have higher
+abundance at the end of the trial than at the beginning. The fact that Topics 2
+and 4 are learned from the data without enforcing any temporal evolution
+structure on the samples suggests that under an antibiotic perturbation, the
+system exhibits differential recovery.
 
 To interpret these topics in terms of their bacterial community fingerprint, we
 study the estimated topic distributions $\beta_{k}$. This is displayed in Figure
@@ -687,10 +688,14 @@ have screened all species for those that seem primarily associated with a single
 topic, and plotted them along with the topic for they are representative.
 Specifically, representatives of the $k^{th}$ topic were found by choosing the
 50 species $v$ with the largest values of $\beta_{kv} - \sum_{k^{\prime} \neq k}
-\beta_{k^{\prime} v}$. This allows an interpretation of the topics in terms of
-the raw data, and the display reinforces the findings of Figures
-\ref{fig:antibiotics_lda_theta} and \ref{fig:antibiotics_lda_beta}. Instead of
-displaying all species together, Supplementary Figures
+\beta_{k^{\prime} v}$.
+
+This allows an interpretation of the topics in terms of the raw data, and the
+display reinforces the findings of Figures \ref{fig:antibiotics_lda_theta} and
+\ref{fig:antibiotics_lda_beta}. In particular, this view makes clear how much
+variation there is in species abundances within taxonomic families -- compare
+Topics 1 and 2 among representative Lachnospiraceae and Bacteroides, for
+example. Instead of displaying all species together, Supplementary Figures
 \ref{fig:species_prototypes_1} through \ref{fig:species_prototypes_4} sort
 individual species by the topic representativeness measure.
 
