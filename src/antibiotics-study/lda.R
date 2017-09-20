@@ -287,7 +287,7 @@ for (k in seq_len(stan_data$K)) {
 }
 
 ## join taxa, sample, and count data, for some plots
-samples <- abt %>%
+sam_data <- abt %>%
   sample_data() %>%
   data.frame() %>%
   rownames_to_column("sample") %>%
@@ -296,7 +296,7 @@ samples <- abt %>%
 mabt <- get_taxa(abt) %>%
   melt(varnames = c("rsv", "sample")) %>%
   as_data_frame() %>%
-  left_join(samples) %>%
+  left_join(sam_data) %>%
   left_join(beta_summary %>% select(rsv, Taxon_5)) %>%
   mutate(prototypical = NA)
 
@@ -315,7 +315,10 @@ p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
     aes(x = time, y = value, group = rsv, col = Taxon_5),
     alpha = 0.6
   ) +
-  scale_y_sqrt(breaks = scales::pretty_breaks(3)) +
+  scale_y_sqrt(
+    "abundance (sqrt scale)",
+    breaks = scales::pretty_breaks(3)
+  ) +
   scale_color_manual(
     "Family",
     values = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "grey"),
@@ -323,10 +326,14 @@ p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
   ) +
   facet_grid(Taxon_5 ~ prototypical, scale = "free_y") +
   theme(
-    strip.text.y = element_text(size = 5),
+    strip.text.y = element_text(size = 6),
+    panel.border = element_rect(fill = "transparent", size = 0.75),
     legend.position = "bottom"
   )
-ggsave("../../doc/figure/topic_prototypes.png", p)
+ggsave(
+  "../../doc/figure/topic_prototypes.png",
+  p, width = 6.5, height = 4.5
+)
 
 for (k in seq_len(stan_data$K)) {
   cur_prototypes <- mabt %>%
@@ -342,8 +349,15 @@ for (k in seq_len(stan_data$K)) {
                  "other" = "grey"),
       guide = guide_legend(override.aes = list(alpha = 1, size = 3))
     ) +
-    facet_wrap(~rsv, scale = "free_y", nrow = 3)
-  ggsave(sprintf("../../doc/figure/species_prototypes_%s.png", k), p)
+    facet_wrap(~rsv, scale = "free_y", nrow = 3) +
+    theme(
+      panel.border = element_rect(fill = "transparent", size = 0.75),
+      legend.position = "bottom"
+    )
+  ggsave(
+    sprintf("../../doc/figure/species_prototypes_%s.png", k),
+    p, width = 6.5, height = 3.5
+  )
 }
 
 ## make comparisons at the family level, by studying
@@ -390,10 +404,15 @@ p <- ggplot(uneven_probs) +
       size = n_prob
     )
   ) +
+  labs(x = "Family", y = "Average Topic Probability", size = "n[taxa]") +
   theme(
-    axis.text.x = element_text(angle = -90, hjust = 0)
+    axis.text.x = element_text(angle = -90, hjust = 0),
+    panel.border = element_rect(size = 1, fill = "transparent")
   )
-ggsave("../../doc/figure/uneven_taxa_ordered.png", p)
+ggsave(
+  "../../doc/figure/uneven_taxa_ordered.png",
+  p, width = 5, height = 5
+)
 
 mbt_uneven_taxa$Taxon_5 <- factor(mbt_uneven_taxa$Taxon_5, levels = Taxon_5_order)
 p <- ggplot(mbt_uneven_taxa) +
@@ -402,12 +421,19 @@ p <- ggplot(mbt_uneven_taxa) +
     alpha = 0.6
   ) +
   scale_y_sqrt(breaks = scales::pretty_breaks(3)) +
-  scale_color_hue(guide = guide_legend(override.aes = list(alpha = 1, size = 2))) +
+  scale_color_hue("Prototype", guide = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   facet_wrap(~ Taxon_5, scale = "free_y") +
+  labs(y = "abundance (sqrt scale)") +
   theme(
-    strip.text = element_text(size = 6.5)
+    strip.text = element_text(size = 6.5),
+    axis.text = element_text(size = 6),
+    legend.position = "bottom",
+    panel.border = element_rect(fill = "transparent", size = 0.75)
   )
-ggsave("../../doc/figure/uneven_taxa_facet.png", p)
+ggsave(
+  "../../doc/figure/uneven_taxa_facet.png",
+  p, width = 6, height = 3.5
+)
 
 ## ---- posterior-checks ----
 checks_data <- posterior_checks_input(
