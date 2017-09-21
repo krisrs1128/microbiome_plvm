@@ -4,6 +4,7 @@
 ## Fit an LDA Model using STAN.
 
 args <- commandArgs(trailingOnly = TRUE)
+print(args)
 output_dir <- args[[1]]
 gen_id <- args[[2]]
 data_path <- args[[3]]
@@ -41,6 +42,7 @@ if (tolower(fit_method) == "vb") {
     fit <- vb(
       stan_model(stan_path),
       data = stan_data,
+      iter = 1000,
       output_samples = n_samples
     )
 } else if (tolower(fit_method) == "gibbs") {
@@ -48,7 +50,8 @@ if (tolower(fit_method) == "vb") {
       stan_path,
       data = stan_data,
       chains = 1,
-      iter = 2 * n_samples ## half are warmup
+      warmup = 1000,
+      iter = 1000 + n_samples
     )
 } else {
     stop("fit_method must be either 'gibbs' or 'vb'")
