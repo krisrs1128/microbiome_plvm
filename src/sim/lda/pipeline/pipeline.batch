@@ -3,7 +3,7 @@
 #all commands that start with SBATCH contain commands that are just used by SLURM for scheduling
 #################
 #set a job name
-#SBATCH --job-name=boot_expers
+#SBATCH --job-name=lda_expers
 #################
 #a file for job output, you can check job progress, append the job ID with %j to make it unique
 #SBATCH --output=pipeline%j.out
@@ -13,7 +13,7 @@
 #################
 #time you think you need; default is 2 hours
 #format could be dd-hh:mm:ss, hh:mm:ss, mm:ss, or mm
-#SBATCH --time=1:00:00
+#SBATCH --time=00:10:00
 #################
 #Quality of Service (QOS); think of it as job priority, there is also --qos=long for with a max job length of 7 days, qos normal is 48 hours.
 # REMOVE "normal" and set to "long" if you want your job to run longer than 48 hours,
@@ -23,7 +23,7 @@
 
 # We are submitting to the dev partition, there are several on sherlock: normal, gpu, owners, hns, bigmem (jobs requiring >64Gigs RAM)
 #
-#SBATCH -p dev,hns
+#SBATCH -p normal
 #################
 #number of nodes you are requesting, the more you ask for the longer you wait
 #SBATCH --nodes=1
@@ -46,8 +46,5 @@
 #now run normal batch commands
 # note the "CMD BATCH is an R specific command
 source /home/kriss1/.bash_profile
-# You can use srun if your job is parallel
-
-# otherwise:
-cd /scratch/users/kriss1/programming/research/boot_expers/pipeline/
-python3 pipeline.py LDAExperiment --local-scheduler --workers=5
+cd /scratch/users/kriss1/programming/research/microbiome_plvm/src/sim/lda/pipeline/
+python3 pipeline.py LDAExperiment --local-scheduler --workers=3
