@@ -47,4 +47,4 @@
 # note the "CMD BATCH is an R specific command
 source /home/kriss1/.bash_profile
 cd /scratch/users/kriss1/programming/research/microbiome_plvm/src/sim/lda/pipeline/
-python3 pipeline.py LDAExperiment --local-scheduler --workers=3
+python3 pipeline.py LDAExperiment --local-scheduler --workers=5
