@@ -17,7 +17,7 @@ library("nmfSim")
 base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 nmf_dir <- file.path(base_dir, "src", "sim", "nmf")
 config_path <- file.path(nmf_dir, "config.json")
-stan_path <- file.path(.libPaths()[1], "nmfSim", "extdata")
+stan_path <- file.path(base_dir, "src", "stan")
 fits_dir <- file.path(nmf_dir, "fits")
 dir.create(fits_dir, recursive = TRUE)
 
@@ -48,7 +48,7 @@ config_df <- rbind(
 
 write_configs(
   config_df,
-  n_batches = 4,
+  n_batches = 1,
   config_path = config_path,
   output_dir = fits_dir
 )
