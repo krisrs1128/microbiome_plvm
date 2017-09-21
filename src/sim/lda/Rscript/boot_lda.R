@@ -9,11 +9,11 @@ output_dir <- args[[1]]
 start_iter <- as.integer(args[[2]])
 end_iter <- as.integer(args[[3]])
 fit_id <- args[[4]]
-input_path <- args[[5]]
-N <- as.integer(args[[6]])
-alpha <- as.numeric(args[[7]])
-gamma <- as.numeric(args[[8]])
-n_samples <- as.integer(args[[9]])
+n_samples <- as.integer(args[[5]])
+input_path <- args[[6]]
+N <- as.integer(args[[7]])
+alpha <- as.numeric(args[[8]])
+gamma <- as.numeric(args[[9]])
 
 ## ---- libraries ----
 library("feather")
@@ -48,7 +48,7 @@ for (i in seq(start_iter, end_iter)) {
     vb_fit <- vb(
         stan_model(file.path(.libPaths()[1], "ldaSim", "extdata", "lda.stan")),
         stan_data,
-        iter = n_samples
+        output_samples = n_samples
     ) %>%
         rstan::extract()
 

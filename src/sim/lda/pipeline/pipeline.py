@@ -163,9 +163,10 @@ class LDABoot(luigi.Task):
         run_cmd = [
             "Rscript", self.conf.get("expers", "boot_script"),
             os.path.join(self.conf.get("expers", "output_dir"), "bootstraps"),
-            self.start_ix, self.end_ix, fit_id(self), input_path, self.N,
-            self.alpha0, self.gamma0, self.conf.get("expers", "n_samples")
+            self.start_ix, self.end_ix, fit_id(self), self.conf.get("expers",
+            "n_samples"), input_path, self.N, self.alpha0, self.gamma0,
         ]
+        print(run_cmd)
         run_and_check(run_cmd)
 
     def output(self):
