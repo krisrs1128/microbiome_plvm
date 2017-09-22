@@ -4,7 +4,6 @@
 ## Fit an LDA Model using STAN.
 
 args <- commandArgs(trailingOnly = TRUE)
-print(args)
 output_dir <- args[[1]]
 gen_id <- args[[2]]
 data_path <- args[[3]]

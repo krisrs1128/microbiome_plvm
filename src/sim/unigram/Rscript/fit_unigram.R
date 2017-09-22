@@ -13,8 +13,8 @@
 library("feather")
 library("tidyverse")
 library("rstan")
-rstan_options(auto_write = TRUE)
-options(mc.cores = parallel::detectCores())
+## rstan_options(auto_write = TRUE)
+## options(mc.cores = parallel::detectCores())
 
 args <- commandArgs(trailingOnly = TRUE)
 output_dir <- args[[1]]
