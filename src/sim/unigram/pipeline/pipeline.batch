@@ -46,5 +46,5 @@
 #now run normal batch commands
 # note the "CMD BATCH is an R specific command
 source /home/kriss1/.bash_profile
-cd /scratch/users/kriss1/programming/research/microbiome_plvm/src/sim/lda/pipeline/
+cd /scratch/users/kriss1/programming/research/microbiome_plvm/src/sim/unigram/pipeline/
 python3 pipeline.py UnigramExperiment --local-scheduler --workers=5
