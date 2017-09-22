@@ -3,7 +3,7 @@
 #all commands that start with SBATCH contain commands that are just used by SLURM for scheduling
 #################
 #set a job name
-#SBATCH --job-name=lda_expers
+#SBATCH --job-name=unigram_expers
 #################
 #a file for job output, you can check job progress, append the job ID with %j to make it unique
 #SBATCH --output=pipeline%j.out
@@ -47,4 +47,4 @@
 # note the "CMD BATCH is an R specific command
 source /home/kriss1/.bash_profile
 cd /scratch/users/kriss1/programming/research/microbiome_plvm/src/sim/lda/pipeline/
-python3 pipeline.py UnigramExperiment --local-scheduler --workers=3
+python3 pipeline.py UnigramExperiment --local-scheduler --workers=5
