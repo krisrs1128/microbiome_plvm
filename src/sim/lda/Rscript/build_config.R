@@ -1,9 +1,9 @@
 library("jsonlite")
 df <- expand.grid(
   D = c(20, 100),
-  V = c(750, 1500),
+  V = c(325, 750),
   K = 2,
-  N = c(3750, 7500, 15000),
+  N = c(1625, 3250, 6500),
   alpha0 = 1,
   gamma0 = 1
 )
