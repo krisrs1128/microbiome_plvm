@@ -89,7 +89,7 @@ class LDAExperiment(luigi.WrapperTask):
         batch_endpoints = [0] + [
             i for i in list(range(n_samples - 1))
             if batches[i] != batches[i + 1]
-        ]
+        ] + [n_samples - 1]
 
         tasks = []
         for (k, v) in enumerate(experiment):
@@ -166,7 +166,6 @@ class LDABoot(luigi.Task):
             self.start_ix, self.end_ix, fit_id(self), self.conf.get("expers",
             "n_samples"), input_path, self.N, self.alpha0, self.gamma0,
         ]
-        print(run_cmd)
         run_and_check(run_cmd)
 
     def output(self):
