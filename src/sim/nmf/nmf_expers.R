@@ -31,10 +31,10 @@ sim_factors <- list(
 
 sim_factors_high <- sim_factors
 sim_factors_high$P <- 750
-sim_factors$prior_params <- list(c(8, 1, 0.015, 0.15), c(4, 1, 0.015, 0.15), c(2, 1, 0.015, 0.15))
+sim_factors_high$prior_params <- list(c(8, 1, 0.015, 0.15), c(4, 1, 0.015, 0.15), c(2, 1, 0.015, 0.15))
 
 model_factors <- list(
-  "inference" = c("vb", "bootstrap"),
+  "inference" = c("gibbs", "vb", "bootstrap"),
   "method" = c(
     file.path(stan_path, "nmf_gamma_poisson.stan"),
     file.path(stan_path, "nmf_gamma_poisson_zero.stan")
@@ -48,7 +48,8 @@ config_df <- rbind(
 
 write_configs(
   config_df,
-  n_batches = 1,
+  n_batches = 4,
+  list.files("fits"),
   config_path = config_path,
   output_dir = fits_dir
 )
