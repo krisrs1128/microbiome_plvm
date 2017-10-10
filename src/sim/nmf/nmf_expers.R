@@ -48,7 +48,7 @@ config_df <- rbind(
 
 write_configs(
   config_df,
-  n_batches = 4,
+  n_batches = 2,
   list.files("fits"),
   config_path = config_path,
   output_dir = fits_dir
@@ -60,7 +60,7 @@ configs <- fromJSON(config_path, simplifyVector = FALSE)
 batches <- sapply(configs, function(x) { x$batch })
 
 rscript_file <- file.path(nmf_dir, "nmf_script.R")
-for (i in seq_along(unique(batches))) {
+for (i in unique(batches)) {
   rscript_cmd <- paste("Rscript", rscript_file, config_path, i)
   system(paste(rscript_cmd, "&"))
 }
