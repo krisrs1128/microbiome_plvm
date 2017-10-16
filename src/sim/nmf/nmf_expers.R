@@ -30,7 +30,7 @@ sim_factors <- list(
 )
 
 sim_factors_high <- sim_factors
-sim_factors_high$P <- 750
+sim_factors_high$P <- 650
 sim_factors_high$prior_params <- list(c(8, 1, 0.015, 0.15), c(4, 1, 0.015, 0.15), c(2, 1, 0.015, 0.15))
 
 model_factors <- list(
@@ -48,7 +48,7 @@ config_df <- rbind(
 
 write_configs(
   config_df,
-  n_batches = 2,
+  n_batches = 5,
   list.files("fits"),
   config_path = config_path,
   output_dir = fits_dir
