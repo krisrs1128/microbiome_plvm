@@ -80,11 +80,11 @@ plot_opts$facet_terms <- c("zero_inf_prob", "inference", "method")
 plot_opts$group <- "i"
 
 ## ---- zinf-betas-errors ----
-zinf_data$a <- as.character(zinf_data$a)
+## zinf_data$a <- as.character(zinf_data$a)
 zinf_data$zero_inf_prob <- as.character(zinf_data$zero_inf_prob)
 zinf_data <- zinf_data %>%
   mutate(
-    EN = paste0("E[N] = ", P * b / as.numeric(a))
+    EN = paste0("E[N] = ", P * b * 10 / as.numeric(a))
   )
 
 perf <- zinf_data %>%
@@ -109,8 +109,8 @@ p <- ggplot(perf) +
     size = 0.7, alpha = 0.6
   ) +
   facet_grid(method + V ~ D + EN) +
-  scale_y_continuous(limits = c(0, 1.5)) +
-  scale_x_continuous(limits = c(0, 3)) +
+  scale_y_continuous(limits = c(0, 3)) +
+  scale_x_continuous(limits = c(0, 30)) +
   scale_color_manual(values = method_cols) +
   guides(
     color = guide_legend(override.aes = list(alpha = 1, size = 2)),
