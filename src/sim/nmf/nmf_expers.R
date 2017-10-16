@@ -14,7 +14,7 @@ library("nmfSim")
 
 ## ---- configuration ----
 ## create the configuration JSON file
-base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
+base_dir <- "/scratch/users/kriss1/programming/research/microbiome_plvm/"
 nmf_dir <- file.path(base_dir, "src", "sim", "nmf")
 config_path <- file.path(nmf_dir, "config.json")
 stan_path <- file.path(base_dir, "src", "stan")
@@ -48,7 +48,7 @@ config_df <- rbind(
 
 write_configs(
   config_df,
-  n_batches = 5,
+  n_batches = 9,
   list.files("fits"),
   config_path = config_path,
   output_dir = fits_dir

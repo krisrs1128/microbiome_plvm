@@ -45,6 +45,7 @@
 
 #now run normal batch commands
 # note the "CMD BATCH is an R specific command
+module load python/3.6.1
 source /home/kriss1/.bash_profile
 cd /scratch/users/kriss1/programming/research/microbiome_plvm/src/sim/unigram/pipeline/
 python3 pipeline.py UnigramExperiment --local-scheduler --workers=5
