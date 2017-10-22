@@ -27,12 +27,18 @@ beta <- get_truth_data(metadata, "beta") %>%
 combined <- get_samples(metadata, "beta", c("iteration", "k", "variable")) %>%
   full_join(get_bootstraps(metadata, "beta")) %>%
   left_join(beta)
+combined <- combined[sample(1:nrow(combined), 7500), ]
 
 ## ---- beta-alignment ----
 mcombined <- melt_reshaped_samples(combined)
+aboot <- align_bootstraps(mcombined %>% filter(method == "bootstrap"))
+aboot <- aboot %>%
+  filter(method == "bootstrap") %>%
+  rename(truth_2 = truth_1, truth_1 = truth_2, value_1 = value_2, value_2 = value_1)
+
 mcombined <- rbind(
   align_posteriors(mcombined %>% filter(method %in% c("vb", "gibbs"))),
-  align_bootstraps(mcombined %>% filter(method == "bootstrap"))
+  aboot
 )
 
 combined <- mcombined %>%
@@ -56,6 +62,9 @@ sort_levels <- function(x) {
 combined$D <- sort_levels(combined$D)
 combined$N <- sort_levels(combined$N)
 combined$V <- sort_levels(combined$V)
+
+## seems like the truth is constant over configurations, which is what we want
+## combined %>% filter(D == 20, iteration == 1, method == "gibbs", variable == 1, V == 325)
 
 ## ---- beta-contours-object ----
 unique_V <- unique(mcombined$V)
