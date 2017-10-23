@@ -193,7 +193,7 @@ combined <- combined %>%
 combined$D <- droplevels(combined$D)
 
 plot_opts <- list(x = "sqrt(value_1)", y = "sqrt(value_2)",
-                  group = "j", fill_type = "gradient", h = 1, # was h = 0.1
+                  group = "j", fill_type = "gradient", h = 1,
                   theme_opts = list(border_size = 0.7))
 
 ggsave(
