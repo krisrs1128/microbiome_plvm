@@ -71,18 +71,41 @@ for (i in seq_along(samples_paths)) {
     along = 1
   )
 }
+names(lsamples) <- samples_paths
 
 lsamples <- quantiles
-samples <- melt(
-  lsamples,
-  varnames = c("file", "statistic", "i", "v"),
-  value.name = "mu"
-)
+
+samples <- melt(lsamples)
+colnames(samples) <- c("statistic", "i", "v", "mu", "file")
+samples <- samples %>%
+  left_join(metadata) %>%
+  spread(statistic, mu)
 
 ## study the bootstrap samples
 ## bootstrap_paths <- metadata %>%
 ##   filter(method == "bootstrap") %>%
 ##   .[["file"]]
 ## rm(samples)
+
+ggplot(samples) +
+  geom_point(
+    aes(
+      x = v, y = mu
+    )
+  ) +
+  facet_wrap(D ~ V)
+
+
+lbootstraps <- list()
+for (i in seq_along(bootstrap_paths)) {
+  cat(sprintf(
+    "Processing sample %s [%s / %s] \n",
+    samples_paths[i],
+    i,
+    length(samples_paths)
+  ))
+  
+}
+
 
 ## boot <- feather_from_paths(bootstrap_paths)
