@@ -20,10 +20,12 @@ library("data.table")
 base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 unigram_dir <- file.path(base_dir, "src", "sim", "unigram")
 output_path <- file.path(unigram_dir, "unigram_fits")
-metadata <- read_csv(file.path(output_path, "metadata.csv")) %>%
-  unique() %>%
-  mutate(file = file.path(unigram_dir, "pipeline", file))
-
+metadata <- read_csv(
+  file.path(output_path, "metadata.csv"),
+  skip = 1,
+  col_names = c("file", "D", "V", "start_ix", "sigma0", "N", "?", "n_samples", "method")
+) %>%
+  unique()
 
 ## get true underlying parameters
 truth_paths <- metadata %>%
@@ -32,10 +34,23 @@ truth_paths <- metadata %>%
   unlist()
 
 mu <- feather_from_paths(truth_paths) %>%
-  dcast(file + i ~ v, value = "mu")
+  left_join(metadata)
+
+ggplot(mu) +
+  geom_hline(yintercept = 0, alpha = 0.4) +
+  geom_point(
+    aes(
+      x = v, y = mu, group = i
+    ),
+    alpha = 0.2,
+    size = 0.3
+  ) +
+  facet_grid(D ~ V, scales = "free")
+
 
 ## read in gibbs and vb samples
 samples_paths <- metadata %>%
   filter(method %in% c("vb", "gibbs")) %>%
   select(file) %>%
   unlist()
+samples <- rdata_from_paths(samples_paths, "mu")
