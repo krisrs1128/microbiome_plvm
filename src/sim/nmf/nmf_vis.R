@@ -133,25 +133,33 @@ ggsave(
 ## ---- zinf-betas-contours ----
 combined <- zinf_data %>%
   filter(P == 325)
-combined <- combined[sample(1:nrow(combined), 500), ]
-
-  filter(method == "bootstrap") %>%
-  rename(truth_2 = truth_1, truth_1 = truth_2, value_1 = value_2, value_2 = value_1)
+combined <- combined %>%
+  filter(
+    iteration > 400,
+    as.numeric(V) < 20
+  )
 
 posterior_means <- combined %>%
   group_by(j, D, a, b, zero_inf_prob, inference, method) %>%
   summarise(
-    value_mean_1 = mean(value_1),
-    value_mean_2 = mean(value_2),
+    value_mean_1 = median(value_1),
+    value_mean_2 = median(value_2),
     truth_1 = truth_1[1],
     truth_2 = truth_2[1]
   )
+
+plot(
+  posterior_means$truth_1[1:10],
+  posterior_means$value_mean_1[1:10],
+  ylim = c(0, 1)
+)
 
 plot_opts <- list(x = "sqrt(value_1)", y = "sqrt(value_2)",
                   group = "j", fill_type = "gradient", h = 1, # was h = 0.1
                   theme_opts = list(border_size = 0.7))
 
-p <- ggcontours(combined, plot_opts) +
+p <- #ggcontours(combined, plot_opts) +
+  ggplot(combined) +
   geom_point(
     data = posterior_means,
     aes(
@@ -170,7 +178,7 @@ p <- ggcontours(combined, plot_opts) +
       y = sqrt(value_mean_2)
     ),
     size = 0.5,
-    alpha = 0.4,
+    alpha = 0.01,
     col = "#fc8d62"
   ) +
   geom_segment(
@@ -181,8 +189,8 @@ p <- ggcontours(combined, plot_opts) +
       xend = sqrt(truth_1),
       yend = sqrt(truth_2)
     ),
-    size = 0.5,
-    alpha = 0.5
+    size = 0.05,
+    alpha = 0.05
   ) +
   ylim(0, 3) +
   xlim(0, 4.5) +
