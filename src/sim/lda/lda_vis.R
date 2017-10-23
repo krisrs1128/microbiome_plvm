@@ -30,7 +30,7 @@ combined <- get_samples(metadata, "beta", c("iteration", "k", "variable")) %>%
 
 combined <- combined %>%
   filter(
-    iteration > 450
+    iteration > 400
     ## variable < 100
   )
 
@@ -89,8 +89,8 @@ p[[2]] <- p[[2]] +
 ggsave(
   file.path(base_dir, "doc", "figure/beta_contours_v10.png"),
   p[[1]],
-  width = 5,
-  height = 3,
+  width = 5.2,
+  height = 3.1,
   dpi = 450
 )
 
@@ -124,6 +124,6 @@ p <- ggplot(perf) +
 ggsave(
   file.path(base_dir, "doc", "figure/beta_errors_lda.png"),
   p,
-  width = 5,
-  height = 3
+  width = 5.2,
+  height = 3.1
 )
