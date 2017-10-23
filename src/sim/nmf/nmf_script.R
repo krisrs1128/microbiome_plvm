@@ -16,7 +16,7 @@ args <- commandArgs(trailingOnly = TRUE)
 expers <- fromJSON(args[[1]], simplifyVector = TRUE, simplifyDataFrame = FALSE)
 subset_ix <- as.integer(args[[2]])
 
-for (i in rev(seq_along(expers))) {
+for (i in seq_along(expers)) {
   if (expers[[i]]$batch != subset_ix) next
   set.seed(01112017)
   output_path <- file.path(expers[[i]]$output_dir, paste0(expers[[i]]$id, ".rda"))

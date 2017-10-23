@@ -14,6 +14,46 @@ library("nmfSim")
 library("ggscaffold")
 theme_set(min_theme(list(border_size = 0.7)))
 
+plot_contours <- function(combined, plot_opts, ymax = 12, xmax = 12) {
+  ggcontours(combined, plot_opts) +
+    geom_segment(
+      data = posterior_means,
+      aes(
+        x = sqrt(value_mean_1),
+        y = sqrt(value_mean_2),
+        xend = sqrt(truth_1),
+        yend = sqrt(truth_2)
+      ),
+      size = 0.05,
+      alpha = 0.5
+    ) +
+    geom_point(
+      data = posterior_means,
+      aes(
+        x = sqrt(truth_1),
+        y = sqrt(truth_2)
+      ),
+      size = 0.2,
+      alpha = 0.2
+    ) +
+    geom_point(
+      data = posterior_means,
+      aes(
+        x = sqrt(value_mean_1),
+        y = sqrt(value_mean_2)
+      ),
+      size = 0.2,
+      alpha = 0.5,
+      col = "#fc8d62"
+    ) +
+    coord_fixed() +
+    scale_x_continuous(limits = c(0, 12), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 12), expand = c(0, 0)) +
+    facet_grid(method + inference ~ EN + zero_inf_prob) +
+    labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2])))
+}
+
+
 ## ---- beta-reshape ----
 ## extract beta information from the fits
 base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
@@ -24,13 +64,18 @@ dir.create(figure_dir, recursive = TRUE)
 
 fits <- list.files(fits_dir, "fit-*", full.names = TRUE)
 expers <- fromJSON(
-  file.path(nmf_dir, "config.json"),
+  ## file.path(nmf_dir, "config.json"),
+  "~/Desktop/src/sim/nmf/config.json",
   simplifyVector = FALSE
 )
 
+exper_ids <- paste0(sapply(expers, function(x) x$id), ".rda")
+expers <- expers[exper_ids %in% basename(fits)]
+
 beta_fits <- reshape_all_samples(
   fits,
-  file.path(nmf_dir, "config.json"),
+  ## file.path(nmf_dir, "config.json"),
+  "~/Desktop/src/sim/nmf/config.json",
   "beta",
   c("j", "k")
 ) %>%
@@ -84,7 +129,7 @@ plot_opts$group <- "i"
 zinf_data$zero_inf_prob <- as.character(zinf_data$zero_inf_prob)
 zinf_data <- zinf_data %>%
   mutate(
-    EN = paste0("E[N] = ", P * b * 10 / as.numeric(a))
+    EN = paste0("E[N] = ", P * b * 20 / as.numeric(a))
   )
 
 perf <- zinf_data %>%
@@ -127,41 +172,50 @@ ggsave(
 
 ## ---- zinf-betas-contours ----
 combined <- zinf_data %>%
-  filter(P == 10)
+  filter(P == 325)
+
+posterior_means <- combined %>%
+  group_by(j, D, a, b, zero_inf_prob, inference, method) %>%
+  summarise(
+    value_mean_1 = median(value_1),
+    value_mean_2 = median(value_2),
+    truth_1 = truth_1[1],
+    truth_2 = truth_2[1]
+  )
+
+combined <- combined %>%
+  filter(
+    D == "D = 20",
+    iteration > 400,
+    sqrt(value_1) < 13,
+    sqrt(value_2) < 13
+  )
+combined$D <- droplevels(combined$D)
 
 plot_opts <- list(x = "sqrt(value_1)", y = "sqrt(value_2)",
-                  group = "j", fill_type = "gradient", h = 0.1,
+                  group = "j", fill_type = "gradient", h = 1,
                   theme_opts = list(border_size = 0.7))
 
-p <- ggcontours(combined, plot_opts) +
-  geom_text(
-    data = combined %>%
-      filter(iteration == 1),
-    aes(
-      x = sqrt(truth_1),
-      y = sqrt(truth_2),
-      label = j
-    ),
-    size = 2
-  ) +
-  geom_text(
-    data = combined %>%
-      group_by(j, D, a, b, zero_inf_prob, inference, method) %>%
-      summarise(value_mean_1 = mean(value_1), value_mean_2 = mean(value_2)),
-    aes(
-      x = sqrt(value_mean_1),
-      y = sqrt(value_mean_2),
-      label = j
-    ),
-    size = 2, col = "#fc8d62") +
-  ylim(0, 3) +
-  xlim(0, 4.5) +
-  facet_grid(method + inference + zero_inf_prob ~ D + EN) +
-  labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2])))
+ggsave(
+  file.path(base_dir, "doc", "figure/beta_contours_nmf_d20.png"),
+  plot_contours(combined, plot_opts),
+  width = 5.3,
+  height = 6.5
+)
+
+combined <- zinf_data %>%
+  filter(P == 325, D == "D = 100")
+combined <- combined %>%
+  filter(
+    iteration > 400,
+    value_1 < 40,
+    value_2 < 40
+  )
+combined$D <- droplevels(combined$D)
 
 ggsave(
-  file.path(base_dir, "doc", "figure/beta_contours_nmf.png"),
-  p,
+  file.path(base_dir, "doc", "figure/beta_contours_nmf_d100.png"),
+  plot_contours(combined, plot_opts, 30, 30),
   width = 5.3,
   height = 6.5
 )
