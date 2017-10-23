@@ -920,30 +920,30 @@ Institute of Health TR01 grant AI112401.
 \section{Figures}
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/beta_contours_v10}
-  \caption{Different inference algorithms for LDA produce different uncertainty
-    assessments in small sample sizes, but become comparable as more data arrives.
+  \centering\includegraphics[width=\textwidth]{figure/beta_contours_v650}
+  \caption{Different inference algorithms for LDA provide comparable posterior estimates under the simulation configurations we have considered.
     Within each panel, we display the true pairs $\left(\sqrt{\beta_{v1}},
-    \sqrt{\beta_{v2}}\right)$ as black labels $v$. The purple clouds are
+    \sqrt{\beta_{v2}}\right)$ as black points $v$. The purple clouds are
     posterior samples from the inference procedure, which are given as row labels. The
-    posterior means are labeled in orange. Different columns index different $D$
+    posterior means are orange points that are linked to the true $v$. Different columns index different $D$
     (top column label) vs. $N$ (bottom column label) pairs. Here, we have
-    subsetted to $V = 10$ -- the corresponding figure for $V = 50$ is given by
-    \ref{fig:beta_contours_v50}.
+    subsetted to $V = 650$ -- the corresponding figure for $V = 325$ is given by
+    \ref{fig:beta_contours_v325}.
   }
-  \label{fig:beta_contours_v10}
+  \label{fig:beta_contours_v650}
 \end{figure}
 
 \begin{figure}[!p]
   \centering
   \includegraphics[width=\textwidth]{figure/beta_errors_lda}
   \caption{A summary of the errors and uncertainty across models and regimes for
-    the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v10}. On the $x$-axis,
-    we plot the difference between posterior means and the true value, after
-    having square-root transformed. On the $y$-axis, we provide the standard
-    deviation of the posterior samples for each $v$, along the first dimension
-    $K = 1$. Columns are indexed as in Figure \ref{fig:beta_contours_v10}, but
-    now rows provide different values of $V$.
+    the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v650} and Supplementary
+    Figure \ref{fig:beta_contours_v325}. On the $x$-axis, we plot the difference
+    between posterior means and the true value, after having square-root
+    transformed. On the $y$-axis, we provide the standard deviation of the
+    posterior samples for each $v$, along the first dimension $K = 1$. Columns
+    are indexed as in Figure \ref{fig:beta_contours_v650}, but now rows provide
+    different values of $V$.
     \label{fig:beta_errors_lda} }
 \end{figure}
 
@@ -1044,8 +1044,9 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/beta_contours_v50}
-  \caption{The analog of Figure \ref{fig:beta_contours_v10} in the case that $V = 50$. \label{fig:beta_contours_v50}}
+  \includegraphics[width=\textwidth]{figure/beta_contours_v325}
+  \caption{The analog of Figure \ref{fig:beta_contours_v325} in the case that $V
+    = 325$. \label{fig:beta_contours_v650}}
 \end{figure}
 
 \begin{figure}[!p]
@@ -1079,13 +1080,13 @@ Institute of Health TR01 grant AI112401.
   \includegraphics[width=\textwidth]{figure/beta_contours_nmf}
   \caption{The results across all simulation configurations in the NMF
     experiment are displayed here. Within each panel, we display the true value
-    of $\sqrt{\beta_{v}}$ as black text, while orange gives posterior means.
-    Note that the axes are truncated at 3, and for some panels, the posterior
-    means all lie outside the visible box. Across columns, we vary $D$ and
-    $\Earg{N}$ -- these are the two rows of column labels, read from top to
-    bottom. Along rows, we vary the assumed model, the inference procedure, and
-    the true $p_{0}$ -- these are the three columns of row labels, read from
-    outside in.\label{fig:beta_contours_nmf}}
+    of $\sqrt{\beta_{v}}$ as black points, while linked orange points give
+    associated posterior means. Note that the axes are truncated, and for some
+    panels, the posterior means all lie outside the visible box. Across columns,
+    we vary $D$ and $\Earg{N}$ -- these are the two rows of column labels, read
+    from top to bottom. Along rows, we vary the assumed model, the inference
+    procedure, and the true $p_{0}$ -- these are the three columns of row
+    labels, read from outside in.\label{fig:beta_contours_nmf}}
 \end{figure}
 
 \begin{figure}[!p]

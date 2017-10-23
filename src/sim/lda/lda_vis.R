@@ -87,7 +87,7 @@ p[[2]] <- p[[2]] +
   facet_grid(method ~ D + N)
 
 ggsave(
-  file.path(base_dir, "doc", "figure/beta_contours_v10.png"),
+  file.path(base_dir, "doc", "figure/beta_contours_v325.png"),
   p[[1]],
   width = 5.2,
   height = 3.1,
@@ -95,10 +95,10 @@ ggsave(
 )
 
 ggsave(
-  file.path(base_dir, "doc", "figure/beta_contours_v50.png"),
+  file.path(base_dir, "doc", "figure/beta_contours_v650.png"),
   p[[2]],
-  width = 5,
-  height = 3,
+  width = 5.2,
+  height = 3.1,
   dpi = 450
 )
 
