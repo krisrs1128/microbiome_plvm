@@ -14,6 +14,46 @@ library("nmfSim")
 library("ggscaffold")
 theme_set(min_theme(list(border_size = 0.7)))
 
+plot_contours <- function(combined, plot_opts, ymax = 12, xmax = 12) {
+  ggcontours(combined, plot_opts) +
+    geom_segment(
+      data = posterior_means,
+      aes(
+        x = sqrt(value_mean_1),
+        y = sqrt(value_mean_2),
+        xend = sqrt(truth_1),
+        yend = sqrt(truth_2)
+      ),
+      size = 0.05,
+      alpha = 0.5
+    ) +
+    geom_point(
+      data = posterior_means,
+      aes(
+        x = sqrt(truth_1),
+        y = sqrt(truth_2)
+      ),
+      size = 0.2,
+      alpha = 0.2
+    ) +
+    geom_point(
+      data = posterior_means,
+      aes(
+        x = sqrt(value_mean_1),
+        y = sqrt(value_mean_2)
+      ),
+      size = 0.2,
+      alpha = 0.5,
+      col = "#fc8d62"
+    ) +
+    coord_fixed() +
+    scale_x_continuous(limits = c(0, 12), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 12), expand = c(0, 0)) +
+    facet_grid(method + inference ~ EN + zero_inf_prob) +
+    labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2])))
+}
+
+
 ## ---- beta-reshape ----
 ## extract beta information from the fits
 base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
@@ -133,11 +173,6 @@ ggsave(
 ## ---- zinf-betas-contours ----
 combined <- zinf_data %>%
   filter(P == 325)
-combined <- combined %>%
-  filter(
-    iteration > 400,
-    as.numeric(V) < 20
-  )
 
 posterior_means <- combined %>%
   group_by(j, D, a, b, zero_inf_prob, inference, method) %>%
@@ -148,58 +183,39 @@ posterior_means <- combined %>%
     truth_2 = truth_2[1]
   )
 
-plot(
-  posterior_means$truth_1[1:10],
-  posterior_means$value_mean_1[1:10],
-  ylim = c(0, 1)
-)
+combined <- combined %>%
+  filter(
+    D == "D = 20",
+    iteration > 400,
+    sqrt(value_1) < 13,
+    sqrt(value_2) < 13
+  )
+combined$D <- droplevels(combined$D)
 
 plot_opts <- list(x = "sqrt(value_1)", y = "sqrt(value_2)",
                   group = "j", fill_type = "gradient", h = 1, # was h = 0.1
                   theme_opts = list(border_size = 0.7))
 
-p <- #ggcontours(combined, plot_opts) +
-  ggplot(combined) +
-  geom_point(
-    data = posterior_means,
-    aes(
-      x = sqrt(truth_1),
-      y = sqrt(truth_2)
-    ),
-    size = 0.5,
-    alpha = 0.4
-  ) +
-  ylim(0, 3) +
-  xlim(0, 4.5) +
-  geom_point(
-    data = posterior_means,
-    aes(
-      x = sqrt(value_mean_1),
-      y = sqrt(value_mean_2)
-    ),
-    size = 0.5,
-    alpha = 0.01,
-    col = "#fc8d62"
-  ) +
-  geom_segment(
-    data = posterior_means,
-    aes(
-      x = sqrt(value_mean_1),
-      y = sqrt(value_mean_2),
-      xend = sqrt(truth_1),
-      yend = sqrt(truth_2)
-    ),
-    size = 0.05,
-    alpha = 0.05
-  ) +
-  ylim(0, 3) +
-  xlim(0, 4.5) +
-  facet_grid(method + inference + zero_inf_prob ~ D + EN) +
-  labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2])))
+ggsave(
+  file.path(base_dir, "doc", "figure/beta_contours_nmf_d20.png"),
+  plot_contours(combined, plot_opts),
+  width = 5.3,
+  height = 6.5
+)
+
+combined <- zinf_data %>%
+  filter(P == 325, D == "D = 100")
+combined <- combined %>%
+  filter(
+    iteration > 400,
+    value_1 < 40,
+    value_2 < 40
+  )
+combined$D <- droplevels(combined$D)
 
 ggsave(
-  file.path(base_dir, "doc", "figure/beta_contours_nmf.png"),
-  p,
+  file.path(base_dir, "doc", "figure/beta_contours_nmf_d100.png"),
+  plot_contours(combined, plot_opts, 30, 30),
   width = 5.3,
   height = 6.5
 )
