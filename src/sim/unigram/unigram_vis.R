@@ -53,4 +53,36 @@ samples_paths <- metadata %>%
   filter(method %in% c("vb", "gibbs")) %>%
   select(file) %>%
   unlist()
-samples <- rdata_from_paths(samples_paths, "mu")
+
+lsamples <- list()
+
+for (i in seq_along(samples_paths)) {
+  cat(sprintf(
+    "Processing sample %s [%s / %s] \n",
+    samples_paths[i],
+    i,
+    length(samples_paths)
+  ))
+  fit <- get(load(samples_paths[i]))
+  mu_i <- rstan::extract(fit)$mu
+  lsamples[[i]] <- abind(
+    apply(mu_i, c(2, 3), quantile),
+    "mean" = array(colMeans(mu_i), c(1, dim(mu_i)[2:3])),
+    along = 1
+  )
+}
+
+lsamples <- quantiles
+samples <- melt(
+  lsamples,
+  varnames = c("file", "statistic", "i", "v"),
+  value.name = "mu"
+)
+
+## study the bootstrap samples
+## bootstrap_paths <- metadata %>%
+##   filter(method == "bootstrap") %>%
+##   .[["file"]]
+## rm(samples)
+
+## boot <- feather_from_paths(bootstrap_paths)
