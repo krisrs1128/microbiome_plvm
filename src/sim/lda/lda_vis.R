@@ -2,11 +2,11 @@
 
 ## File description -------------------------------------------------------------
 ## Script for visualizing output from LDA simulation and evaluation pipeline.
-## Three main types of views: Boxplots of proportions estimates, across
-## configurations, scatterplots of pairs of proportions estimates, and
-## histograms of errors.
+## Two main types of views: Kernel smoothed posterior views scatterplots of
+## errors.
 ##
 ## author: kriss1@stanford.edu
+## date: 10/23/2017
 
 ## ---- libraries-boot-expers ----
 library("feather")
@@ -29,10 +29,7 @@ combined <- get_samples(metadata, "beta", c("iteration", "k", "variable")) %>%
   left_join(beta)
 
 combined <- combined %>%
-  filter(
-    iteration > 400
-    ## variable < 100
-  )
+  filter(iteration > 400)
 
 ## ---- beta-alignment ----
 mcombined <- melt_reshaped_samples(combined)
