@@ -65,8 +65,7 @@ for (i in seq_along(samples_paths)) {
     length(samples_paths)
   ))
   fit <- get(load(samples_paths[i]))
-  fit_params <- rstan::extract(fit)
-  mu_i <- fit_params$mu
+  mu_i <- rstan::extract(fit)$mu
   lsamples[[i]] <- abind(
     apply(mu_i, c(2, 3), quantile),
     "mean" = array(colMeans(mu_i), c(1, dim(mu_i)[2:3])),
@@ -135,23 +134,21 @@ ggplot(perf) +
   xlim(0, 25)
 
 ## study the bootstrap samples
-## bootstrap_paths <- metadata %>%
-##   filter(method == "bootstrap") %>%
-##   .[["file"]]
-## rm(samples)
+bootstrap_paths <- metadata %>%
+  filter(method == "bootstrap") %>%
+  .[["file"]]
 
 lbootstraps <- list()
 for (i in seq_along(bootstrap_paths)) {
   cat(sprintf(
-    "Processing sample %s [%s / %s] \n",
-    samples_paths[i],
+    "Processing bootstrap %s [%s / %s] \n",
+    bootstrap_paths[i],
     i,
-    length(samples_paths)
+    length(bootstrap_paths)
   ))
-
+  lbootstraps[[i]] <- read_feather(bootstrap_paths[i])
+  lbootstraps[[i]]$file <- bootstrap_paths[i]
 }
 
-## boot <- feather_from_paths(bootstrap_paths)
-curfit <- get(load("../unigram_fits/vb-042de8ce9ed1b5e9cfadafac738ec71f.RData"))
-
-x <- read_feather("../unigram_fits/mu-05e91549a659b808c8bf3bae6b402c8c.feather")
+bootstraps <- bind_rows(lbootstraps) %>%
+  left_join(metadata)
