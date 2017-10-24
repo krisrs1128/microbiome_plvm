@@ -82,7 +82,7 @@ metadata <- data.frame(
   "file" = output_path,
   "D" = nrow(X),
   "V" = ncol(X),
-  "N" = sum(X[, 1]),
+  "N" = sum(X[1, ]),
   "sigma0" = NA,
   "a0" = a0,
   "b0" = b0,

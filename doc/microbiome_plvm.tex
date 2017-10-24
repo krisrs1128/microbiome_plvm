@@ -412,30 +412,31 @@ meant to complement the model-checking that should follow parametric analysis --
 since we know the truth in simulations, it is easier to develop more unambiguous
 guidelines.
 
-More specifically, our plan is to divide our experiments into one simulation
-generating data from the true LDA model and one drawing from either the NMF or
-Z-NMF models. In both, we vary the sample size and dimension, performing model
-estimation using either Markov Chain Monte Carlo (MCMC) sampling, Variational
-Bayes (VB), or a bootstrap. The only misspecification we consider is
-a failure to account for zero inflation when the true data were generated
-according to the Z-NMF model -- though not pursued here, it could be interesting
-to study robustness of study conclusions to misspecification in the number of
-topics or deliberate contamination.
+More specifically, our plan is to divide our experiments into simulations
+generating data from the true LDA, unigram, and NMF / Z-NMF models. In each, we
+vary the sample size and dimension, performing model estimation using either
+Markov Chain Monte Carlo (MCMC) sampling, Variational Bayes (VB), or a
+bootstrap. The only misspecification we consider is a failure to account for
+zero inflation when the true data were generated according to the Z-NMF model --
+though not pursued here, it could be interesting to study robustness of study
+conclusions to misspecification in the number of topics or deliberate
+contamination.
 
 For the LDA experiment, we vary the number of samples $D \in \{20, 100\}$, the
-number of features $V \in \{10, 50\}$, and the total count per sample $N \in
-\{20, 50, 100\}$. On the other hand, we fix the number of topics to $K = 2$ and
-the Dirichlet hyperparameter to $\alpha = \gamma = 1$. For each simulated data
-set, we perform estimation using VB, MCMC sampling, and a parametric bootstrap.
-In more detail, this bootstrap procedure fits VB to the original data, simulates
-$B = 1000$ new datasets $X^{\ast}_{b}$ according to the LDA model using
-VB-estimated parameters $\{\hat{\theta}^{\ast}_{b}, \hat{\beta}^{\ast}_{b}\}$,
-and re-estimates parameters $\{\hat{\theta}^{\ast\ast}_{b},
-\hat{\beta}^{\ast\ast}_{b}\}$ on each simulated data set, again using VB. The
-motivation for this procedure is the desire to strike an easily-parallelizable
-compromise between MCMC sampling, which can be time consuming but has reliable
-uncertainty estimates, and VB, which is fast, but can underestimate uncertainty
-\citep{wang2005inadequacy}.
+number of features $V \in \{325, 650\}$, and the total count per sample $N \in
+\{1625, 3250, 6500\}$, in order to approximately match dimensions typical in
+real microbiome datasets. On the other hand, we fix the number of topics to $K =
+2$ and the Dirichlet hyperparameter to $\alpha = \gamma = 1$. For each simulated
+data set, we perform estimation using VB, MCMC sampling, and a parametric
+bootstrap. In more detail, this bootstrap procedure fits VB to the original
+data, simulates $B = 500$ new datasets $X^{\ast}_{b}$ according to the LDA model
+using VB-estimated parameters $\{\hat{\theta}^{\ast}_{b},
+\hat{\beta}^{\ast}_{b}\}$, and re-estimates parameters
+$\{\hat{\theta}^{\ast\ast}_{b}, \hat{\beta}^{\ast\ast}_{b}\}$ on each simulated
+data set, again using VB. The motivation for this procedure is the desire to
+strike an easily-parallelizable compromise between MCMC sampling, which can be
+time consuming but has reliable uncertainty estimates, and VB, which is fast,
+but can underestimate uncertainty \citep{wang2005inadequacy}.
 
 Note that, due to the label-switching problem, it is not possible to directly
 compare the estimated topics across simulation configurations. To address this
@@ -443,32 +444,29 @@ issue, we attempt to identify the permutation that aligns topics across all
 experiments: for each experiment, we identify the true-estimated topics pair
 with highest correlation, then find the next highest pair among the remaining,
 and so forth. Judging from the aligned densities in Figures
-\ref{fig:beta_contours_v10}, \ref{fig:beta_contours_v50}, and
+\ref{fig:beta_contours_v325}, \ref{fig:beta_contours_v650}, and
 \ref{fig:beta_contours_nmf}, this ad-hoc alignment procedure seems sufficient.
 
-Figure \ref{fig:beta_contours_v10} displays the true and posterior $\beta_{k}$ for
-the LDA experiment with $V = 10$ features, while varying other simulation
+Figure \ref{fig:beta_contours_v650} displays the true and posterior $\beta_{k}$
+for the LDA experiment with $V = 650$ features, while varying other simulation
 characteristics. Each panel represents a single experimental configuration, with
-each axis associated with an underlying topic. Each black number $v$ is the
+each axis associated with an underlying topic. Each black point is the
 square-root transformed value of feature $v$ across topics:
 $\left(\sqrt{\beta_{v1}}, \sqrt{\beta_{v2}}\right)$. The shaded clouds are
-sampled posteriors, and the orange labels give posterior means. Across rows,
-different inferential procedures are compared. The top row of column labels
-refers to the total count $N$ within each sample, while the second refers to the
-number of samples $D$. The analogous figure when $V = 50$ is provided in 
-Supplementary Figure \ref{fig:beta_contours_v50}.
+sampled posteriors, and the linked orange point give the posterior mean for the
+associated feature. Across rows, different inferential procedures are compared.
+The top row of column labels refers to the total count $N$ within each sample,
+while the second refers to the number of samples $D$. The analogous figure when
+$V = 325$ is provided in Supplementary Figure \ref{fig:beta_contours_v325}.
 
 As expected, when $D$ increases, the posterior for $\beta$, whose dimension does
-not increase with $D$, begins to concentrate around its true value. Consistent
-with \cite{wang2005inadequacy}, the VB posteriors are narrower and more
-elliptical than the more plausible MCMC sampled posteriors. The bootstrap
-distributions seem intermediate between the VB and MCMC sampled distributions in
-terms of variability within each feature. As the number of samples or total
-count within samples increases, the three methods become indistinguishable.
-Interestingly, when $N = D = 20$, VB appears more accurate than either the
-MCMC or bootstrap approaches, whose posterior means all lie along the diagonal,
-corresponding to the failure to estimate distinct topics, and instead defaulting
-to marginal feature counts across samples.
+not increase with $D$, begins to concentrate around its true value. As the
+number of samples or total count within samples increases, the posteriors
+further concentrate around the truth. In each of the settings considered, the
+three methods seem comparable, suggesting that for microbiome studies of this
+approximate scale, VB may be a reasonable choice, considering that it can be run
+much more quickly than either MCMC or the bootstrap, in spite of the issues
+raised by \citep{wang2005inadequacy}.
 
 While the kernel-smoothed posterior densities display the complete results from
 this simulation study, a few summary statistics from these densities can
@@ -479,29 +477,28 @@ these posteriors around their means. Figure \ref{fig:beta_errors_lda} addresses
 these questions directly -- the $x$-axis gives the RMSE of the
 square-root-transformed posterior means for the $\beta_{vk}$, for each $v$, and
 the $y$-axis gives the associated standard deviation, along $K = 1$, for each
-$v$. As in Figure \ref{fig:beta_contours_v10}, the first row of column numbers
+$v$. As in Figure \ref{fig:beta_contours_650}, the first row of column numbers
 gives the total count $N$ in each sample, and the second gives $D$, the number
 of samples. The grey line within each panel is the identity line, where the
 error equals one standard deviation.
 
 The drift of points to the bottom left as $N$ and $D$ increase reflects the
 improved accuracy and concentration of all inference techniques when the number
-of samples and total count within samples increase. The ordering mentioned
-before is visible in the ordering across colors when $N$ and $D$ are small. Note
-that few points lie above the identity standard deviation line -- this suggests
-that the posteriors may be misleadingly narrow. Finally, we note that, the scale
-of errors and concentration in the $V = 10$ and $V = 50$ cases are comparable.
-Considering that there is the same number of documents available for estimating
-each $\beta_{vk}$, this is not entirely surprising.
+of samples and total count within samples increase. Note that few points lie
+above the identity standard deviation line -- this suggests that the posteriors
+may be misleadingly narrow. Finally, we find that, the scale of errors and
+concentration in the $V = 325$ and $V = 650$ cases are comparable. Considering
+that there is the same number of documents available for estimating each
+$\beta_{vk}$, this is not entirely surprising.
 
 For the NMF experiment, we use similar parameters, except now we introduce a
 zero-inflation probability, $p_{0} \in \{0, 0.2\}$, and have control only over
 the expected total count per sample $\Earg{N}$, rather than $N$. When $p_{0} >
 0$, we perform inference when the true value is provided and also when and when
 $p_{0}$ is (incorrectly) assumed to be zero. To modulate $\Earg{N}$, we vary
-$a_{0}$ and $b_{0}$ so that $\Earg{N} = \frac{b_{0}}{a_{0}}V \in \{20, 50,
-100\}$, matching the LDA experiment. As before, we vary the number of samples $D
-\in \{20, 100\}$ but fix the number of latent factors $K$ at 2. Figure
+$a_{0}$ and $b_{0}$ so that $\Earg{N} = \frac{b_{0}}{a_{0}}V \in \{1625, 3250,
+6500\}$, matching the LDA experiment. As before, we vary the number of samples
+$D \in \{20, 100\}$ but fix the number of latent factors $K$ at 2. Figure
 \ref{fig:beta_errors_zinf} summarizes the estimation error across regimes, and
 is read in the same way as Figure \ref{fig:beta_errors_lda}, with two
 exceptions,
@@ -529,12 +526,10 @@ B\right)^{T}$ and $\Theta B^{T}$ is through the prior, and the prior may not be
 strong enough to guide inference to the right scaling.
 
 Further, examining Supplementary Figure \ref{fig:beta_contours_nmf}, we note
-that the different inferential procedures produce quite different contours, even
-when $\Earg{N}$ is large. There also seem to be cases where estimation fails to
-converge or concentrates around the incorrect value, though this may be related
-to rescaling. Generally, we do not find a direct probabilistic-programming
-implementation of the GaP or Z-GaP models reliable in the regimes under
-consideration, even when $p_{0}$ is known.
+many cases where estimation fails to converge or concentrates around the
+incorrect value, though this may be related to rescaling. Generally, we do not
+find a direct probabilistic-programming implementation of the GaP or Z-GaP
+models reliable in the regimes under consideration, even when $p_{0}$ is known.
 
 \section{Data Analysis}
 \label{sec:data_analysis}
@@ -925,30 +920,31 @@ Institute of Health TR01 grant AI112401.
 \section{Figures}
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/beta_contours_v10}
-  \caption{Different inference algorithms for LDA produce different uncertainty
-    assessments in small sample sizes, but become comparable as more data arrives.
-    Within each panel, we display the true pairs $\left(\sqrt{\beta_{v1}},
-    \sqrt{\beta_{v2}}\right)$ as black labels $v$. The purple clouds are
-    posterior samples from the inference procedure, which are given as row labels. The
-    posterior means are labeled in orange. Different columns index different $D$
-    (top column label) vs. $N$ (bottom column label) pairs. Here, we have
-    subsetted to $V = 10$ -- the corresponding figure for $V = 50$ is given by
-    \ref{fig:beta_contours_v50}.
+  \centering\includegraphics[width=\textwidth]{figure/beta_contours_v650}
+  \caption{Different inference algorithms for LDA provide comparable posterior
+    estimates under the simulation configurations we have considered. Within
+    each panel, we display the true pairs $\left(\sqrt{\beta_{v1}},
+    \sqrt{\beta_{v2}}\right)$ as black points $v$. The purple clouds are
+    posterior samples from the inference procedure, which are given as row
+    labels. The posterior means are orange points that are linked to the true
+    $v$. Different columns index different $D$ (top column label) vs. $N$
+    (bottom column label) pairs. Here, we have subsetted to $V = 650$ -- the
+    corresponding figure for $V = 325$ is given by \ref{fig:beta_contours_v325}.
   }
-  \label{fig:beta_contours_v10}
+  \label{fig:beta_contours_v650}
 \end{figure}
 
 \begin{figure}[!p]
   \centering
   \includegraphics[width=\textwidth]{figure/beta_errors_lda}
   \caption{A summary of the errors and uncertainty across models and regimes for
-    the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v10}. On the $x$-axis,
-    we plot the difference between posterior means and the true value, after
-    having square-root transformed. On the $y$-axis, we provide the standard
-    deviation of the posterior samples for each $v$, along the first dimension
-    $K = 1$. Columns are indexed as in Figure \ref{fig:beta_contours_v10}, but
-    now rows provide different values of $V$.
+    the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v650} and Supplementary
+    Figure \ref{fig:beta_contours_v325}. On the $x$-axis, we plot the difference
+    between posterior means and the true value, after having square-root
+    transformed. On the $y$-axis, we provide the standard deviation of the
+    posterior samples for each $v$, along the first dimension $K = 1$. Columns
+    are indexed as in Figure \ref{fig:beta_contours_v650}, but now rows provide
+    different values of $V$.
     \label{fig:beta_errors_lda} }
 \end{figure}
 
@@ -1049,8 +1045,9 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/beta_contours_v50}
-  \caption{The analog of Figure \ref{fig:beta_contours_v10} in the case that $V = 50$. \label{fig:beta_contours_v50}}
+  \includegraphics[width=\textwidth]{figure/beta_contours_v325}
+  \caption{The analog of Figure \ref{fig:beta_contours_v325} in the case that $V
+    = 325$. \label{fig:beta_contours_v650}}
 \end{figure}
 
 \begin{figure}[!p]
@@ -1084,13 +1081,13 @@ Institute of Health TR01 grant AI112401.
   \includegraphics[width=\textwidth]{figure/beta_contours_nmf}
   \caption{The results across all simulation configurations in the NMF
     experiment are displayed here. Within each panel, we display the true value
-    of $\sqrt{\beta_{v}}$ as black text, while orange gives posterior means.
-    Note that the axes are truncated at 3, and for some panels, the posterior
-    means all lie outside the visible box. Across columns, we vary $D$ and
-    $\Earg{N}$ -- these are the two rows of column labels, read from top to
-    bottom. Along rows, we vary the assumed model, the inference procedure, and
-    the true $p_{0}$ -- these are the three columns of row labels, read from
-    outside in.\label{fig:beta_contours_nmf}}
+    of $\sqrt{\beta_{v}}$ as black points, while linked orange points give
+    associated posterior means. Note that the axes are truncated, and for some
+    panels, the posterior means all lie outside the visible box. Across columns,
+    we vary $D$ and $\Earg{N}$ -- these are the two rows of column labels, read
+    from top to bottom. Along rows, we vary the assumed model, the inference
+    procedure, and the true $p_{0}$ -- these are the three columns of row
+    labels, read from outside in.\label{fig:beta_contours_nmf}}
 \end{figure}
 
 \begin{figure}[!p]
@@ -1172,8 +1169,8 @@ Institute of Health TR01 grant AI112401.
     contribute to the average family-topic association measure, but were not
     among the 50 prototypes for each topic. This view suggests that the
     Rhodospillaceae, Alcaligenaceaeand Parabacteroides may have a large
-    fractions of representatives from Topics 3, 1, and 2,
-    respectively. Note that as before, abundances are plotted on a square root
+    fractions of representatives from Topics 3, 1, and 2, respectively. Note
+    that as before, abundances are plotted on a square root
     scale. \label{fig:uneven_taxa_facet} }
 \end{figure}
 \end{document}

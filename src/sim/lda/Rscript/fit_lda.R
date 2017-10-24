@@ -36,7 +36,8 @@ stan_data <- list(
 )
 
 ## ---- fit-model ----
-stan_path <- "~/Desktop/microbiome_plvm/src/stan/lda_counts.stan"
+base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
+stan_path <- file.path(base_dir, "src", "stan", "lda_counts.stan")
 if (tolower(fit_method) == "vb") {
     fit <- vb(
       stan_model(stan_path),
