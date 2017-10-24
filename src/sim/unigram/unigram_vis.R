@@ -16,6 +16,8 @@ library("feather")
 library("tidyverse")
 library("ldaSim")
 library("data.table")
+library("abind")
+theme_set(ggscaffold::min_theme(list(border_size = .7)))
 
 base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 unigram_dir <- file.path(base_dir, "src", "sim", "unigram")
@@ -23,7 +25,7 @@ output_path <- file.path(unigram_dir, "unigram_fits")
 metadata <- read_csv(
   file.path(output_path, "metadata.csv"),
   skip = 1,
-  col_names = c("file", "D", "V", "start_ix", "sigma0", "N", "?", "n_samples", "method")
+  col_names = c("file", "D", "V", "N", "sigma0", "a0", "b0", "n_samples", "method", "iteration")
 ) %>%
   unique()
 
@@ -47,7 +49,6 @@ ggplot(mu) +
   ) +
   facet_grid(D ~ V, scales = "free")
 
-
 ## read in gibbs and vb samples
 samples_paths <- metadata %>%
   filter(method %in% c("vb", "gibbs")) %>%
@@ -55,6 +56,7 @@ samples_paths <- metadata %>%
   unlist()
 
 lsamples <- list()
+Ns <- list()
 
 for (i in seq_along(samples_paths)) {
   cat(sprintf(
@@ -64,16 +66,20 @@ for (i in seq_along(samples_paths)) {
     length(samples_paths)
   ))
   fit <- get(load(samples_paths[i]))
-  mu_i <- rstan::extract(fit)$mu
+  fit_params <- rstan::extract(fit)
+  mu_i <- fit_params$mu
+  Ns[[i]] <- sum(fit_params$x_sim[1,1, ])
   lsamples[[i]] <- abind(
     apply(mu_i, c(2, 3), quantile),
     "mean" = array(colMeans(mu_i), c(1, dim(mu_i)[2:3])),
     along = 1
   )
 }
-names(lsamples) <- samples_paths
 
-lsamples <- quantiles
+names(lsamples) <- samples_paths
+names(Ns) <- sample_paths
+
+metadata$N <- Ns[metadata$file]
 
 samples <- melt(lsamples)
 colnames(samples) <- c("statistic", "i", "v", "mu", "file")
@@ -81,20 +87,42 @@ samples <- samples %>%
   left_join(metadata) %>%
   spread(statistic, mu)
 
+ggplot(samples) +
+  geom_pointrange(
+    aes(
+      x = v, y = `50%`, ymin = `25%`, ymax = `75%`, col = N
+    ),
+    size = 0.5, alpha = 0.3, fatten = 0.1
+  ) +
+  facet_wrap(D ~ V, scale = "free_x") +
+  ylim(-35, 35) +
+  coord_fixed()
+
+combined <- mu %>%
+  select(D, V, i, v, mu) %>%
+  full_join(
+    samples %>%
+    select(method, D, V, i, v, `25%`, `50%`, `75%`)
+  )
+
+ggplot(combined) +
+  geom_point(
+    aes(
+      x = mu,
+      y = `50%`
+    ),
+    alpha = 0.3,
+    size = 0.5
+  ) +
+  facet_grid(D ~ V + method) +
+  ylim(-20, 20)
+
+
 ## study the bootstrap samples
 ## bootstrap_paths <- metadata %>%
 ##   filter(method == "bootstrap") %>%
 ##   .[["file"]]
 ## rm(samples)
-
-ggplot(samples) +
-  geom_point(
-    aes(
-      x = v, y = mu
-    )
-  ) +
-  facet_wrap(D ~ V)
-
 
 lbootstraps <- list()
 for (i in seq_along(bootstrap_paths)) {
@@ -104,8 +132,10 @@ for (i in seq_along(bootstrap_paths)) {
     i,
     length(samples_paths)
   ))
-  
+
 }
 
-
 ## boot <- feather_from_paths(bootstrap_paths)
+curfit <- get(load("../unigram_fits/vb-042de8ce9ed1b5e9cfadafac738ec71f.RData"))
+
+x <- read_feather("../unigram_fits/mu-05e91549a659b808c8bf3bae6b402c8c.feather")
