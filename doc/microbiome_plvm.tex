@@ -266,7 +266,7 @@ $a_{0}, b_{0}, c_{0}$, and $d_{0}$ are unknown. In all of our experiments, we
 optimize over them, though it would also be possible to add a level to the
 hierarchy and place vague nonnegative priors on these parameters.
 
-In our simulation studies, we also consider a slight variant of this model, 
+In our simulation studies, we also consider a slight variant of this model,
 similar to the proposal of \citep{pierson2015zifa}, which independently sends
 entries of $X$ to zero with probability $p_{0}$. In our experiments, we assume
 that this zero-inflation probability is known. This procedure is denoted by
@@ -477,7 +477,7 @@ these posteriors around their means. Figure \ref{fig:beta_errors_lda} addresses
 these questions directly -- the $x$-axis gives the RMSE of the
 square-root-transformed posterior means for the $\beta_{vk}$, for each $v$, and
 the $y$-axis gives the associated standard deviation, along $K = 1$, for each
-$v$. As in Figure \ref{fig:beta_contours_650}, the first row of column numbers
+$v$. As in Figure \ref{fig:beta_contours_v650}, the first row of column numbers
 gives the total count $N$ in each sample, and the second gives $D$, the number
 of samples. The grey line within each panel is the identity line, where the
 error equals one standard deviation.
@@ -530,6 +530,42 @@ many cases where estimation fails to converge or concentrates around the
 incorrect value, though this may be related to rescaling. Generally, we do not
 find a direct probabilistic-programming implementation of the GaP or Z-GaP
 models reliable in the regimes under consideration, even when $p_{0}$ is known.
+
+Next we consider a simulation experiment involving the unigram model. We use the
+same configurations of $D$, $V$, and $N$ as in the LDA and NMF experiments
+above. The parameter controlling the rate of evolution on the simplex,
+$\sigma_{0}^2$, is set to 1 throughout. $\sigma_0^2$ is not assumed known, and
+is instead modeled as an $\text{InvGamma\left(1, 1\right)}$ across all
+simulation settings.
+
+In the NMF and LDA experiments, we could visualize fitted posteriors over
+$\theta_i$ and $\beta_j$ as two-dimensional smoothed scatterplots, since we set
+$K = 2$. In contrast, this unigram experiment involves a $V$-dimensional
+parameter $\mu_t$ evolving over time -- this precludes the development of a
+Figure analogous to Figures \ref{fig:beta_contours_v650} or
+\ref{fig:beta_contours_nmf}. Instead, in Figure \ref{fig:mu_posteriors}, we
+visualize the true $\mu_{tv}$ against 95\% posterior intervals for the
+one-dimensional $p\left(\mu_{tv} \vert x\right)$, across all configurations of
+simulation parameters.
+
+Evidently, only MCMC provides completely reliable posterior estimates. The VB
+and the bootstrap posteriors display certain deviations from the true
+$\mu_{tv}$. First, when the true $\mu_{tv}$ is very small, the posterior
+estimates are too large. This is not as much a reason for concern as it might
+appear at first, however, as the parameters $\mu_t$ are passed through a softmax
+before being mapped to probabilities. After this transformation, the difference
+between, say, $\mu_{tv} = 10^{-2}$ and $\mu_{tv} = 10^{-5}$ is relatively
+unimportant. Second, posterior estimates for $\mu_{tv}$ for large positive
+values of the parameter tend to be biased downards, to a degree that can't be
+simply explained as an effect of the prior, as such a strong bias is not present
+among the MCMC-sampled posteriors.
+
+To simplify the comparison between methods, we can also display the unigram
+analog of Figure \ref{fig:beta_errors_analog} -- this is given in Supplementary
+Figure \ref{fig:mu_errors_nmf}. This display confirms our earlier observation,
+that posterior Gibbs samples seem more reliable than either those from VB or the
+bootstrap, when using generic probabilistic programming for the Dynamic Unigram
+model, at least in problems with the dimensions we have considered.
 
 \section{Data Analysis}
 \label{sec:data_analysis}
@@ -1054,7 +1090,7 @@ Institute of Health TR01 grant AI112401.
   \centering
   \includegraphics[scale=0.2]{figure/posterior_check_quantiles-F}
   \caption{As a posterior check, we compare the observed with simulated
-    data quantiles, using a qq-plot. To reduce overlap, we have introduced a 
+    data quantiles, using a qq-plot. To reduce overlap, we have introduced a
     uniform $\left[0, 0.2\right]$ jitter on both axes. Further, the points are
     semi-transparent -- this makes it easy to see that most quantiles map to 0,
     which is expected, considering the sparsity of the data. From this view, we
