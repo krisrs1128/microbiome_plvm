@@ -46,13 +46,12 @@ stan_data <- list(
 )
 
 start_fit <- Sys.time()
-m <- stan_model("../stan/unigram.stan")
-stan_fit <- vb(
-  m,
+stan_fit <- stan(
+  "../stan/unigram.stan",
   data = stan_data,
-  output_samples = 1000,
-  eta = 0.5,
-  adapt_engaged = FALSE
+  chains = 1,
+  iter = 2000,
+  warmup = 1000
 )
 cat(sprintf(
   "Finished in %f minutes\n",
