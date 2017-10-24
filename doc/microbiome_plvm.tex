@@ -548,6 +548,22 @@ visualize the true $\mu_{tv}$ against 95\% posterior intervals for the
 one-dimensional $p\left(\mu_{tv} \vert x\right)$, across all configurations of
 simulation parameters.
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{figure/mu_posteriors}
+  \caption{
+    A comparison of the posterior marginals $p\left(\mu_{tv} \vert x\right)$ to
+    the known underlying $\mu_{tv}$, in the unigram simulation experiment. The
+    $x$-axis for each point corresponds to the truth, $\mu_{tv}$ for one
+    species at one timepoint, while the vertical intervals cover the 5\% to 95\%
+    quantiles of samples from the posterior $p\left(\mu_{tv} \vert x\right)$.
+    Different panels distinguish between configurations of $D$, $N$, $V$, and
+    posterior sampling schemes. Posteriors from MCMC sampling seem to correctly
+    recover the true underlyign $\mu_{tv}$, while discrepancies arise for both
+    VB and the bootstrap.
+    \label{fig:mu_posteriors} }
+\end{figure}
+
 Evidently, only MCMC provides completely reliable posterior estimates. The VB
 and the bootstrap posteriors display certain deviations from the true
 $\mu_{tv}$. First, when the true $\mu_{tv}$ is very small, the posterior
@@ -562,10 +578,11 @@ among the MCMC-sampled posteriors.
 
 To simplify the comparison between methods, we can also display the unigram
 analog of Figure \ref{fig:beta_errors_analog} -- this is given in Supplementary
-Figure \ref{fig:mu_errors_nmf}. This display confirms our earlier observation,
-that posterior Gibbs samples seem more reliable than either those from VB or the
-bootstrap, when using generic probabilistic programming for the Dynamic Unigram
-model, at least in problems with the dimensions we have considered.
+Figure \ref{fig:mu_errors_unigram}. This display confirms our earlier
+observation, that posterior MCMC samples seem more reliable than either those
+from VB or the bootstrap, when using generic probabilistic programming for the
+Dynamic Unigram model, at least in problems with the dimensions we have
+considered.
 
 \section{Data Analysis}
 \label{sec:data_analysis}
@@ -1125,6 +1142,19 @@ Institute of Health TR01 grant AI112401.
     procedure, and the true $p_{0}$ -- these are the three columns of row
     labels, read from outside in.\label{fig:beta_contours_nmf}}
 \end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{figure/mu_errors_unigram}
+  \caption{A simplification of Figure \ref{mu_posteriors}, displaying RMSE when
+    using posterior medians to estimate simulation $\mu_{tv}$s ($x$-axis) and
+    the standard deviations of posterior marginals ($y$-axis), across
+    experimental configurations. Generally, MCMC sampled posteriors seem to be
+    the most reliable, across simulation configurations.
+    \label{fig:mu_errors_unigram}
+  }
+\end{figure}
+
 
 \begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-D}
