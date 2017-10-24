@@ -56,7 +56,6 @@ samples_paths <- metadata %>%
   unlist()
 
 lsamples <- list()
-Ns <- list()
 
 for (i in seq_along(samples_paths)) {
   cat(sprintf(
@@ -68,7 +67,6 @@ for (i in seq_along(samples_paths)) {
   fit <- get(load(samples_paths[i]))
   fit_params <- rstan::extract(fit)
   mu_i <- fit_params$mu
-  Ns[[i]] <- sum(fit_params$x_sim[1,1, ])
   lsamples[[i]] <- abind(
     apply(mu_i, c(2, 3), quantile),
     "mean" = array(colMeans(mu_i), c(1, dim(mu_i)[2:3])),
@@ -77,9 +75,6 @@ for (i in seq_along(samples_paths)) {
 }
 
 names(lsamples) <- samples_paths
-names(Ns) <- sample_paths
-
-metadata$N <- Ns[metadata$file]
 
 samples <- melt(lsamples)
 colnames(samples) <- c("statistic", "i", "v", "mu", "file")
