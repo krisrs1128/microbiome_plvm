@@ -10,14 +10,14 @@
 ## date: 10/23/2017
 
 ###############################################################################
-## Libraries and reading in data
+## Libraries and setup
 ###############################################################################
 library("feather")
 library("tidyverse")
 library("ldaSim")
 library("data.table")
 library("abind")
-theme_set(ggscaffold::min_theme(list(border_size = .7)))
+theme_set(ggscaffold::min_theme(list(border_size = 0.7)))
 
 base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
 unigram_dir <- file.path(base_dir, "src", "sim", "unigram")
@@ -29,6 +29,9 @@ metadata <- read_csv(
 ) %>%
   unique()
 
+###############################################################################
+## Read in all the data
+###############################################################################
 ## get true underlying parameters
 truth_paths <- metadata %>%
   filter(is.na(method), grepl("mu", file)) %>%
@@ -37,17 +40,6 @@ truth_paths <- metadata %>%
 
 mu <- feather_from_paths(truth_paths) %>%
   left_join(metadata)
-
-ggplot(mu) +
-  geom_hline(yintercept = 0, alpha = 0.4) +
-  geom_point(
-    aes(
-      x = v, y = mu, group = i
-    ),
-    alpha = 0.2,
-    size = 0.3
-  ) +
-  facet_grid(D ~ V, scales = "free")
 
 ## read in gibbs and vb samples
 samples_paths <- metadata %>%
@@ -80,12 +72,35 @@ samples <- samples %>%
   left_join(metadata) %>%
   spread(statistic, mu)
 
+## extract the bootstrap samples
+bootstrap_paths <- metadata %>%
+  filter(method == "bootstrap") %>%
+  .[["file"]]
+
+bootstraps <- feather_from_paths(bootstrap_paths) %>%
+  left_join(metadata) %>%
+  group_by(D, V, N, sigma0, a0, b0, method) %>%
+  do(
+    data.frame(
+      quantile = paste0(100 * seq(0, 1, 0.25), "%"),
+      mu = quantile(.$mu))
+  ) %>%
+  spread(quantile, mu)
+
 combined <- mu %>%
   select(D, V, i, v, mu) %>%
   full_join(
     samples %>%
     select(method, N, D, V, i, v, `25%`, `50%`, `75%`)
+  ) %>%
+  full_join(
+    samples %>%
+    select(method, N, D, V, i, v, `25%`, `50%`, `75%`)
   )
+
+###############################################################################
+## Visualize the performance of different methods
+###############################################################################
 
 method_cols <- c("#ae7664", "#64ae76", "#7664ae")
 ggplot(combined) +
@@ -133,22 +148,3 @@ ggplot(perf) +
   facet_grid(V ~ D + N) +
   xlim(0, 25)
 
-## study the bootstrap samples
-bootstrap_paths <- metadata %>%
-  filter(method == "bootstrap") %>%
-  .[["file"]]
-
-lbootstraps <- list()
-for (i in seq_along(bootstrap_paths)) {
-  cat(sprintf(
-    "Processing bootstrap %s [%s / %s] \n",
-    bootstrap_paths[i],
-    i,
-    length(bootstrap_paths)
-  ))
-  lbootstraps[[i]] <- read_feather(bootstrap_paths[i])
-  lbootstraps[[i]]$file <- bootstrap_paths[i]
-}
-
-bootstraps <- bind_rows(lbootstraps) %>%
-  left_join(metadata)
