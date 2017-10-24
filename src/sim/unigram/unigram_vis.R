@@ -77,7 +77,7 @@ bootstrap_paths <- metadata %>%
   filter(method == "bootstrap") %>%
   .[["file"]]
 
-bootstraps <- feather_from_paths(bootstrap_paths) %>%
+bootstraps <- feather_from_paths(bootstrap_paths)  %>%
   left_join(metadata) %>%
   group_by(i, v, D, V, N, sigma0, a0, b0, method) %>%
   do(
@@ -87,32 +87,42 @@ bootstraps <- feather_from_paths(bootstrap_paths) %>%
   ) %>%
   spread(quantile, mu)
 
-combined <- mu %>%
+colnames(bootstraps)[c(5, 6, 7)] <- c("a0", "sigma0", "b0")
+bootstraps$N <- NULL
+bootstraps$N <- bootstraps$a0
+
+combined_samples <- mu %>%
   select(D, V, i, v, mu) %>%
   full_join(
     samples %>%
     select(method, N, D, V, i, v, `25%`, `50%`, `75%`)
-  ) %>%
+  )
+combined_bootstrap <- mu %>%
+  select(D, V, i, v, mu) %>%
   full_join(
     bootstraps %>%
     select(method, N, D, V, i, v, `25%`, `50%`, `75%`)
   )
+combined <- bind_rows(
+  combined_samples,
+  combined_bootstrap
+)
 
 ###############################################################################
 ## Visualize the performance of different methods
 ###############################################################################
-combined[combined$N == 3]$N <- 1625
-combined[combined$N == 9]$N <- 1625
-combined[combined$N == 6]$N <- 1625
-combined[combined$N == 19]$N <- 1625
-combined[combined$N == 11]$N <- 3250
-combined[combined$N == 16]$N <- 3250
-combined[combined$N == 28]$N <- 3250
-combined[combined$N == 137]$N <- 3250
-combined[combined$N == 22]$N <- 6500
-combined[combined$N == 56]$N <- 6500
-combined[combined$N == 270]$N <- 6500
-combined[combined$N == 540]$N <- 6500
+combined[combined$N == 3, ]$N <- 1625
+combined[combined$N == 9, ]$N <- 1625
+combined[combined$N == 6, ]$N <- 1625
+combined[combined$N == 19, ]$N <- 1625
+combined[combined$N == 11, ]$N <- 3250
+combined[combined$N == 16, ]$N <- 3250
+combined[combined$N == 28, ]$N <- 3250
+combined[combined$N == 137, ]$N <- 3250
+combined[combined$N == 22, ]$N <- 6500
+combined[combined$N == 56, ]$N <- 6500
+combined[combined$N == 270, ]$N <- 6500
+combined[combined$N == 540, ]$N <- 6500
 
 method_cols <- c("#ae7664", "#64ae76", "#7664ae")
 ggplot(combined) +
@@ -158,4 +168,5 @@ ggplot(perf) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   labs(x = "Root Mean Squared Error", y = "Standard Deviation", col = "Inference") +
   facet_grid(V ~ D + N) +
-  xlim(0, 25)
+  xlim(0, 25) +
+  ylim(0, 25)
