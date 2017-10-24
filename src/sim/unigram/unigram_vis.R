@@ -79,7 +79,7 @@ bootstrap_paths <- metadata %>%
 
 bootstraps <- feather_from_paths(bootstrap_paths) %>%
   left_join(metadata) %>%
-  group_by(D, V, N, sigma0, a0, b0, method) %>%
+  group_by(i, v, D, V, N, sigma0, a0, b0, method) %>%
   do(
     data.frame(
       quantile = paste0(100 * seq(0, 1, 0.25), "%"),
@@ -94,13 +94,25 @@ combined <- mu %>%
     select(method, N, D, V, i, v, `25%`, `50%`, `75%`)
   ) %>%
   full_join(
-    samples %>%
+    bootstraps %>%
     select(method, N, D, V, i, v, `25%`, `50%`, `75%`)
   )
 
 ###############################################################################
 ## Visualize the performance of different methods
 ###############################################################################
+combined[combined$N == 3]$N <- 1625
+combined[combined$N == 9]$N <- 1625
+combined[combined$N == 6]$N <- 1625
+combined[combined$N == 19]$N <- 1625
+combined[combined$N == 11]$N <- 3250
+combined[combined$N == 16]$N <- 3250
+combined[combined$N == 28]$N <- 3250
+combined[combined$N == 137]$N <- 3250
+combined[combined$N == 22]$N <- 6500
+combined[combined$N == 56]$N <- 6500
+combined[combined$N == 270]$N <- 6500
+combined[combined$N == 540]$N <- 6500
 
 method_cols <- c("#ae7664", "#64ae76", "#7664ae")
 ggplot(combined) +
@@ -147,4 +159,3 @@ ggplot(perf) +
   labs(x = "Root Mean Squared Error", y = "Standard Deviation", col = "Inference") +
   facet_grid(V ~ D + N) +
   xlim(0, 25)
-
