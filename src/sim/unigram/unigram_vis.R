@@ -75,43 +75,64 @@ for (i in seq_along(samples_paths)) {
 }
 
 names(lsamples) <- samples_paths
-
 samples <- melt(lsamples)
 colnames(samples) <- c("statistic", "i", "v", "mu", "file")
 samples <- samples %>%
   left_join(metadata) %>%
   spread(statistic, mu)
 
-ggplot(samples) +
-  geom_pointrange(
-    aes(
-      x = v, y = `50%`, ymin = `25%`, ymax = `75%`, col = N
-    ),
-    size = 0.5, alpha = 0.3, fatten = 0.1
-  ) +
-  facet_wrap(D ~ V, scale = "free_x") +
-  ylim(-35, 35) +
-  coord_fixed()
-
 combined <- mu %>%
   select(D, V, i, v, mu) %>%
   full_join(
     samples %>%
-    select(method, D, V, i, v, `25%`, `50%`, `75%`)
+    select(method, N, D, V, i, v, `25%`, `50%`, `75%`)
   )
 
+method_cols <- c("#ae7664", "#64ae76", "#7664ae")
 ggplot(combined) +
-  geom_point(
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    size = 0.6,
+    alpha = 0.6
+  ) +
+  geom_pointrange(
     aes(
       x = mu,
-      y = `50%`
+      y = `50%`,
+      ymin = `25%`,
+      ymax = `75%`,
+      col = method
     ),
-    alpha = 0.3,
-    size = 0.5
+    alpha = 0.01,
+    size = 0.05,
+    fatten = 0.01
   ) +
-  facet_grid(D ~ V + method) +
-  ylim(-20, 20)
+  scale_color_manual(values = method_cols) +
+  coord_flip() +
+  coord_fixed() +
+  facet_grid(method + V ~ D + N) +
+  ylim(-5, 20) +
+  xlim(-5, 20)
 
+## summary performance plot
+perf <- combined %>%
+  group_by(v, method, D, V, N) %>%
+  summarise(
+    error = mean(mu - `50%`),
+    error_bar = sd(`50%`)
+  )
+
+ggplot(perf) +
+  geom_abline(slope = 1, alpha = 0.6, size = 0.3) +
+  geom_point(aes(x = error, y = error_bar, col = method), size = 0.7, alpha = 0.6) +
+  scale_color_manual(values = method_cols) +
+  guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
+  labs(x = "Root Mean Squared Error", y = "Standard Deviation", col = "Inference") +
+  facet_grid(V ~ D + N) +
+  xlim(0, 25)
 
 ## study the bootstrap samples
 ## bootstrap_paths <- metadata %>%
