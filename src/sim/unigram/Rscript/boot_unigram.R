@@ -28,10 +28,10 @@ argv$end_iter <- as.integer(args[[3]])
 argv$fit_id <- args[[4]]
 argv$input_path <- args[[5]]
 argv$stan_path <- args[[6]]
-argv$n_samples <- as.integer(args[[10]])
-argv$N <- args[[7]]
-argv$a0 <- as.numeric(args[[8]])
-argv$b0 <- as.numeric(args[[9]])
+argv$n_samples <- as.integer(args[[7]])
+argv$N <- args[[8]]
+argv$a0 <- as.numeric(args[[9]])
+argv$b0 <- as.numeric(args[[10]])
 dir.create(argv$output_dir)
 
 ###############################################################################
@@ -71,7 +71,7 @@ for (i in seq(argv$start_iter, argv$end_iter)) {
     "file" = mu_path,
     "D" = nrow(cur_data),
     "V" = ncol(cur_data),
-    "N" = sum(cur_data[, 1]),
+    "N" = sum(cur_data[1, ]),
     "sigma0" = NA,
     "a0" = argv$a0,
     "b0" = argv$b0,

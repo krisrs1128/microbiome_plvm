@@ -127,7 +127,7 @@ class UnigramBoot(luigi.Task):
             os.path.join(self.conf.get("expers", "output_dir"), "bootstraps"),
             self.start_ix, self.end_ix, fit_id(self), input_path,
             self.conf.get("expers", "stan_path"), self.conf.get("expers",
-            "n_samples"), self.N, self.a0, self.b0,
+            "n_samples"), self.N, self.a0, self.b0
         ]
         run_and_check(run_cmd)
 
