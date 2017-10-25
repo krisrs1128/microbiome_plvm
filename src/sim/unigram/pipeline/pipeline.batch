@@ -32,7 +32,7 @@
 # sherlock automatically allocates 8 Gigs of RAM/CPU, if you ask for 8 CPUs you will need 32 Gigs of RAM, so either
 # leave --mem commented out or request >= to the RAM needed for your CPU request.
 
-#SBATCH --mem=8000
+#SBATCH --mem=18000
 #################
 
 # Have SLURM send you an email when the job ends or fails, careful, the email could end up in your clutter folder
@@ -48,4 +48,4 @@
 module load python/3.6.1
 source /home/kriss1/.bash_profile
 cd /scratch/users/kriss1/programming/research/microbiome_plvm/src/sim/unigram/pipeline/
-python3 pipeline.py UnigramExperiment --local-scheduler --workers=5
+python3 pipeline.py UnigramExperiment --local-scheduler --workers=9
