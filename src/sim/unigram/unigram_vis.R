@@ -87,10 +87,6 @@ bootstraps <- feather_from_paths(bootstrap_paths)  %>%
   ) %>%
   spread(quantile, mu)
 
-colnames(bootstraps)[c(5, 6, 7)] <- c("a0", "sigma0", "b0")
-bootstraps$N <- NULL
-bootstraps$N <- bootstraps$a0
-
 combined_samples <- mu %>%
   select(D, V, i, v, mu) %>%
   full_join(
@@ -111,19 +107,6 @@ combined <- bind_rows(
 ###############################################################################
 ## Visualize the performance of different methods
 ###############################################################################
-combined[combined$N == 3, ]$N <- 1625
-combined[combined$N == 9, ]$N <- 1625
-combined[combined$N == 6, ]$N <- 1625
-combined[combined$N == 19, ]$N <- 1625
-combined[combined$N == 11, ]$N <- 3250
-combined[combined$N == 16, ]$N <- 3250
-combined[combined$N == 28, ]$N <- 3250
-combined[combined$N == 137, ]$N <- 3250
-combined[combined$N == 22, ]$N <- 6500
-combined[combined$N == 56, ]$N <- 6500
-combined[combined$N == 270, ]$N <- 6500
-combined[combined$N == 540, ]$N <- 6500
-
 method_cols <- c("#ae7664", "#64ae76", "#7664ae")
 ggplot(combined) +
   geom_hline(yintercept = 0) +
@@ -153,6 +136,10 @@ ggplot(combined) +
   ylim(-5, 20) +
   xlim(-5, 20)
 
+ggsave(
+  file.path(base_dir, "doc", "figure/mu_intervals.png")
+)
+
 ## summary performance plot
 perf <- combined %>%
   group_by(v, method, D, V, N) %>%
@@ -170,3 +157,8 @@ ggplot(perf) +
   facet_grid(V ~ D + N) +
   xlim(0, 25) +
   ylim(0, 25)
+ggsave(
+  file.path(base_dir, "doc", "figure/mu_errors_unigram.png"),
+  width = 5.2,
+  height = 3.1
+)

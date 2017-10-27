@@ -208,8 +208,8 @@ combined <- zinf_data %>%
 combined <- combined %>%
   filter(
     iteration > 400,
-    value_1 < 40,
-    value_2 < 40
+    sqrt(value_1) < 13,
+    sqrt(value_2) < 13
   )
 combined$D <- droplevels(combined$D)
 
