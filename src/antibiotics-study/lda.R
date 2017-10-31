@@ -322,7 +322,8 @@ p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
   scale_color_manual(
     "Family",
     values = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "grey"),
-    guide = guide_legend(override.aes = list(alpha = 1, size = 3))
+    guide = guide_legend(override.aes = list(alpha = 1, size = 3)),
+    na.value = "black"
   ) +
   facet_grid(Taxon_5 ~ prototypical, scale = "free_y") +
   theme(
@@ -347,7 +348,8 @@ for (k in seq_len(stan_data$K)) {
       values = c("Lachnospiraceae" = "#66C2A5", "Ruminococcaceae" = "#FC8D62",
                  "Bacteroidaceae" = "#8DA0CB", "uncultured" = "#E78AC3",
                  "other" = "grey"),
-      guide = guide_legend(override.aes = list(alpha = 1, size = 3))
+      guide = guide_legend(override.aes = list(alpha = 1, size = 3)),
+      na.value = "black"
     ) +
     facet_wrap(~rsv, scale = "free_y", nrow = 3) +
     theme(
@@ -393,8 +395,7 @@ uneven_probs$Taxon_5 <- factor(
   levels = Taxon_5_order
 )
 
-## visualize the unevenness in topic
-## assignments across taxa
+## visualize the unevenness in topic assignments across taxa
 p <- ggplot(uneven_probs) +
   geom_point(
     aes(
