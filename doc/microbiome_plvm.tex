@@ -546,22 +546,6 @@ Figure \ref{fig:mu_posteriors}, we visualize the true $\mu_{tv}$ against
 posterior intervals for the one-dimensional $p\left(\mu_{tv} \vert x\right)$,
 across all configurations of simulation parameters.
 
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=\textwidth]{figure/mu_posteriors}
-  \caption{
-    A comparison of the posterior $p\left(\mu_{tv} \vert x\right)$ to the known
-    underlying $\mu_{tv}$, in the unigram simulation experiment. The $x$-axis
-    for each interval corresponds to the true $\mu_{tv}$ for one species at one
-    timepoint, while the vertical intervals cover the 25\% to 75\% quantiles of
-    samples from the posterior $p\left(\mu_{tv} \vert x\right)$. Different
-    panels distinguish between configurations of $D$, $N$, $V$, and posterior
-    sampling schemes. Posteriors from MCMC sampling seem to correctly recover
-    the true underlying $\mu_{tv}$, while discrepancies arise for both VB and
-    the bootstrap.
-    \label{fig:mu_posteriors} }
-\end{figure}
-
 Evidently, MCMC provides accurate posterior estimates, while VB and the
 bootstrap estimates deviate from the true $\mu_{tv}$. First, when the true
 $\mu_{tv}$ is small small, the posterior estimates from VB and the bootstrap are
@@ -728,13 +712,15 @@ interesting variation that may be occurring among species not among the 750 most
 abundant. To address these issues, we have designed an interactive version,
 available online at
 %\url{https://statweb.stanford.edu/~kriss1/microbiome_plvm/vis.html}.
-(link blinded for review). Alternatively, individual species that are primarily
-assigned to individual topics can be used to characterize the topics. For
-example, in Figure \ref{fig:topic_prototypes} we have screened all species for
-those that seem primarily associated with a single topic, and plotted them along
-with the topic for they are representative. Specifically, representatives of the
-$k^{th}$ topic were found by choosing the 50 species $v$ with the largest values
-of $\beta_{kv} - \sum_{k^{\prime} \neq k} \beta_{k^{\prime} v}$.
+(link blinded for review).
+Alternatively,
+individual species that are primarily assigned to individual topics can be used
+to characterize the topics. For example, in Figure \ref{fig:topic_prototypes} we
+have screened all species for those that seem primarily associated with a single
+topic, and plotted them along with the topic for they are representative.
+Specifically, representatives of the $k^{th}$ topic were found by choosing the
+50 species $v$ with the largest values of $\beta_{kv} - \sum_{k^{\prime} \neq k}
+\beta_{k^{\prime} v}$.
 
 This allows an interpretation of the topics in terms of the raw data, and the
 display reinforces the findings of Figures \ref{fig:antibiotics_lda_theta} and
@@ -1142,6 +1128,22 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[ht]
   \centering
+  \includegraphics[width=\textwidth]{figure/mu_posteriors}
+  \caption{
+    A comparison of the posterior $p\left(\mu_{tv} \vert x\right)$ to the known
+    underlying $\mu_{tv}$, in the unigram simulation experiment. The $x$-axis
+    for each interval corresponds to the true $\mu_{tv}$ for one species at one
+    timepoint, while the vertical intervals cover the 25\% to 75\% quantiles of
+    samples from the posterior $p\left(\mu_{tv} \vert x\right)$. Different
+    panels distinguish between configurations of $D$, $N$, $V$, and posterior
+    sampling schemes. Posteriors from MCMC sampling seem to correctly recover
+    the true underlying $\mu_{tv}$, while discrepancies arise for both VB and
+    the bootstrap.
+    \label{fig:mu_posteriors} }
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
   \includegraphics[width=\textwidth]{figure/mu_errors_unigram}
   \caption{A simplification of Figure \ref{fig:mu_posteriors}, displaying RMSE when
     using posterior medians to estimate simulation $\mu_{tv}$s ($x$-axis) and
@@ -1151,7 +1153,6 @@ Institute of Health TR01 grant AI112401.
     \label{fig:mu_errors_unigram}
   }
 \end{figure}
-
 
 \begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-D}
