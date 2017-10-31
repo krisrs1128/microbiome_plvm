@@ -64,8 +64,7 @@ dir.create(figure_dir, recursive = TRUE)
 
 fits <- list.files(fits_dir, "fit-*", full.names = TRUE)
 expers <- fromJSON(
-  ## file.path(nmf_dir, "config.json"),
-  "~/Desktop/src/sim/nmf/config.json",
+  file.path(nmf_dir, "config.json"),
   simplifyVector = FALSE
 )
 
@@ -74,8 +73,7 @@ expers <- expers[exper_ids %in% basename(fits)]
 
 beta_fits <- reshape_all_samples(
   fits,
-  ## file.path(nmf_dir, "config.json"),
-  "~/Desktop/src/sim/nmf/config.json",
+  file.path(nmf_dir, "config.json"),
   "beta",
   c("j", "k")
 ) %>%
@@ -100,6 +98,10 @@ beta_fits$method <- beta_fits$method %>%
     "nmf_gamma_poisson.stan" = "GaP",
     "nmf_gamma_poisson_zero.stan" = "Z-GaP"
   )
+beta_fits$method <- factor(
+  beta_fits$method,
+  levels = c("bootstrap", "mcmc", "vb")
+)
 
 ## ---- visualizebetas-prep -----
 ## Visualize the fitted betas, according to a few different simulation properties
@@ -204,7 +206,7 @@ ggsave(
 )
 
 combined <- zinf_data %>%
-  filter(P == 325, D == "D = 100")
+  filter(D == "D = 100")
 combined <- combined %>%
   filter(
     iteration > 400,
