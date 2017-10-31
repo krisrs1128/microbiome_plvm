@@ -301,8 +301,8 @@ $T_{k}\left(x\right)$ lie in the bulk of the $T_{k}\left(x^{\ast}_{s}\right)$ --
 or fails to fit -- the case where $T_{k}\left(x\right)$ lie far from the bulk of
 $T_{k}\left(x^{\ast}_{s}\right)$ -- the data well.
 
-For example, it is common to set $T_{k}\left(x\right) = \bar{x}_d$ or
-$\frac{1}{n}\sum_{i} \left(x_{id} - \bar{x}_d\right)^{2}$ to see whether
+For example, it is common to set $T_{k}\left(x\right) = \overline{x}_d$ or
+$\frac{1}{n}\sum_{i} \left(x_{id} - \overline{x}_d\right)^{2}$ to see whether
 simulated samples approximately match the moments of the $d^{th}$ dimension in
 the observed data. Alternatively, histograms of raw data or raw data subsetted
 to certain groups can guide evaluation. This corresponds to setting a
@@ -332,8 +332,8 @@ between the most common field-specific terms as follows,
   \item \textbf{Term} $\iff$ \textbf{Bacterial species}: The fundamental
     features with which to describe samples are the counts of terms (text
     analysis) and bacterial species (microbiome analysis). More formally, by
-    bacterial species, we mean Ribosomal Sequence Variants
-    \citep{callahan2016dada2}, though we avoid this terminology for simplicity
+    bacterial species, we mean Amplicon Sequence Variants
+    \citep{callahan2017exact}, though we avoid this terminology for simplicity
     of exposition.
   \item \textbf{Topic} $\iff$ \textbf{Community}: For interpretation, it is
     common to imagine ``prototypical'' units which can be used as a point of
@@ -427,7 +427,7 @@ number of features $V \in \{325, 650\}$, and the total count per sample $N \in
 \{1625, 3250, 6500\}$, in order to approximately match dimensions typical in
 real microbiome datasets. On the other hand, we fix the number of topics to $K =
 2$ and the Dirichlet hyperparameter to $\alpha = \gamma = 1$. For each simulated
-data set, we perform estimation using VB, MCMC sampling, and a parametric
+data set, we perform estimation using MCMC sampling, VB, and a parametric
 bootstrap. In more detail, this bootstrap procedure fits VB to the original
 data, simulates $B = 500$ new datasets $X^{\ast}_{b}$ according to the LDA model
 using VB-estimated parameters $\{\hat{\theta}^{\ast}_{b},
@@ -443,9 +443,10 @@ compare the estimated topics across simulation configurations. To address this
 issue, we attempt to identify the permutation that aligns topics across all
 experiments: for each experiment, we identify the true-estimated topics pair
 with highest correlation, then find the next highest pair among the remaining,
-and so forth. Judging from the aligned densities in Figures
-\ref{fig:beta_contours_v325}, \ref{fig:beta_contours_v650}, and
-\ref{fig:beta_contours_nmf}, this ad-hoc alignment procedure seems sufficient.
+and so forth. Judging from the aligned densities in Figure
+\ref{fig:beta_contours_v650} and Supplementary Figures
+\ref{fig:beta_contours_v325}, and \ref{fig:beta_contours_nmf}, this ad-hoc
+alignment procedure seems sufficient.
 
 Figure \ref{fig:beta_contours_v650} displays the true and posterior $\beta_{k}$
 for the LDA experiment with $V = 650$ features, while varying other simulation
@@ -453,7 +454,7 @@ characteristics. Each panel represents a single experimental configuration, with
 each axis associated with an underlying topic. Each black point is the
 square-root transformed value of feature $v$ across topics:
 $\left(\sqrt{\beta_{v1}}, \sqrt{\beta_{v2}}\right)$. The shaded clouds are
-sampled posteriors, and the linked orange point give the posterior mean for the
+sampled posteriors, and the linked orange point give the posterior median for the
 associated feature. Across rows, different inferential procedures are compared.
 The top row of column labels refers to the total count $N$ within each sample,
 while the second refers to the number of samples $D$. The analogous figure when
@@ -465,38 +466,37 @@ number of samples or total count within samples increases, the posteriors
 further concentrate around the truth. In each of the settings considered, the
 three methods seem comparable, suggesting that for microbiome studies of this
 approximate scale, VB may be a reasonable choice, considering that it can be run
-much more quickly than either MCMC or the bootstrap, in spite of the issues
-raised by \citep{wang2005inadequacy}.
+much more quickly than either MCMC or the bootstrap.
 
 While the kernel-smoothed posterior densities display the complete results from
 this simulation study, a few summary statistics from these densities can
 facilitate comparison across models and data generation regimes. The key
-features of interest are (1) the distance of the posterior means for each
+features of interest are (1) the distance of the posterior medians for each
 parameter from their true values, after alignment, and (2) the concentration of
-these posteriors around their means. Figure \ref{fig:beta_errors_lda} addresses
-these questions directly -- the $x$-axis gives the RMSE of the
-square-root-transformed posterior means for the $\beta_{vk}$, for each $v$, and
-the $y$-axis gives the associated standard deviation, along $K = 1$, for each
-$v$. As in Figure \ref{fig:beta_contours_v650}, the first row of column numbers
-gives the total count $N$ in each sample, and the second gives $D$, the number
-of samples. The grey line within each panel is the identity line, where the
-error equals one standard deviation.
+these posteriors around their medians. Figure \ref{fig:beta_errors_lda}
+addresses these questions directly -- the $x$-axis gives the RMSE of the
+square-root-transformed posterior medians for the $\beta_{vk}$, for each $v$,
+across $k$, and the $y$-axis gives the associated standard deviation, along $K =
+1$, for each $v$. As in Figure \ref{fig:beta_contours_v650}, the first row of
+column numbers gives the total count $N$ in each sample, and the second gives
+$D$, the number of samples. The grey line within each panel is the identity
+line, where the error equals one standard deviation.
 
 The drift of points to the bottom left as $N$ and $D$ increase reflects the
 improved accuracy and concentration of all inference techniques when the number
 of samples and total count within samples increase. Note that few points lie
 above the identity standard deviation line -- this suggests that the posteriors
-may be misleadingly narrow. Finally, we find that, the scale of errors and
+may be misleadingly narrow. Finally, we find that the scale of errors and
 concentration in the $V = 325$ and $V = 650$ cases are comparable. Considering
 that there is the same number of documents available for estimating each
-$\beta_{vk}$, this is not entirely surprising.
+individual $\beta_{vk}$, this is not surprising.
 
 For the NMF experiment, we use similar parameters, except now we introduce a
 zero-inflation probability, $p_{0} \in \{0, 0.2\}$, and have control only over
 the expected total count per sample $\Earg{N}$, rather than $N$. When $p_{0} >
-0$, we perform inference when the true value is provided and also when and when
+0$, we perform inference when the true $p_0$ is provided and also when and when
 $p_{0}$ is (incorrectly) assumed to be zero. To modulate $\Earg{N}$, we vary
-$a_{0}$ and $b_{0}$ so that $\Earg{N} = \frac{b_{0}}{a_{0}}V \in \{1625, 3250,
+$a_{0}$ and $b_{0}$ so that $\Earg{N} = \frac{b_{0}}{a_{0}}KV \in \{1625, 3250,
 6500\}$, matching the LDA experiment. As before, we vary the number of samples
 $D \in \{20, 100\}$ but fix the number of latent factors $K$ at 2. Figure
 \ref{fig:beta_errors_zinf} summarizes the estimation error across regimes, and
@@ -506,9 +506,9 @@ exceptions,
 \item Instead of providing the fixed values of $N$, we display $\Earg{N}$.
 \item We must distinguish between different $p_{0}$ regimes, and whether or not
   the inferential procedure assumed $p_{0}$ was 0 or was given the true $p_{0}$.
-  Different values of $p_{0}$ are represented by different shapes. Inference
-  where $p_{0}$ was provided is denoted by the row label Z-GaP, while those rows
-  marked GaP assumed $p_{0} = 0$.
+  The true value of $p_0$ is marked by the second row of column labels, and
+  inference where $p_{0}$ was provided is denoted by the row label Z-GaP, while
+  those rows marked GaP assumed $p_{0} = 0$.
 \end{enumerate}
 The associated posterior density display is given in Supplementary Figure
 \ref{fig:beta_contours_nmf}.
@@ -517,8 +517,7 @@ The results in Figure \ref{fig:beta_errors_zinf} are more problematic than those
 in Figure \ref{fig:beta_errors_lda}. First, the standard errors are no longer
 comparable across methods, with those for the MCMC sampling procedure appearing
 much larger across many simulation configurations. Second, the error rates are
-substantially larger than those in LDA, even when accounting for the larger
-scale of the $\theta_{d}$'s in this setting. Examining Supplementary Figure
+substantially larger than those in LDA. Examining Supplementary Figure
 \ref{fig:beta_contours_nmf}, it appears that lack of identifiability in the NMF
 model may be affecting our ability to evaluate the resulting fits. The only way
 to distinguish between models $\left(c\Theta\right)\left(\frac{1}{c}
@@ -534,47 +533,46 @@ models reliable in the regimes under consideration, even when $p_{0}$ is known.
 Next we consider a simulation experiment involving the unigram model. We use the
 same configurations of $D$, $V$, and $N$ as in the LDA and NMF experiments
 above. The parameter controlling the rate of evolution on the simplex,
-$\sigma_{0}^2$, is set to 1 throughout. $\sigma_0^2$ is not assumed known, and
-is instead modeled as an $\text{InvGamma}\left(1, 1\right)$ across all
-simulation settings.
+$\sigma_{0}^2$, is set to 1 throughout. During inference, $\sigma_0^2$ is not
+assumed known, and is instead modeled as an $\text{InvGamma}\left(1, 1\right)$
+across all simulation settings.
 
 In the NMF and LDA experiments, we could visualize fitted posteriors over
 $\theta_i$ and $\beta_j$ as two-dimensional smoothed scatterplots, since we set
 $K = 2$. In contrast, this unigram experiment involves a $V$-dimensional
-parameter $\mu_t$ evolving over time -- this precludes the development of a
-Figure analogous to Figures \ref{fig:beta_contours_v650} or
-\ref{fig:beta_contours_nmf}. Instead, in Figure \ref{fig:mu_posteriors}, we
-visualize the true $\mu_{tv}$ against 95\% posterior intervals for the
-one-dimensional $p\left(\mu_{tv} \vert x\right)$, across all configurations of
-simulation parameters.
+parameter $\mu_t$ evolving over time -- this precludes any direct analog to
+Figures \ref{fig:beta_contours_v650} or \ref{fig:beta_contours_nmf}. Instead, in
+Figure \ref{fig:mu_posteriors}, we visualize the true $\mu_{tv}$ against
+posterior intervals for the one-dimensional $p\left(\mu_{tv} \vert x\right)$,
+across all configurations of simulation parameters.
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{figure/mu_posteriors}
   \caption{
-    A comparison of the posterior marginals $p\left(\mu_{tv} \vert x\right)$ to
-    the known underlying $\mu_{tv}$, in the unigram simulation experiment. The
-    $x$-axis for each point corresponds to the truth, $\mu_{tv}$ for one
-    species at one timepoint, while the vertical intervals cover the 5\% to 95\%
-    quantiles of samples from the posterior $p\left(\mu_{tv} \vert x\right)$.
-    Different panels distinguish between configurations of $D$, $N$, $V$, and
-    posterior sampling schemes. Posteriors from MCMC sampling seem to correctly
-    recover the true underlyign $\mu_{tv}$, while discrepancies arise for both
-    VB and the bootstrap.
+    A comparison of the posterior $p\left(\mu_{tv} \vert x\right)$ to the known
+    underlying $\mu_{tv}$, in the unigram simulation experiment. The $x$-axis
+    for each interval corresponds to the true $\mu_{tv}$ for one species at one
+    timepoint, while the vertical intervals cover the 25\% to 75\% quantiles of
+    samples from the posterior $p\left(\mu_{tv} \vert x\right)$. Different
+    panels distinguish between configurations of $D$, $N$, $V$, and posterior
+    sampling schemes. Posteriors from MCMC sampling seem to correctly recover
+    the true underlying $\mu_{tv}$, while discrepancies arise for both VB and
+    the bootstrap.
     \label{fig:mu_posteriors} }
 \end{figure}
 
-Evidently, only MCMC provides completely reliable posterior estimates. The VB
-and the bootstrap posteriors display certain deviations from the true
-$\mu_{tv}$. First, when the true $\mu_{tv}$ is very small, the posterior
-estimates are too large. This is not as much a reason for concern as it might
-appear at first, however, as the parameters $\mu_t$ are passed through a softmax
-before being mapped to probabilities. After this transformation, the difference
-between, say, $\mu_{tv} = 10^{-2}$ and $\mu_{tv} = 10^{-5}$ is relatively
-unimportant. Second, posterior estimates for $\mu_{tv}$ for large positive
-values of the parameter tend to be biased downards, to a degree that can't be
-simply explained as an effect of the prior, as such a strong bias is not present
-among the MCMC-sampled posteriors.
+Evidently, MCMC provides accurate posterior estimates, while VB and the
+bootstrap estimates deviate from the true $\mu_{tv}$. First, when the true
+$\mu_{tv}$ is small small, the posterior estimates from VB and the bootstrap are
+too large. This is not as much a reason for concern as it might appear at first,
+however, as the parameters $\mu_t$ are passed through a softmax before being
+mapped to probabilities. After this transformation, the difference between, say,
+$\mu_{tv} = 10^{-2}$ and $\mu_{tv} = 10^{-5}$ is relatively unimportant. Second,
+posterior estimates for $\mu_{tv}$ for large positive values of the parameter
+tend to be biased downards, to a degree that can't be simply explained as an
+effect of the prior, as such a strong bias is not present among the MCMC-sampled
+posteriors.
 
 To simplify the comparison between methods, we can also display the unigram
 analog of Figure \ref{fig:beta_errors_analog} -- this is given in Supplementary
@@ -593,7 +591,7 @@ two questions,
 \item Do these models fit the data well, and what techniques are available for
   performing this evaluation?
 \item Supposing these models fit well, do they lend themselves to informative
-summaries of the original data?
+  summaries of the original data?
 \end{enumerate}
 
 To develop answers to these questions, we reanalyze the data of
@@ -649,7 +647,7 @@ process reflects an advantage of probabilistic modeling: the Bayesian Occam's
 razor ensures that the posterior probability of a model won't always go up as
 $K$ increases -- contrast this with ordinary $K$-means, where tailored methods
 like the Gap or Silhouette statistics must be studied
-\citep{rasumussen2001occam, tibshirani2001estimating, kaufman2009finding}.
+\citep{rasmussen2001occam, tibshirani2001estimating, kaufman2009finding}.
 Alternatively, the proposals of \citep{wallach2009evaluation} could be carried
 out. However, in this study, we guide the choice of $K$ based on what we find
 most useful for scientific interpretation, rather than that which necessarily
@@ -658,21 +656,21 @@ gives the best fit over the entire population.
 Note that we plot the fitted probabilities on a logit scale -- for a raw vector
 of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right) \in
 \simplex{D - 1}$, we plot $g\left(\mathbf{p}\right) := \left(\log p_{1} -
-\bar{\log \mathbf{p}}, \dots, \log p_{K} - \bar{\log
+\overline{\log \mathbf{p}}, \dots, \log p_{K} - \overline{\log
   \mathbf{p}}\right)$, which are similar to log-odds, but centered according to
 the average log probability, rather than any reference class.
 
-We note that both LDA and the Dynamic Unigram model are more computationally
-intensive than more common approaches, like principal components analysis (PCA)
-or multidimensional scaling (MDS), but are still amenable to routine
-application. For example, in the case studies below, LDA and the Dynamic Unigram
-model can both be compiled and run on a standard laptop\footnote{1.4GHz Intel
-  Core i5 processor and 4GB RAM} in 5.62 and 30.0 minutes, respectively -- the
-longer runtime of the Dynamic Unigram model is due to its larger number of
-parameters. Further, both approaches can be scaled to much larger datasets
-without requiring substantially more memory (but requiring somewhat longer
-training time) by applying stochastic variational inference
-\citep{hoffman2013stochastic, kucukelbir2015automatic}.
+Both LDA and the Dynamic Unigram model are more computationally intensive than
+more common approaches, like principal components analysis (PCA) or
+multidimensional scaling (MDS), but are still amenable to routine application.
+For example, in the case studies below, LDA and the Dynamic Unigram model can
+both be compiled and run on a standard laptop\footnote{1.4GHz Intel Core i5
+  processor and 4GB RAM} in 5.62 and 30.0 minutes, respectively -- the longer
+runtime of the Dynamic Unigram model is due to its larger number of parameters.
+Further, both approaches can be scaled to much larger datasets without requiring
+substantially more memory (but requiring somewhat longer training time) by
+applying stochastic variational inference \citep{hoffman2013stochastic,
+  kucukelbir2015automatic}.
 
 \subsection{Latent Dirichlet Allocation}
 \label{sec:antibiotics_lda}
@@ -729,14 +727,14 @@ species associated with a specific credible interval. It also hides any
 interesting variation that may be occurring among species not among the 750 most
 abundant. To address these issues, we have designed an interactive version,
 available online at
-\url{https://statweb.stanford.edu/~kriss1/microbiome_plvm/vis.html}. Alternatively,
-individual species that are primarily assigned to individual topics can be used
-to characterize the topics. For example, in Figure \ref{fig:topic_prototypes} we
-have screened all species for those that seem primarily associated with a single
-topic, and plotted them along with the topic for they are representative.
-Specifically, representatives of the $k^{th}$ topic were found by choosing the
-50 species $v$ with the largest values of $\beta_{kv} - \sum_{k^{\prime} \neq k}
-\beta_{k^{\prime} v}$.
+%\url{https://statweb.stanford.edu/~kriss1/microbiome_plvm/vis.html}.
+(link blinded for review). Alternatively, individual species that are primarily
+assigned to individual topics can be used to characterize the topics. For
+example, in Figure \ref{fig:topic_prototypes} we have screened all species for
+those that seem primarily associated with a single topic, and plotted them along
+with the topic for they are representative. Specifically, representatives of the
+$k^{th}$ topic were found by choosing the 50 species $v$ with the largest values
+of $\beta_{kv} - \sum_{k^{\prime} \neq k} \beta_{k^{\prime} v}$.
 
 This allows an interpretation of the topics in terms of the raw data, and the
 display reinforces the findings of Figures \ref{fig:antibiotics_lda_theta} and
@@ -819,11 +817,11 @@ departure occurs in the second half of series 1116. Here, the posterior
 predictive distribution places most mass on the event that the bacterial time
 series rebounds to its initial abundance when in reality the species vanishes
 during the second antibiotic time course, never to return. A potential
-explanation for LDA's failure to capture this pattern is that not many initially
-highly abundant species disappear after the second time course, and hence they are
-not captured by the global LDA summary. This suggests a technique for
-highlighting outlier species: we can look at the average discrepancy between
-observed series and their posterior predictive samples.
+explanation for LDA's failure to capture this pattern is that few highly
+abundant species disappear after the second time course, and hence they are not
+captured by the global LDA summary. This suggests a technique for highlighting
+outlier species: we can look at the average discrepancy between observed series
+and their posterior predictive samples.
 
 On the other hand, for the Dynamic Unigram model, the posterior predictive
 distribution places most of its support close to the observed species series.
@@ -867,7 +865,7 @@ further evidence to the claim that this model is over-parameterized.
 \label{subsec:comparison_with_pcoa}
 
 There is value in comparing this text-modeling based approach to the data from
-\citep{dethlefsen2011} with the analysis carried out in the original
+\citep{dethlefsen2011incomplete} with the analysis carried out in the original
 publication, based on principal coordinates analysis (PCoA) using a UniFrac
 distance. Both approaches accentuate the dramatic change in microbiome
 composition immediately following the administration of antibiotics, and both
@@ -879,19 +877,19 @@ antibiotic treatment.
 On the other hand, some findings are more easily accessible when using the
 probabilistic approach. For example, the availability of topics with mixed
 memberships strikes a balance between the continuous gradient representation of
-principle coordinate analysis of \citep{dethlefsen2011} and the discrete
-clusters provided by standard clustering techniques, which appear elsewhere in
-the microbiome literature \citep{diguilio2015temporal, mcmurdie2014waste}. This
-simplifies the taxonomic characterization of different communities -- with
-principal coordinates, it would be necessary to find species correlated with the
-principal coordinate axes, and indeed no visual representations of taxa ever
-appear in the figures of \ref{dethlefsen2011}. Similarly, by studying individual
-topics, we find there is more variation within taxonomic families than is ever
-discussed in the original refernece. Further, through posterior predictive
-checks, we can perform model assessment in a way that is not so straightforwards
-with PCoA, and more broadly speaking, we by adopting probabilistic methods, we
-are able to describe the uncertainty associated with mixed membership and topic
-estimate.
+principle coordinate analysis of \citep{dethlefsen2011incomplete} and the
+discrete clusters provided by standard clustering techniques, which appear
+elsewhere in the microbiome literature \citep{digiulio2015temporal,
+  mcmurdie2014waste}. This simplifies the taxonomic characterization of
+different communities -- with principal coordinates, it would be necessary to
+find species correlated with the principal coordinate axes, and indeed no visual
+representations of taxa ever appear in the figures of
+\cite{dethlefsen2011incomplete}. Similarly, by studying individual topics, we
+find there is more variation within taxonomic families than is ever discussed in
+the original refernece. Further, through posterior predictive checks, we can
+perform model assessment in a way that is not so straightforwards with PCoA, and
+more broadly speaking, we by adopting probabilistic methods, we are able to
+describe the uncertainty associated with mixed membership and topic estimate.
 
 That said, PCoA enjoys certain advantages over the probabilistic approaches that
 have been the focus of this work. Perhaps most importantly, PCoA can be run in
@@ -979,7 +977,7 @@ Institute of Health TR01 grant AI112401.
     each panel, we display the true pairs $\left(\sqrt{\beta_{v1}},
     \sqrt{\beta_{v2}}\right)$ as black points $v$. The purple clouds are
     posterior samples from the inference procedure, which are given as row
-    labels. The posterior means are orange points that are linked to the true
+    labels. The posterior medians are orange points that are linked to the true
     $v$. Different columns index different $D$ (top column label) vs. $N$
     (bottom column label) pairs. Here, we have subsetted to $V = 650$ -- the
     corresponding figure for $V = 325$ is given by \ref{fig:beta_contours_v325}.
@@ -993,7 +991,7 @@ Institute of Health TR01 grant AI112401.
   \caption{A summary of the errors and uncertainty across models and regimes for
     the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v650} and Supplementary
     Figure \ref{fig:beta_contours_v325}. On the $x$-axis, we plot the difference
-    between posterior means and the true value, after having square-root
+    between posterior median and the true value, after having square-root
     transformed. On the $y$-axis, we provide the standard deviation of the
     posterior samples for each $v$, along the first dimension $K = 1$. Columns
     are indexed as in Figure \ref{fig:beta_contours_v650}, but now rows provide
@@ -1022,8 +1020,8 @@ Institute of Health TR01 grant AI112401.
     of panels provides a different sequence of $\theta_{dk}$ for a single $k$,
     and different columns distinguish different phases of sampling. Note that
     the $y$-axis is on the $g$-scale, which is defined as a translated logit,
-    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \bar{\log \mathbf{p}},
-    \dots,\log p_{K} - \bar{\log \mathbf{p}}\right)$. Note that the first
+    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \overline{\log \mathbf{p}},
+    \dots,\log p_{K} - \overline{\log \mathbf{p}}\right)$. Note that the first
     and second antibiotic time courses result in meaningful shifts in these
     sequences, and that there appear to be long-term effects of treatment among
     bacteria in Topic 3. \label{fig:antibiotics_lda_theta}}
@@ -1123,7 +1121,7 @@ Institute of Health TR01 grant AI112401.
     posterior predictive samples, which are aligned and overlaid here. The left
     pair of panels give scores for each species, while the right pair provide
     loadings for each timepoint. The individual posterior samples have been
-    smoothed into contours, while the posterior means are displayed as shaded
+    smoothed into contours, while the posterior medians are displayed as shaded
     text. The observed data PCA results, after alignment with posterior samples,
     are displayed as black text. \label{fig:antibiotics_posterior_pca} }
 \end{figure}
@@ -1134,18 +1132,18 @@ Institute of Health TR01 grant AI112401.
   \caption{The results across all simulation configurations in the NMF
     experiment are displayed here. Within each panel, we display the true value
     of $\sqrt{\beta_{v}}$ as black points, while linked orange points give
-    associated posterior means. Note that the axes are truncated, and for some
-    panels, the posterior means all lie outside the visible box. Across columns,
-    we vary $D$ and $\Earg{N}$ -- these are the two rows of column labels, read
-    from top to bottom. Along rows, we vary the assumed model, the inference
-    procedure, and the true $p_{0}$ -- these are the three columns of row
-    labels, read from outside in.\label{fig:beta_contours_nmf}}
+    associated posterior medians. Note that the axes are truncated, and for some
+    panels, the posterior medians all lie outside the visible box. Across
+    columns, we vary $D$ and $\Earg{N}$ -- these are the two rows of column
+    labels, read from top to bottom. Along rows, we vary the assumed model, the
+    inference procedure, and the true $p_{0}$ -- these are the three columns of
+    row labels, read from outside in.\label{fig:beta_contours_nmf}}
 \end{figure}
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{figure/mu_errors_unigram}
-  \caption{A simplification of Figure \ref{mu_posteriors}, displaying RMSE when
+  \caption{A simplification of Figure \ref{fig:mu_posteriors}, displaying RMSE when
     using posterior medians to estimate simulation $\mu_{tv}$s ($x$-axis) and
     the standard deviations of posterior marginals ($y$-axis), across
     experimental configurations. Generally, MCMC sampled posteriors seem to be
@@ -1182,7 +1180,7 @@ Institute of Health TR01 grant AI112401.
   \caption{Rather than displaying all representative species together, as in
     Figure \ref{fig:topic_prototypes}, we can sort species according to how
     representative they are of an individual topic. Here, the 15 species most
-    strongly associated with Topic 1 are given. THe panels are to be read from
+    strongly associated with Topic 1 are given. The panels are to be read from
     left to right and from top to bottom, to go in decreasing value of
     association. Note that the $y$-axis is on a square root
     scale. \label{fig:species_prototypes_1} }
