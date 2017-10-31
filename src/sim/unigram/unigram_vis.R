@@ -155,8 +155,8 @@ ggplot(perf) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   labs(x = "Root Mean Squared Error", y = "Standard Deviation", col = "Inference") +
   facet_grid(V ~ D + N) +
-  xlim(0, 25) +
-  ylim(0, 25)
+  xlim(0, 20) +
+  ylim(0, 14)
 ggsave(
   file.path(base_dir, "doc", "figure/mu_errors_unigram.png"),
   width = 5.2,
