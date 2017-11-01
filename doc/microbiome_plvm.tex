@@ -445,8 +445,9 @@ experiments: for each experiment, we identify the true-estimated topics pair
 with highest correlation, then find the next highest pair among the remaining,
 and so forth. Judging from the aligned densities in Figure
 \ref{fig:beta_contours_v650} and Supplementary Figures
-\ref{fig:beta_contours_v325}, and \ref{fig:beta_contours_nmf}, this ad-hoc
-alignment procedure seems sufficient.
+\ref{fig:beta_contours_v325}, \ref{fig:beta_contours_nmf_d20}, and
+\ref{fig:beta_contours_nmf_d100}, this ad-hoc alignment procedure seems
+sufficient.
 
 Figure \ref{fig:beta_contours_v650} displays the true and posterior $\beta_{k}$
 for the LDA experiment with $V = 650$ features, while varying other simulation
@@ -499,7 +500,7 @@ $p_{0}$ is (incorrectly) assumed to be zero. To modulate $\Earg{N}$, we vary
 $a_{0}$ and $b_{0}$ so that $\Earg{N} = \frac{b_{0}}{a_{0}}KV \in \{1625, 3250,
 6500\}$, matching the LDA experiment. As before, we vary the number of samples
 $D \in \{20, 100\}$ but fix the number of latent factors $K$ at 2. Figure
-\ref{fig:beta_errors_zinf} summarizes the estimation error across regimes, and
+\ref{fig:beta_errors_nmf} summarizes the estimation error across regimes, and
 is read in the same way as Figure \ref{fig:beta_errors_lda}, with two
 exceptions,
 \begin{enumerate}
@@ -510,10 +511,10 @@ exceptions,
   inference where $p_{0}$ was provided is denoted by the row label Z-GaP, while
   those rows marked GaP assumed $p_{0} = 0$.
 \end{enumerate}
-The associated posterior density display is given in Supplementary Figure
-\ref{fig:beta_contours_nmf}.
+The associated posterior density display is given in Supplementary Figures
+\ref{fig:beta_contours_nmf_d20} and \ref{fig:beta_contours_nmf_d100}.
 
-The results in Figure \ref{fig:beta_errors_zinf} are more problematic than those
+The results in Figure \ref{fig:beta_errors_nmf} are more problematic than those
 in Figure \ref{fig:beta_errors_lda}. First, the standard errors are no longer
 comparable across methods, with those for the MCMC sampling procedure appearing
 much larger across many simulation configurations. Second, the error rates are
@@ -542,7 +543,7 @@ $\theta_i$ and $\beta_j$ as two-dimensional smoothed scatterplots, since we set
 $K = 2$. In contrast, this unigram experiment involves a $V$-dimensional
 parameter $\mu_t$ evolving over time -- this precludes any direct analog to
 Figures \ref{fig:beta_contours_v650} or \ref{fig:beta_contours_nmf}. Instead, in
-Figure \ref{fig:mu_posteriors}, we visualize the true $\mu_{tv}$ against
+Figure \ref{fig:mu_intervals}, we visualize the true $\mu_{tv}$ against
 posterior intervals for the one-dimensional $p\left(\mu_{tv} \vert x\right)$,
 across all configurations of simulation parameters.
 
@@ -996,7 +997,7 @@ Institute of Health TR01 grant AI112401.
     $N$. Note that we also now truncate the $x$ and $y$ axes, and not all points
     are visible. For example, most MCMC samples in the last panel in the second
     row have errors and SDs larger than what is displayed, and so are
-    missing. \label{fig:beta_errors_zinf}}
+    missing. \label{fig:beta_errors_nmf}}
 \end{figure}
 
 \begin{figure}[!p]
@@ -1088,6 +1089,54 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
+  \includegraphics[width=\textwidth]{figure/beta_contours_nmf_d20}
+  \caption{The results of the NMF experiment with $D = 20$ Within each panel, we
+    display the true value of $\sqrt{\beta_{v}}$ as black points, while linked
+    orange points give associated posterior medians. Note that the axes are
+    truncated, and for some panels, the posterior medians all lie outside the
+    visible box. Across columns, we vary and $\Earg{N}$. Along rows, we vary the
+    assumed model, the inference procedure, and the true $p_{0}$ -- these are
+    the three columns of row labels, read from outside
+    in.\label{fig:beta_contours_nmf_d20}}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/beta_contours_nmf_d100}
+  \caption{The analog of Figure \ref{fig:beta_contours_nmf_d20} when $D = 100$.
+  \label{fig:beta_contours_nmf_d100}}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{figure/mu_intervals}
+  \caption{
+    A comparison of the posterior $p\left(\mu_{tv} \vert x\right)$ to the known
+    underlying $\mu_{tv}$, in the unigram simulation experiment. The $x$-axis
+    for each interval corresponds to the true $\mu_{tv}$ for one species at one
+    timepoint, while the vertical intervals cover the 25\% to 75\% quantiles of
+    samples from the posterior $p\left(\mu_{tv} \vert x\right)$. Different
+    panels distinguish between configurations of $D$, $N$, $V$, and posterior
+    sampling schemes. Posteriors from MCMC sampling seem to correctly recover
+    the true underlying $\mu_{tv}$, while discrepancies arise for both VB and
+    the bootstrap.
+    \label{fig:mu_intervals} }
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{figure/mu_errors_unigram}
+  \caption{A simplification of Figure \ref{fig:mu_intervals}, displaying RMSE when
+    using posterior medians to estimate simulation $\mu_{tv}$s ($x$-axis) and
+    the standard deviations of posterior marginals ($y$-axis), across
+    experimental configurations. Generally, MCMC sampled posteriors seem to be
+    the most reliable, across simulation configurations.
+    \label{fig:mu_errors_unigram}
+  }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
   \includegraphics[scale=0.2]{figure/posterior_check_quantiles-F}
   \caption{As a posterior check, we compare the observed with simulated
     data quantiles, using a qq-plot. To reduce overlap, we have introduced a
@@ -1110,48 +1159,6 @@ Institute of Health TR01 grant AI112401.
     smoothed into contours, while the posterior medians are displayed as shaded
     text. The observed data PCA results, after alignment with posterior samples,
     are displayed as black text. \label{fig:antibiotics_posterior_pca} }
-\end{figure}
-
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=\textwidth]{figure/beta_contours_nmf}
-  \caption{The results across all simulation configurations in the NMF
-    experiment are displayed here. Within each panel, we display the true value
-    of $\sqrt{\beta_{v}}$ as black points, while linked orange points give
-    associated posterior medians. Note that the axes are truncated, and for some
-    panels, the posterior medians all lie outside the visible box. Across
-    columns, we vary $D$ and $\Earg{N}$ -- these are the two rows of column
-    labels, read from top to bottom. Along rows, we vary the assumed model, the
-    inference procedure, and the true $p_{0}$ -- these are the three columns of
-    row labels, read from outside in.\label{fig:beta_contours_nmf}}
-\end{figure}
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=\textwidth]{figure/mu_posteriors}
-  \caption{
-    A comparison of the posterior $p\left(\mu_{tv} \vert x\right)$ to the known
-    underlying $\mu_{tv}$, in the unigram simulation experiment. The $x$-axis
-    for each interval corresponds to the true $\mu_{tv}$ for one species at one
-    timepoint, while the vertical intervals cover the 25\% to 75\% quantiles of
-    samples from the posterior $p\left(\mu_{tv} \vert x\right)$. Different
-    panels distinguish between configurations of $D$, $N$, $V$, and posterior
-    sampling schemes. Posteriors from MCMC sampling seem to correctly recover
-    the true underlying $\mu_{tv}$, while discrepancies arise for both VB and
-    the bootstrap.
-    \label{fig:mu_posteriors} }
-\end{figure}
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=\textwidth]{figure/mu_errors_unigram}
-  \caption{A simplification of Figure \ref{fig:mu_posteriors}, displaying RMSE when
-    using posterior medians to estimate simulation $\mu_{tv}$s ($x$-axis) and
-    the standard deviations of posterior marginals ($y$-axis), across
-    experimental configurations. Generally, MCMC sampled posteriors seem to be
-    the most reliable, across simulation configurations.
-    \label{fig:mu_errors_unigram}
-  }
 \end{figure}
 
 \begin{figure}[!p]
@@ -1232,7 +1239,7 @@ Institute of Health TR01 grant AI112401.
     according to the topics of they are prototypical. Grey series still
     contribute to the average family-topic association measure, but were not
     among the 50 prototypes for each topic. This view suggests that the
-    Rhodospillaceae, Alcaligenaceaeand Parabacteroides may have a large
+    Rhodospillaceae, Alcaligenaceae and Parabacteroides may have a large
     fractions of representatives from Topics 3, 1, and 2, respectively. Note
     that as before, abundances are plotted on a square root
     scale. \label{fig:uneven_taxa_facet} }
