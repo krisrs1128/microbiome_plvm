@@ -321,19 +321,19 @@ p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
   ) +
   scale_color_manual(
     "Family",
-    values = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "grey"),
+    values = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#a6d854", "grey"),
     guide = guide_legend(override.aes = list(alpha = 1, size = 3)),
     na.value = "black"
   ) +
   facet_grid(Taxon_5 ~ prototypical, scale = "free_y") +
   theme(
-    strip.text.y = element_text(size = 6),
+    strip.text.y = element_blank(),
     panel.border = element_rect(fill = "transparent", size = 0.75),
     legend.position = "bottom"
   )
 ggsave(
   "../../doc/figure/topic_prototypes.png",
-  p, width = 6.5, height = 4.5
+  p, width = 4.5, height = 2.8
 )
 
 for (k in seq_len(stan_data$K)) {
