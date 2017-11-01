@@ -75,7 +75,6 @@ bootstrap_paths <- metadata %>%
   filter(method == "bootstrap") %>%
   .[["file"]]
 
-bootstrap_paths <- bootstrap_paths[1:5]
 bootstraps <- feather_from_paths(bootstrap_paths)  %>%
   left_join(metadata) %>%
   group_by(i, v, D, V, N, sigma0, a0, b0, method) %>%
