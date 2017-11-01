@@ -14,25 +14,25 @@ accepted for publication XXXXXX}
 \title{Latent Variable Modeling for the Microbiome}
 
 \author{
-  KRIS SANKARAN$^\ast$, SUSAN P. HOLMES\\[4pt]
+  %% KRIS SANKARAN$^\ast$, SUSAN P. HOLMES\\[4pt]
   % Author addresses
-  \textit{
-    Department of Statistics
-    Stanford University
-    390 Serra Mall
-    Stanford, CA 94305
-    United States
-  } \\[2pt]
+  %% \textit{
+  %%   Department of Statistics
+  %%   Stanford University
+  %%   390 Serra Mall
+  %%   Stanford, CA 94305
+  %%   United States
+  %% } \\[2pt]
   % E-mail address for correspondence
-  {krissankaran@stanford.edu}
+  %% {krissankaran@stanford.edu}
 }
 
 % Running headers of paper:
-\markboth
+%\markboth
 % First field is the short list of authors
-{Sankaran and Holmes}
+%{Sankaran and Holmes}
 % Second field is the short title of the paper
-{Latent Variable Modeling for the Microbiome}
+%{Latent Variable Modeling for the Microbiome}
 
 \maketitle
 
@@ -445,8 +445,9 @@ experiments: for each experiment, we identify the true-estimated topics pair
 with highest correlation, then find the next highest pair among the remaining,
 and so forth. Judging from the aligned densities in Figure
 \ref{fig:beta_contours_v650} and Supplementary Figures
-\ref{fig:beta_contours_v325}, and \ref{fig:beta_contours_nmf}, this ad-hoc
-alignment procedure seems sufficient.
+\ref{fig:beta_contours_v325}, \ref{fig:beta_contours_nmf_d20}, and
+\ref{fig:beta_contours_nmf_d100}, this ad-hoc alignment procedure seems
+sufficient.
 
 Figure \ref{fig:beta_contours_v650} displays the true and posterior $\beta_{k}$
 for the LDA experiment with $V = 650$ features, while varying other simulation
@@ -475,6 +476,19 @@ $V = 325$ is provided in Supplementary Figure \ref{fig:beta_contours_v325}.
   \label{fig:beta_contours_v650}
 \end{figure}
 
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/beta_errors_lda}
+  \caption{A summary of the errors and uncertainty across models and regimes for
+    the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v650} and Supplementary
+    Figure \ref{fig:beta_contours_v325}. On the $x$-axis, we plot the difference
+    between posterior median and the true value, after having square-root
+    transformed. On the $y$-axis, we provide the standard deviation of the
+    posterior samples for each $v$, along the first dimension $K = 1$. Columns
+    are indexed as in Figure \ref{fig:beta_contours_v650}, but now rows provide
+    different values of $V$.
+    \label{fig:beta_errors_lda} }
+\end{figure}
 
 As expected, when $D$ increases, the posterior for $\beta$, whose dimension does
 not increase with $D$, begins to concentrate around its true value. As the
@@ -497,20 +511,6 @@ across $k$, and the $y$-axis gives the associated standard deviation, along $K =
 column numbers gives the total count $N$ in each sample, and the second gives
 $D$, the number of samples. The grey line within each panel is the identity
 line, where the error equals one standard deviation.
-
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=\textwidth]{figure/beta_errors_lda}
-  \caption{A summary of the errors and uncertainty across models and regimes for
-    the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v650} and Supplementary
-    Figure \ref{fig:beta_contours_v325}. On the $x$-axis, we plot the difference
-    between posterior median and the true value, after having square-root
-    transformed. On the $y$-axis, we provide the standard deviation of the
-    posterior samples for each $v$, along the first dimension $K = 1$. Columns
-    are indexed as in Figure \ref{fig:beta_contours_v650}, but now rows provide
-    different values of $V$.
-    \label{fig:beta_errors_lda} }
-\end{figure}
 
 The drift of points to the bottom left as $N$ and $D$ increase reflects the
 improved accuracy and concentration of all inference techniques when the number
@@ -540,19 +540,8 @@ exceptions,
   inference where $p_{0}$ was provided is denoted by the row label Z-GaP, while
   those rows marked GaP assumed $p_{0} = 0$.
 \end{enumerate}
-The associated posterior density display is given in Supplementary Figure
-\ref{fig:beta_contours_nmf}.
-
-The results in Figure \ref{fig:beta_errors_nmf} are more problematic than those
-in Figure \ref{fig:beta_errors_lda}. First, the standard errors are no longer
-comparable across methods, with those for the MCMC sampling procedure appearing
-much larger across many simulation configurations. Second, the error rates are
-substantially larger than those in LDA. Examining Supplementary Figure
-\ref{fig:beta_contours_nmf}, it appears that lack of identifiability in the NMF
-model may be affecting our ability to evaluate the resulting fits. The only way
-to distinguish between models $\left(c\Theta\right)\left(\frac{1}{c}
-B\right)^{T}$ and $\Theta B^{T}$ is through the prior, and the prior may not be
-strong enough to guide inference to the right scaling.
+The associated posterior density display is given in Supplementary Figures
+\ref{fig:beta_contours_nmf_d20} and \ref{fig:beta_contours_nmf_d100}.
 
 \begin{figure}[!p]
   \centering
@@ -567,6 +556,17 @@ strong enough to guide inference to the right scaling.
     row have errors and SDs larger than what is displayed, and so are
     missing. \label{fig:beta_errors_nmf}}
 \end{figure}
+
+The results in Figure \ref{fig:beta_errors_nmf} are more problematic than those
+in Figure \ref{fig:beta_errors_lda}. First, the standard errors are no longer
+comparable across methods, with those for the MCMC sampling procedure appearing
+much larger across many simulation configurations. Second, the error rates are
+substantially larger than those in LDA. Examining Supplementary Figure
+\ref{fig:beta_contours_nmf}, it appears that lack of identifiability in the NMF
+model may be affecting our ability to evaluate the resulting fits. The only way
+to distinguish between models $\left(c\Theta\right)\left(\frac{1}{c}
+B\right)^{T}$ and $\Theta B^{T}$ is through the prior, and the prior may not be
+strong enough to guide inference to the right scaling.
 
 Further, examining Supplementary Figure \ref{fig:beta_contours_nmf}, we note
 many cases where estimation fails to converge or concentrates around the
@@ -586,25 +586,9 @@ $\theta_i$ and $\beta_j$ as two-dimensional smoothed scatterplots, since we set
 $K = 2$. In contrast, this unigram experiment involves a $V$-dimensional
 parameter $\mu_t$ evolving over time -- this precludes any direct analog to
 Figures \ref{fig:beta_contours_v650} or \ref{fig:beta_contours_nmf}. Instead, in
-Figure \ref{fig:mu_posteriors}, we visualize the true $\mu_{tv}$ against
+Figure \ref{fig:mu_intervals}, we visualize the true $\mu_{tv}$ against
 posterior intervals for the one-dimensional $p\left(\mu_{tv} \vert x\right)$,
 across all configurations of simulation parameters.
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=\textwidth]{figure/mu_posteriors}
-  \caption{
-    A comparison of the posterior $p\left(\mu_{tv} \vert x\right)$ to the known
-    underlying $\mu_{tv}$, in the unigram simulation experiment. The $x$-axis
-    for each interval corresponds to the true $\mu_{tv}$ for one species at one
-    timepoint, while the vertical intervals cover the 25\% to 75\% quantiles of
-    samples from the posterior $p\left(\mu_{tv} \vert x\right)$. Different
-    panels distinguish between configurations of $D$, $N$, $V$, and posterior
-    sampling schemes. Posteriors from MCMC sampling seem to correctly recover
-    the true underlying $\mu_{tv}$, while discrepancies arise for both VB and
-    the bootstrap.
-    \label{fig:mu_posteriors} }
-\end{figure}
 
 Evidently, MCMC provides accurate posterior estimates, while VB and the
 bootstrap estimates deviate from the true $\mu_{tv}$. First, when the true
@@ -725,20 +709,6 @@ In Figure \ref{fig:antibiotics_lda_theta}, rows represent topics, the $x$-axis
 represents time, and the $y$-axis gives the boxplots of posterior quantiles for
 each $\theta_{dk}$.
 
-\begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-F}
-  \caption{Boxplots represent approximate posteriors for estimated mixture
-    memberships $\theta_{d}$, and their evolution over time. That is, each row
-    of panels provides a different sequence of $\theta_{dk}$ for a single $k$,
-    and different columns distinguish different phases of sampling. Note that
-    the $y$-axis is on the $g$-scale, which is defined as a translated logit,
-    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \overline{\log \mathbf{p}},
-    \dots,\log p_{K} - \overline{\log \mathbf{p}}\right)$. Note that the first
-    and second antibiotic time courses result in meaningful shifts in these
-    sequences, and that there appear to be long-term effects of treatment among
-    bacteria in Topic 3. \label{fig:antibiotics_lda_theta}}
-\end{figure}
-
 This figure draws attention to the two antibiotic time courses, which took place
 between days 12-23 and 41-51. Topic 1 seems to become prominent during the
 interim period between the two time courses, suggesting that this is the
@@ -757,13 +727,19 @@ and 4 are learned from the data without enforcing any temporal evolution
 structure on the samples suggests that under an antibiotic perturbation, the
 system exhibits differential recovery.
 
-To interpret these topics in terms of their bacterial community fingerprint, we
-study the estimated topic distributions $\beta_{k}$. This is displayed in Figure
-\ref{fig:antibiotics_lda_beta}. The four rows correspond to the $K = 4$
-estimated topics. Within a row, we show 95\% credible intervals associated with
-the posterior samples for each bacterium. Different colors identify different
-taxonomic families, and bacteria are sorted according to evolutionary
-relatedness. For clarity, we have displayed only the 750 most abundant bacteria.
+\begin{figure}[!p]
+  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-F}
+  \caption{Boxplots represent approximate posteriors for estimated mixture
+    memberships $\theta_{d}$, and their evolution over time. That is, each row
+    of panels provides a different sequence of $\theta_{dk}$ for a single $k$,
+    and different columns distinguish different phases of sampling. Note that
+    the $y$-axis is on the $g$-scale, which is defined as a translated logit,
+    $g\left(\mathbf{p}\right) := \left(\log p_{1} - \overline{\log \mathbf{p}},
+    \dots,\log p_{K} - \overline{\log \mathbf{p}}\right)$. Note that the first
+    and second antibiotic time courses result in meaningful shifts in these
+    sequences, and that there appear to be long-term effects of treatment among
+    bacteria in Topic 3. \label{fig:antibiotics_lda_theta}}
+\end{figure}
 
 \begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-F}
@@ -778,6 +754,13 @@ relatedness. For clarity, we have displayed only the 750 most abundant bacteria.
     extent, 1.} \label{fig:antibiotics_lda_beta}
 \end{figure}
 
+To interpret these topics in terms of their bacterial community fingerprint, we
+study the estimated topic distributions $\beta_{k}$. This is displayed in Figure
+\ref{fig:antibiotics_lda_beta}. The four rows correspond to the $K = 4$
+estimated topics. Within a row, we show 95\% credible intervals associated with
+the posterior samples for each bacterium. Different colors identify different
+taxonomic families, and bacteria are sorted according to evolutionary
+relatedness. For clarity, we have displayed only the 750 most abundant bacteria.
 
 Considering the mixture probabilities in Figure \ref{fig:antibiotics_lda_theta},
 those bacteria with large probabilities in the second and fourth rows of Figure
@@ -800,13 +783,15 @@ interesting variation that may be occurring among species not among the 750 most
 abundant. To address these issues, we have designed an interactive version,
 available online at
 %\url{https://statweb.stanford.edu/~kriss1/microbiome_plvm/vis.html}.
-(link blinded for review). Alternatively, individual species that are primarily
-assigned to individual topics can be used to characterize the topics. For
-example, in Figure \ref{fig:topic_prototypes} we have screened all species for
-those that seem primarily associated with a single topic, and plotted them along
-with the topic for they are representative. Specifically, representatives of the
-$k^{th}$ topic were found by choosing the 50 species $v$ with the largest values
-of $\beta_{kv} - \sum_{k^{\prime} \neq k} \beta_{k^{\prime} v}$.
+(link blinded for review).
+Alternatively,
+individual species that are primarily assigned to individual topics can be used
+to characterize the topics. For example, in Figure \ref{fig:topic_prototypes} we
+have screened all species for those that seem primarily associated with a single
+topic, and plotted them along with the topic for they are representative.
+Specifically, representatives of the $k^{th}$ topic were found by choosing the
+50 species $v$ with the largest values of $\beta_{kv} - \sum_{k^{\prime} \neq k}
+\beta_{k^{\prime} v}$.
 
 \begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/topic_prototypes}
@@ -849,6 +834,14 @@ explicitly models temporal evolution. Unlike LDA, however, this model does not
 seek latent mixture structure. Our primary results are displayed in Figure
 \ref{fig:antibiotics_unigram_theta}.
 
+Each row in this figure is interpreted similarly to a row in Figure
+\ref{fig:antibiotics_lda_beta}, except now they correspond to estimated
+proportions over time $g\left(\mu_{t}\right)$ rather than transformed topics
+$g\left(\beta_{k}\right)$. Only four of the 54 total timepoints
+is displayed, highlighting a time window around the first antibiotic time
+course. Such a display implicitly assumes a relatively smooth interpolation
+between timepoints, which is enforced by the form of the Dynamic Unigram model.
+
 \begin{figure}[!p]
   \centering
   \includegraphics[width=\textwidth]{figure/antibiotics_unigram_mu-F}
@@ -861,15 +854,6 @@ seek latent mixture structure. Our primary results are displayed in Figure
     smoothing abundance time series, to see how different species respond to
     antibiotic treatment. \label{fig:antibiotics_unigram_theta} }
 \end{figure}
-
-Each row in this figure is interpreted similarly to a row in Figure
-\ref{fig:antibiotics_lda_beta}, except now they correspond to estimated
-proportions over time $g\left(\mu_{t}\right)$ rather than transformed topics
-$g\left(\beta_{k}\right)$. Only four of the 54 total timepoints
-is displayed, highlighting a time window around the first antibiotic time
-course. Such a display implicitly assumes a relatively smooth interpolation
-between timepoints, which is enforced by the form of the Dynamic Unigram model.
-
 This analysis yields conclusions similar to those obtained through LDA, though
 reaching them requires somewhat more effort. For example, on day 10, most
 $g\left(\mu_{tv}\right)$'s have most of their mass concentrated above zero, and
@@ -906,6 +890,29 @@ as some species are much more abundant than others. Each dot is a simulated
 timepoint from a posterior predictive time series. Formally, this corresponds to
 the choice $T\left(x\right) = \left(x_{\cdot v}\right)_{v \in \mathcal{V}}$
 where the random subset $\mathcal{V}$ indexes the displayed species.
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/posterior_check_ts-F}
+  \caption{We can visualize the simulated time series for a subset of species
+    and compare them with the observed ones, as a posterior check. Each panel
+    represents one species. The black lines represent the observed
+    $\asinh$-transformed abundances for subject F over time. The blue and purple
+    dots give the posterior predictive realizations for these species over time,
+    according to LDA and the Dynamic Unigram model, respectively.
+    \label{fig:antibiotics_posterior_ts}}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/posterior_check_evals-F}
+  \caption{As a posterior predictive check, we compute eigenvalues of data
+    simulated from the fitted LDA model. The clouds of points summarize the
+    posterior predictive distribution, while the black circles represent
+    observed data eigenvalues. Note that the $y$-axis are logged eigenvalues.
+    Evidently, the four-topic model effectively creates a rank-four
+    approximation of the original data. \label{fig:antibiotics_posterior_evals}}
+\end{figure}
 
 For LDA, the posterior predictive time series are on the appropriate scale with
 approximately the correct shape. However, we observe two substantial types of
@@ -960,18 +967,6 @@ $K$ in follow-up analysis, as long as topics remain interpretable. In contrast,
 the eigenvalues for the Dynamic Unigram model closely match those in the
 observed data -- even overestimating the size of small eigenvalues -- lending
 further evidence to the claim that this model is over-parameterized.
-
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=\textwidth]{figure/posterior_check_evals-F}
-  \caption{As a posterior predictive check, we compute eigenvalues of data
-    simulated from the fitted LDA model. The clouds of points summarize the
-    posterior predictive distribution, while the black circles represent
-    observed data eigenvalues. Note that the $y$-axis are logged eigenvalues.
-    Evidently, the four-topic model effectively creates a rank-four
-    approximation of the original data. \label{fig:antibiotics_posterior_evals}}
-\end{figure}
-
 
 \subsection{Comparison with principal coordinates}
 \label{subsec:comparison_with_pcoa}
@@ -1071,26 +1066,16 @@ repository.
 
 \section*{Acknowledgments}
 
-KS is supported by a Stanford University Weiland fellowship and the National
-Institute of Health T32 grant 5T32GM096982-04. SPH is supported by the National
-Institute of Health TR01 grant AI112401.
+%% KS is supported by a Stanford University Weiland fellowship and the National
+%% Institute of Health T32 grant 5T32GM096982-04. SPH is supported by the National
+%% Institute of Health TR01 grant AI112401.
 
 {\it Conflict of Interest}: None declared.
 
 \bibliographystyle{biorefs}
 \bibliography{refs}
 
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=\textwidth]{figure/posterior_check_ts-F}
-  \caption{We can visualize the simulated time series for a subset of species
-    and compare them with the observed ones, as a posterior check. Each panel
-    represents one species. The black lines represent the observed
-    $\asinh$-transformed abundances for subject F over time. The blue and purple
-    dots give the posterior predictive realizations for these species over time,
-    according to LDA and the Dynamic Unigram model, respectively.
-    \label{fig:antibiotics_posterior_ts}}
-\end{figure}
+\section{Figures}
 \section{Supplementary Figures}
 
 \begin{figure}[!p]
@@ -1098,6 +1083,54 @@ Institute of Health TR01 grant AI112401.
   \includegraphics[width=\textwidth]{figure/beta_contours_v325}
   \caption{The analog of Figure \ref{fig:beta_contours_v650} in the case that $V
     = 325$. \label{fig:beta_contours_v325}}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/beta_contours_nmf_d20}
+  \caption{The results of the NMF experiment with $D = 20$ Within each panel, we
+    display the true value of $\sqrt{\beta_{v}}$ as black points, while linked
+    orange points give associated posterior medians. Note that the axes are
+    truncated, and for some panels, the posterior medians all lie outside the
+    visible box. Across columns, we vary and $\Earg{N}$. Along rows, we vary the
+    assumed model, the inference procedure, and the true $p_{0}$ -- these are
+    the three columns of row labels, read from outside
+    in.\label{fig:beta_contours_nmf_d20}}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/beta_contours_nmf_d100}
+  \caption{The analog of Figure \ref{fig:beta_contours_nmf_d20} when $D = 100$.
+  \label{fig:beta_contours_nmf_d100}}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{figure/mu_intervals}
+  \caption{
+    A comparison of the posterior $p\left(\mu_{tv} \vert x\right)$ to the known
+    underlying $\mu_{tv}$, in the unigram simulation experiment. The $x$-axis
+    for each interval corresponds to the true $\mu_{tv}$ for one species at one
+    timepoint, while the vertical intervals cover the 25\% to 75\% quantiles of
+    samples from the posterior $p\left(\mu_{tv} \vert x\right)$. Different
+    panels distinguish between configurations of $D$, $N$, $V$, and posterior
+    sampling schemes. Posteriors from MCMC sampling seem to correctly recover
+    the true underlying $\mu_{tv}$, while discrepancies arise for both VB and
+    the bootstrap.
+    \label{fig:mu_intervals} }
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{figure/mu_errors_unigram}
+  \caption{A simplification of Figure \ref{fig:mu_intervals}, displaying RMSE when
+    using posterior medians to estimate simulation $\mu_{tv}$s ($x$-axis) and
+    the standard deviations of posterior marginals ($y$-axis), across
+    experimental configurations. Generally, MCMC sampled posteriors seem to be
+    the most reliable, across simulation configurations.
+    \label{fig:mu_errors_unigram}
+  }
 \end{figure}
 
 \begin{figure}[!p]
@@ -1125,33 +1158,6 @@ Institute of Health TR01 grant AI112401.
     text. The observed data PCA results, after alignment with posterior samples,
     are displayed as black text. \label{fig:antibiotics_posterior_pca} }
 \end{figure}
-
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=\textwidth]{figure/beta_contours_nmf}
-  \caption{The results across all simulation configurations in the NMF
-    experiment are displayed here. Within each panel, we display the true value
-    of $\sqrt{\beta_{v}}$ as black points, while linked orange points give
-    associated posterior medians. Note that the axes are truncated, and for some
-    panels, the posterior medians all lie outside the visible box. Across
-    columns, we vary $D$ and $\Earg{N}$ -- these are the two rows of column
-    labels, read from top to bottom. Along rows, we vary the assumed model, the
-    inference procedure, and the true $p_{0}$ -- these are the three columns of
-    row labels, read from outside in.\label{fig:beta_contours_nmf}}
-\end{figure}
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=\textwidth]{figure/mu_errors_unigram}
-  \caption{A simplification of Figure \ref{fig:mu_posteriors}, displaying RMSE when
-    using posterior medians to estimate simulation $\mu_{tv}$s ($x$-axis) and
-    the standard deviations of posterior marginals ($y$-axis), across
-    experimental configurations. Generally, MCMC sampled posteriors seem to be
-    the most reliable, across simulation configurations.
-    \label{fig:mu_errors_unigram}
-  }
-\end{figure}
-
 
 \begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-D}
@@ -1230,7 +1236,7 @@ Institute of Health TR01 grant AI112401.
     according to the topics of they are prototypical. Grey series still
     contribute to the average family-topic association measure, but were not
     among the 50 prototypes for each topic. This view suggests that the
-    Rhodospillaceae, Alcaligenaceaeand Parabacteroides may have a large
+    Rhodospillaceae, Alcaligenaceae and Parabacteroides may have a large
     fractions of representatives from Topics 3, 1, and 2, respectively. Note
     that as before, abundances are plotted on a square root
     scale. \label{fig:uneven_taxa_facet} }
