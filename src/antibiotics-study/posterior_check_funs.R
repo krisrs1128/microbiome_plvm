@@ -190,7 +190,7 @@ summary_contours <- function(summary_data, plot_opts, text_size = 3) {
     data = summary_data %>%
       filter(type != "true") %>%
       group_by(row_ix, method) %>%
-      summarise(V1 = mean(V1), V2 = mean(V2)),
+      summarise(V1 = median(V1), V2 = median(V2)),
     aes(x = V1, y = V2, label = row_ix, col = method),
     size = text_size
   ) +

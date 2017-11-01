@@ -16,7 +16,6 @@ library("feather")
 library("tidyverse")
 library("ldaSim")
 library("data.table")
-library("abind")
 theme_set(ggscaffold::min_theme(list(border_size = 0.7)))
 
 base_dir <- Sys.getenv("MICROBIOME_PLVM_DIR")
@@ -48,7 +47,6 @@ samples_paths <- metadata %>%
   unlist()
 
 lsamples <- list()
-
 for (i in seq_along(samples_paths)) {
   cat(sprintf(
     "Processing sample %s [%s / %s] \n",
@@ -58,19 +56,19 @@ for (i in seq_along(samples_paths)) {
   ))
   fit <- get(load(samples_paths[i]))
   mu_i <- rstan::extract(fit)$mu
-  lsamples[[i]] <- abind(
-    apply(mu_i, c(2, 3), quantile),
-    "mean" = array(colMeans(mu_i), c(1, dim(mu_i)[2:3])),
-    along = 1
-  )
+  lsamples[[i]] <- apply(mu_i, c(2, 3), quantile, c(0.25, 0.5, 0.75)) %>%
+    melt(
+      varnames = c("quantile", "i", "v"),
+      value.name = "mu"
+    ) %>%
+    as_data_frame()
+  lsamples[[i]]$file <- samples_paths[i]
 }
 
-names(lsamples) <- samples_paths
-samples <- melt(lsamples)
-colnames(samples) <- c("statistic", "i", "v", "mu", "file")
+samples <- bind_rows(lsamples)
 samples <- samples %>%
   left_join(metadata) %>%
-  spread(statistic, mu)
+  spread(quantile, mu)
 
 ## extract the bootstrap samples
 bootstrap_paths <- metadata %>%
@@ -82,8 +80,9 @@ bootstraps <- feather_from_paths(bootstrap_paths)  %>%
   group_by(i, v, D, V, N, sigma0, a0, b0, method) %>%
   do(
     data.frame(
-      quantile = paste0(100 * seq(0, 1, 0.25), "%"),
-      mu = quantile(.$mu))
+      quantile = c("25%", "50%", "75%"),
+      mu = quantile(.$mu, c(0.25, 0.5, 0.75))
+    )
   ) %>%
   spread(quantile, mu)
 
@@ -117,24 +116,27 @@ ggplot(combined) +
     size = 0.6,
     alpha = 0.6
   ) +
-  geom_pointrange(
+  geom_linerange(
     aes(
       x = mu,
-      y = `50%`,
       ymin = `25%`,
       ymax = `75%`,
       col = method
     ),
-    alpha = 0.01,
+    alpha = 0.2,
     size = 0.05,
-    fatten = 0.01
   ) +
   scale_color_manual(values = method_cols) +
+  guides(col = guide_legend(override.aes = list(alpha = 1, size = 1))) +
   coord_flip() +
   coord_fixed() +
   facet_grid(method + V ~ D + N) +
-  ylim(-5, 20) +
-  xlim(-5, 20)
+  scale_x_continuous(limits = c(-3, 20), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(-3, 20), expand = c(0, 0)) +
+  labs(
+    "x" = bquote(True~mu[tv]),
+    "y" = bquote(Posterior~hat(mu[tv]))
+  )
 
 ggsave(
   file.path(base_dir, "doc", "figure/mu_intervals.png")
@@ -144,7 +146,7 @@ ggsave(
 perf <- combined %>%
   group_by(v, method, D, V, N) %>%
   summarise(
-    error = mean(mu - `50%`),
+    error = sqrt(mean((mu - `50%`) ^ 2)),
     error_bar = sd(`50%`)
   )
 
@@ -155,8 +157,9 @@ ggplot(perf) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   labs(x = "Root Mean Squared Error", y = "Standard Deviation", col = "Inference") +
   facet_grid(V ~ D + N) +
-  xlim(0, 25) +
-  ylim(0, 25)
+  scale_x_continuous(limits = c(0, 19), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(0, 13), expand = c(0, 0))
+
 ggsave(
   file.path(base_dir, "doc", "figure/mu_errors_unigram.png"),
   width = 5.2,
