@@ -98,7 +98,7 @@ ggsave(
   p[[2]],
   width = 5.2,
   height = 3.1,
-  dpi make sure variable names = 450
+  dpi = 450
 )
 
 ## ---- relative-errors ----

@@ -200,7 +200,9 @@ plot_opts <- list(x = "sqrt(value_1)", y = "sqrt(value_2)",
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_contours_nmf_d20.png"),
-  plot_contours(combined, plot_opts),
+  plot_contours(combined, plot_opts) +
+    scale_x_continuous(breaks = c(0, 3, 6, 9)) +
+    scale_y_continuous(breaks = c(0, 3, 6, 9)),
   width = 5.3,
   height = 6
 )
@@ -217,7 +219,9 @@ combined$D <- droplevels(combined$D)
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_contours_nmf_d100.png"),
-  plot_contours(combined, plot_opts, 30, 30),
+  plot_contours(combined, plot_opts, 30, 30) +
+    scale_x_continuous(breaks = c(0, 3, 6, 9)) +
+    scale_y_continuous(breaks = c(0, 3, 6, 9)),
   width = 5.3,
   height = 6
 )
