@@ -14,25 +14,25 @@ accepted for publication XXXXXX}
 \title{Latent Variable Modeling for the Microbiome}
 
 \author{
-  %% KRIS SANKARAN$^\ast$, SUSAN P. HOLMES\\[4pt]
+  KRIS SANKARAN$^\ast$, SUSAN P. HOLMES\\[4pt]
   % Author addresses
-  %% \textit{
-  %%   Department of Statistics
-  %%   Stanford University
-  %%   390 Serra Mall
-  %%   Stanford, CA 94305
-  %%   United States
-  %% } \\[2pt]
+  \textit{
+    Department of Statistics
+    Stanford University
+    390 Serra Mall
+    Stanford, CA 94305
+    United States
+  } \\[2pt]
   % E-mail address for correspondence
-  %% {krissankaran@stanford.edu}
+  {krissankaran@stanford.edu}
 }
 
 % Running headers of paper:
-%\markboth
+\markboth
 % First field is the short list of authors
-%{Sankaran and Holmes}
+{Sankaran and Holmes}
 % Second field is the short title of the paper
-%{Latent Variable Modeling for the Microbiome}
+{Latent Variable Modeling for the Microbiome}
 
 \maketitle
 
@@ -67,10 +67,10 @@ accepted for publication XXXXXX}
 \section{Introduction}
 
 Microbiome studies attempt to characterize variation in bacterial abundance
-profiles across different experimental conditions \citep{human2012structure}.
-For example, a study may attempt to describe differences in bacterial
-communities between diseased and healthy states or after deliberately induced
-perturbations \citep{dethlefsen2011incomplete}.
+profiles across different experimental conditions \citep{human2012structure,
+  gilbert2014earth}. For example, a study may attempt to describe differences in
+bacterial communities between diseased and healthy states or after deliberately
+induced perturbations \citep{dethlefsen2011incomplete, fukuyama2017multidomain}.
 
 In the process, two complementary difficulties arise. First, the data are often
 high-dimensional, measured over several hundreds or thousands types of bacteria.
@@ -98,11 +98,11 @@ popular in the microbiome literature. Often interesting species can be
 identified by searching for important features in models that predict sample
 characteristics -- treatment vs. control, for example -- from species
 abundances. \cite{segata2011metagenomic} provided an approach for accounting for
-phylogenetic structure in this problem by initially prescreening for according
-to independent biological interest. Alterantively, \cite{chen2013variable}
-applied a Dirichlet Multinomial regression model to study the relationship
-between bacterial counts and sample characteristics in a fully generative
-fashion, and then added an $\ell^{1}$-penalty to induce sparsity and facilitate
+phylogenetic structure in this problem by initially prescreening according to
+independent biological interest. Alternatively, \cite{chen2013variable} applied
+a Dirichlet Multinomial regression model to study the relationship between
+bacterial counts and sample characteristics in a fully generative fashion, and
+then added an $\ell^{1}$-penalty to induce sparsity and facilitate
 interpretability. \cite{shafiei2015biomico} designed a different generative
 supervised model, based on ideas from mixed-membership modeling
 \citep{blei2003latent}. The development of structured modeling techniques
@@ -152,7 +152,7 @@ $d^{th}$ document. Then, the generative mechanism for the observed data set is
 \end{align*}
 Equivalently, we could write $w_{d} \vert \left(\beta_{k}\right)_{k = 1}^{K},
 z_{d} \sim \Mult\left(N_{d}, \beta_{z_{d}}\right)$, though the form above makes
-comparison with LDA more straightforwards. Further, while we treat $\theta$, and
+comparison with LDA more straightforward. Further, while we treat $\theta$, and
 $\gamma$ as fixed parameters, it is possible to place priors on them as well.
 Geometrically, this model identifies each document with one of the $\beta_{k}$ on
 the $V$-dimensional simplex.
@@ -177,15 +177,14 @@ of Dirichlet multinomial mixture modeling, and one goal of the case study in
 Section \ref{sec:data_analysis} is to demonstrate the usefulness of this
 additional flexibility in microbiome analysis.
 
-Use the same notation as before, but instead of fixing a global $\theta$
+We use the same notation as before, but instead of fixing a global $\theta$
 parameter, let $\theta_{d} \in \simplex^{K - 1}$ represent the $d^{th}$
-document's mixture over the $K$ underlying topics.
-
-Represent the term in the $n_{th}$ word of this document
-by $w_{dn}$, and the associated topic by $z_{dn}$. Suppose the $k^{th}$ topic
-places weight $\beta_{vk}$ on the $v^{th}$ term, so that $\beta_{k} \in
-\simplex^{V - 1}$. Suppose there are $N_{d}$ words in the $d^{th}$ document. Then,
-the generative mechanism for the observed data set is
+document's mixture over the $K$ underlying topics. Represent the term in the
+$n_{th}$ word of this document by $w_{dn}$, and the associated topic by
+$z_{dn}$. Suppose the $k^{th}$ topic places weight $\beta_{vk}$ on the $v^{th}$
+term, so that $\beta_{k} \in \simplex^{V - 1}$. Suppose there are $N_{d}$ words
+in the $d^{th}$ document. Then, the generative mechanism for the observed data
+set is
 \begin{align*}
 w_{dn} \vert \left(\beta_{k}\right)_{k = 1}^{K}, z_{dn} &\overset{iid}{\sim} \Mult\left(1, \beta_{z_{dn}}\right) \text{ for } d = 1, \dots, D  \text{ and } n = 1, \dots,  N_{d} \\
 z_{dn} \vert \theta_{d} &\overset{iid}{\sim} \Mult\left(1, \theta_{d}\right) \text{ for } d = 1, \dots, D \text{ and } n = 1, \dots, N_{d}\\
@@ -225,10 +224,11 @@ where $S$ is the multilogit link
 \left[S\left(\mu\right)\right]_{v} = \frac{\exp{\mu_{v}}}{\sum_{v^{\prime}} \exp{\mu_{v^{\prime}}}},
 \end{align*}
 and $t\left(d\right)$ maps document $d$ to the time it was sampled. The
-$\left(\mu_{t}\right)$ define a Gaussian random walk in $\reals^{V}$ with
-step-size $\sigma$, and $S$ transforms the walk into a sequence of probability
-distributions. In our experiments, we place a vague inverse-gamma prior on
-$\sigma^{2}$, since this hyperparameter is rarely known in practice.
+$\left(\mu_{t\left(\right)}\right)$ define a Gaussian random walk in
+$\reals^{V}$ with step-size $\sigma$, and $S$ transforms the walk into a
+sequence of probability distributions. In our experiments, we place a vague
+inverse-gamma prior on $\sigma^{2}$, since this hyperparameter is rarely known
+in practice.
 
 \subsection{Nonnegative Matrix Factorization}
 \label{sec:nmf}
@@ -267,7 +267,7 @@ optimize over them, though it would also be possible to add a level to the
 hierarchy and place vague nonnegative priors on these parameters.
 
 In our simulation studies, we also consider a slight variant of this model,
-similar to the proposal of \citep{pierson2015zifa}, which independently sends
+similar to the proposal of \citep{romero2014composition}, which independently sends
 entries of $X$ to zero with probability $p_{0}$. In our experiments, we assume
 that this zero-inflation probability is known. This procedure is denoted by
 Z-NMF.
@@ -374,10 +374,10 @@ Nonetheless, in practice, the structure of these data can be quite different.
 First, text data can be on a much larger scale. For example, the Wikipedia
 corpus studied by \cite{hoffman2013stochastic} includes 3.8 million articles. In
 contrast, even large microbiome datasets, like the one studied in
-\citep{human2012structure}, typically only have on the order of thousands of
-samples. Similarly, the total number of terms in such large-scale text analysis
-problems can be substantially larger than the number of bacterial species under
-consideration.
+\citep{gilbert2014earth}, typically only have on the order of tens of thousands
+of samples. Similarly, the total number of terms in such large-scale text
+analysis problems can be substantially larger than the number of bacterial
+species under consideration.
 
 On the other hand, in a different sense, microbiome studies are larger in scale
 -- there tend to be tens of thousands of reads per sample in microbiome studies,
@@ -441,25 +441,13 @@ but can underestimate uncertainty \citep{wang2005inadequacy}.
 Note that, due to the label-switching problem, it is not possible to directly
 compare the estimated topics across simulation configurations. To address this
 issue, we attempt to identify the permutation that aligns topics across all
-experiments: for each experiment, we identify the true-estimated topics pair
+experiments. For each experiment, we identify the true-estimated topics pair
 with highest correlation, then find the next highest pair among the remaining,
 and so forth. Judging from the aligned densities in Figure
 \ref{fig:beta_contours_v650} and Supplementary Figures
 \ref{fig:beta_contours_v325}, \ref{fig:beta_contours_nmf_d20}, and
 \ref{fig:beta_contours_nmf_d100}, this ad-hoc alignment procedure seems
 sufficient.
-
-Figure \ref{fig:beta_contours_v650} displays the true and posterior $\beta_{k}$
-for the LDA experiment with $V = 650$ features, while varying other simulation
-characteristics. Each panel represents a single experimental configuration, with
-each axis associated with an underlying topic. Each black point is the
-square-root transformed value of feature $v$ across topics:
-$\left(\sqrt{\beta_{v1}}, \sqrt{\beta_{v2}}\right)$. The shaded clouds are
-sampled posteriors, and the linked orange point give the posterior median for the
-associated feature. Across rows, different inferential procedures are compared.
-The top row of column labels refers to the total count $N$ within each sample,
-while the second refers to the number of samples $D$. The analogous figure when
-$V = 325$ is provided in Supplementary Figure \ref{fig:beta_contours_v325}.
 
 \begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/beta_contours_v650}
@@ -476,19 +464,17 @@ $V = 325$ is provided in Supplementary Figure \ref{fig:beta_contours_v325}.
   \label{fig:beta_contours_v650}
 \end{figure}
 
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=\textwidth]{figure/beta_errors_lda}
-  \caption{A summary of the errors and uncertainty across models and regimes for
-    the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v650} and Supplementary
-    Figure \ref{fig:beta_contours_v325}. On the $x$-axis, we plot the difference
-    between posterior median and the true value, after having square-root
-    transformed. On the $y$-axis, we provide the standard deviation of the
-    posterior samples for each $v$, along the first dimension $K = 1$. Columns
-    are indexed as in Figure \ref{fig:beta_contours_v650}, but now rows provide
-    different values of $V$.
-    \label{fig:beta_errors_lda} }
-\end{figure}
+Figure \ref{fig:beta_contours_v650} displays the true and posterior $\beta_{k}$
+for the LDA experiment with $V = 650$ features, while varying other simulation
+characteristics. Each panel represents a single experimental configuration, with
+each axis associated with an underlying topic. Each black point is the
+square-root transformed value of feature $v$ across topics:
+$\left(\sqrt{\beta_{v1}}, \sqrt{\beta_{v2}}\right)$. The shaded clouds are
+sampled posteriors, and the linked orange point give the posterior median for the
+associated feature. Across rows, different inferential procedures are compared.
+The top row of column labels refers to the total count $N$ within each sample,
+while the second refers to the number of samples $D$. The analogous figure when
+$V = 325$ is provided in Supplementary Figure \ref{fig:beta_contours_v325}.
 
 As expected, when $D$ increases, the posterior for $\beta$, whose dimension does
 not increase with $D$, begins to concentrate around its true value. As the
@@ -512,6 +498,21 @@ column numbers gives the total count $N$ in each sample, and the second gives
 $D$, the number of samples. The grey line within each panel is the identity
 line, where the error equals one standard deviation.
 
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/beta_errors_lda}
+  \caption{A summary of the errors and uncertainty across models and regimes for
+    the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v650} and Supplementary
+    Figure \ref{fig:beta_contours_v325}. On the $x$-axis, we plot the difference
+    between posterior median and the true value, after having square-root
+    transformed. On the $y$-axis, we provide the standard deviation of the
+    posterior samples for each $v$, along the first dimension $K = 1$. Columns
+    are indexed as in Figure \ref{fig:beta_contours_v650}, but now rows provide
+    different values of $V$.
+    \label{fig:beta_errors_lda} }
+\end{figure}
+
+
 The drift of points to the bottom left as $N$ and $D$ increase reflects the
 improved accuracy and concentration of all inference techniques when the number
 of samples and total count within samples increase. Note that few points lie
@@ -520,28 +521,6 @@ may be misleadingly narrow. Finally, we find that the scale of errors and
 concentration in the $V = 325$ and $V = 650$ cases are comparable. Considering
 that there is the same number of documents available for estimating each
 individual $\beta_{vk}$, this is not surprising.
-
-For the NMF experiment, we use similar parameters, except now we introduce a
-zero-inflation probability, $p_{0} \in \{0, 0.2\}$, and have control only over
-the expected total count per sample $\Earg{N}$, rather than $N$. When $p_{0} >
-0$, we perform inference when the true $p_0$ is provided and also when and when
-$p_{0}$ is (incorrectly) assumed to be zero. To modulate $\Earg{N}$, we vary
-$a_{0}$ and $b_{0}$ so that $\Earg{N} = \frac{b_{0}}{a_{0}}KV \in \{1625, 3250,
-6500\}$, matching the LDA experiment. As before, we vary the number of samples
-$D \in \{20, 100\}$ but fix the number of latent factors $K$ at 2. Figure
-\ref{fig:beta_errors_nmf} summarizes the estimation error across regimes, and
-is read in the same way as Figure \ref{fig:beta_errors_lda}, with two
-exceptions,
-\begin{enumerate}
-\item Instead of providing the fixed values of $N$, we display $\Earg{N}$.
-\item We must distinguish between different $p_{0}$ regimes, and whether or not
-  the inferential procedure assumed $p_{0}$ was 0 or was given the true $p_{0}$.
-  The true value of $p_0$ is marked by the second row of column labels, and
-  inference where $p_{0}$ was provided is denoted by the row label Z-GaP, while
-  those rows marked GaP assumed $p_{0} = 0$.
-\end{enumerate}
-The associated posterior density display is given in Supplementary Figures
-\ref{fig:beta_contours_nmf_d20} and \ref{fig:beta_contours_nmf_d100}.
 
 \begin{figure}[!p]
   \centering
@@ -557,6 +536,27 @@ The associated posterior density display is given in Supplementary Figures
     missing. \label{fig:beta_errors_nmf}}
 \end{figure}
 
+For the NMF experiment, we use similar parameters, except now we introduce a
+zero-inflation probability, $p_{0} \in \{0, 0.2\}$, and have control only over
+the expected total count per sample $\Earg{N}$, rather than $N$. When $p_{0} >
+0$, we perform inference when the true $p_0$ is provided and also when $p_{0}$
+is (incorrectly) assumed to be zero. To modulate $\Earg{N}$, we vary $a_{0}$ and
+$b_{0}$ so that $\Earg{N} = \frac{b_{0}}{a_{0}}KV \in \{1625, 3250, 6500\}$,
+matching the LDA experiment. As before, we vary the number of samples $D \in
+\{20, 100\}$ but fix the number of latent factors $K$ at 2. Figure
+\ref{fig:beta_errors_nmf} summarizes the estimation error across regimes, and is
+read in the same way as Figure \ref{fig:beta_errors_lda}, with two exceptions,
+\begin{enumerate}
+\item Instead of providing the fixed values of $N$, we display $\Earg{N}$.
+\item We must distinguish between different $p_{0}$ regimes, and whether or not
+  the inferential procedure assumed $p_{0}$ was 0 or was given the true $p_{0}$.
+  The true value of $p_0$ is marked by the second row of column labels, and
+  inference where $p_{0}$ was provided is denoted by the row label Z-GaP, while
+  those rows marked GaP assumed $p_{0} = 0$.
+\end{enumerate}
+The associated posterior density display is given in Supplementary Figures
+\ref{fig:beta_contours_nmf_d20} and \ref{fig:beta_contours_nmf_d100}.
+
 The results in Figure \ref{fig:beta_errors_nmf} are more problematic than those
 in Figure \ref{fig:beta_errors_lda}. First, the standard errors are no longer
 comparable across methods, with those for the MCMC sampling procedure appearing
@@ -568,7 +568,7 @@ to distinguish between models $\left(c\Theta\right)\left(\frac{1}{c}
 B\right)^{T}$ and $\Theta B^{T}$ is through the prior, and the prior may not be
 strong enough to guide inference to the right scaling.
 
-Further, examining Supplementary Figure \ref{fig:beta_contours_nmf}, we note
+Further, examining Supplementary Figure \ref{fig:beta_contours_nmf_d20}, we note
 many cases where estimation fails to converge or concentrates around the
 incorrect value, though this may be related to rescaling. Generally, we do not
 find a direct probabilistic-programming implementation of the GaP or Z-GaP
@@ -683,7 +683,7 @@ gives the best fit over the entire population.
 
 Note that we plot the fitted probabilities on a logit scale -- for a raw vector
 of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right) \in
-\simplex{D - 1}$, we plot $g\left(\mathbf{p}\right) := \left(\log p_{1} -
+\simplex^{D - 1}$, we plot $g\left(\mathbf{p}\right) := \left(\log p_{1} -
 \overline{\log \mathbf{p}}, \dots, \log p_{K} - \overline{\log
   \mathbf{p}}\right)$, which are similar to log-odds, but centered according to
 the average log probability, rather than any reference class.
@@ -708,24 +708,6 @@ The fitted parameter values are summarized in Figures
 In Figure \ref{fig:antibiotics_lda_theta}, rows represent topics, the $x$-axis
 represents time, and the $y$-axis gives the boxplots of posterior quantiles for
 each $\theta_{dk}$.
-
-This figure draws attention to the two antibiotic time courses, which took place
-between days 12-23 and 41-51. Topic 1 seems to become prominent during the
-interim period between the two time courses, suggesting that this is the
-bacterial community that fills in the niches left empty during the first time
-course. Conversely, Topic 3 seems to represent those bacteria that were present
-initially but are eliminated during the first time course, though there is a
-hint of a recovery at the end of sampling. This topic seems most closely related
-to the finding reported in \cite{dethlefsen2011incomplete} that Subject F
-experienced long-term antibiotic effects on bacterial community composition.
-Topics 2 and 4 seem to be overrepresented during the antibiotic treatments.
-Topic 2 is elevated immediately after the antibiotic treatment. Topic 4 seems to
-summarize those bacteria that are initially negatively impacted by the
-antibiotic treatments, but which recover relatively quickly and have higher
-abundance at the end of the trial than at the beginning. The fact that Topics 2
-and 4 are learned from the data without enforcing any temporal evolution
-structure on the samples suggests that under an antibiotic perturbation, the
-system exhibits differential recovery.
 
 \begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-F}
@@ -753,6 +735,25 @@ system exhibits differential recovery.
     disappearance of otherwise abundant species within Topics 2, 4, and to some
     extent, 1.} \label{fig:antibiotics_lda_beta}
 \end{figure}
+
+
+This figure draws attention to the two antibiotic time courses, which took place
+between days 12-23 and 41-51. Topic 1 seems to become prominent during the
+interim period between the two time courses, suggesting that this is the
+bacterial community that fills in the niches left empty during the first time
+course. Conversely, Topic 3 seems to represent those bacteria that were present
+initially but are eliminated during the first time course, though there is a
+hint of a recovery at the end of sampling. This topic seems most closely related
+to the finding reported in \cite{dethlefsen2011incomplete} that Subject F
+experienced long-term antibiotic effects on bacterial community composition.
+Topics 2 and 4 seem to be overrepresented during the antibiotic treatments.
+Topic 2 is elevated immediately after the antibiotic treatment. Topic 4 seems to
+summarize those bacteria that are initially negatively impacted by the
+antibiotic treatments, but which recover relatively quickly and have higher
+abundance at the end of the trial than at the beginning. The fact that Topics 2
+and 4 are learned from the data without enforcing any temporal evolution
+structure on the samples suggests that under an antibiotic perturbation, the
+system exhibits differential recovery.
 
 To interpret these topics in terms of their bacterial community fingerprint, we
 study the estimated topic distributions $\beta_{k}$. This is displayed in Figure
@@ -834,14 +835,6 @@ explicitly models temporal evolution. Unlike LDA, however, this model does not
 seek latent mixture structure. Our primary results are displayed in Figure
 \ref{fig:antibiotics_unigram_theta}.
 
-Each row in this figure is interpreted similarly to a row in Figure
-\ref{fig:antibiotics_lda_beta}, except now they correspond to estimated
-proportions over time $g\left(\mu_{t}\right)$ rather than transformed topics
-$g\left(\beta_{k}\right)$. Only four of the 54 total timepoints
-is displayed, highlighting a time window around the first antibiotic time
-course. Such a display implicitly assumes a relatively smooth interpolation
-between timepoints, which is enforced by the form of the Dynamic Unigram model.
-
 \begin{figure}[!p]
   \centering
   \includegraphics[width=\textwidth]{figure/antibiotics_unigram_mu-F}
@@ -854,6 +847,15 @@ between timepoints, which is enforced by the form of the Dynamic Unigram model.
     smoothing abundance time series, to see how different species respond to
     antibiotic treatment. \label{fig:antibiotics_unigram_theta} }
 \end{figure}
+
+Each row in this figure is interpreted similarly to a row in Figure
+\ref{fig:antibiotics_lda_beta}, except now they correspond to estimated
+proportions over time $g\left(\mu_{t}\right)$ rather than transformed topics
+$g\left(\beta_{k}\right)$. Only four of the 54 total timepoints
+is displayed, highlighting a time window around the first antibiotic time
+course. Such a display implicitly assumes a relatively smooth interpolation
+between timepoints, which is enforced by the form of the Dynamic Unigram model.
+
 This analysis yields conclusions similar to those obtained through LDA, though
 reaching them requires somewhat more effort. For example, on day 10, most
 $g\left(\mu_{tv}\right)$'s have most of their mass concentrated above zero, and
@@ -903,17 +905,6 @@ where the random subset $\mathcal{V}$ indexes the displayed species.
     \label{fig:antibiotics_posterior_ts}}
 \end{figure}
 
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=\textwidth]{figure/posterior_check_evals-F}
-  \caption{As a posterior predictive check, we compute eigenvalues of data
-    simulated from the fitted LDA model. The clouds of points summarize the
-    posterior predictive distribution, while the black circles represent
-    observed data eigenvalues. Note that the $y$-axis are logged eigenvalues.
-    Evidently, the four-topic model effectively creates a rank-four
-    approximation of the original data. \label{fig:antibiotics_posterior_evals}}
-\end{figure}
-
 For LDA, the posterior predictive time series are on the appropriate scale with
 approximately the correct shape. However, we observe two substantial types of
 departures between simulated and observed data. First, for series with larger
@@ -947,6 +938,17 @@ produced by PCA. Formally, we construct $T\left(x\right) = \left(u_{1}, u_{2},
 \lambda_{1}, \lambda_{2}, v_{1}, v_{2}\right)$ where $\left(u_{i}\right)$,
 $\left(\lambda_{i}\right)$ and $\left(v_{j}\right)$ are left singular vectors,
 eigenvalues, and right singular vectors of $x$, respectively.
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/posterior_check_evals-F}
+  \caption{As a posterior predictive check, we compute eigenvalues of data
+    simulated from the fitted LDA model. The clouds of points summarize the
+    posterior predictive distribution, while the black circles represent
+    observed data eigenvalues. Note that the $y$-axis are logged eigenvalues.
+    Evidently, the four-topic model effectively creates a rank-four
+    approximation of the original data. \label{fig:antibiotics_posterior_evals}}
+\end{figure}
 
 Figure \ref{fig:antibiotics_posterior_evals} gives the PCA eigenvalues between
 the true and posterior predictive samples, after applying an
@@ -984,7 +986,7 @@ antibiotic treatment.
 On the other hand, some findings are more easily accessible when using the
 probabilistic approach. For example, the availability of topics with mixed
 memberships strikes a balance between the continuous gradient representation of
-principle coordinate analysis of \citep{dethlefsen2011incomplete} and the
+principal coordinate analysis of \citep{dethlefsen2011incomplete} and the
 discrete clusters provided by standard clustering techniques, which appear
 elsewhere in the microbiome literature \citep{digiulio2015temporal,
   mcmurdie2014waste}. This simplifies the taxonomic characterization of
@@ -1066,9 +1068,9 @@ repository.
 
 \section*{Acknowledgments}
 
-%% KS is supported by a Stanford University Weiland fellowship and the National
-%% Institute of Health T32 grant 5T32GM096982-04. SPH is supported by the National
-%% Institute of Health TR01 grant AI112401.
+KS is supported by a Stanford University Weiland fellowship and the National
+Institute of Health T32 grant 5T32GM096982-04. SPH is supported by the National
+Institute of Health TR01 grant AI112401.
 
 {\it Conflict of Interest}: None declared.
 
@@ -1212,6 +1214,7 @@ repository.
   \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
     4. \label{fig:species_prototypes_4} }
 \end{figure}
+
 
 \begin{figure}[!p]
   \centering
