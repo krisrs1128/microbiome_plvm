@@ -9,6 +9,7 @@ library("argparser")
 parser <- arg_parser("Perform dynamic unigrams on the antibiotics dataset")
 parser <- add_argument(parser, "--subject", help = "Subject on which to perform analysis", default = "F")
 argv <- parse_args(parser)
+argv <- list("subject" = "F")
 
 ## ---- setup ----
 library("tidyverse")
