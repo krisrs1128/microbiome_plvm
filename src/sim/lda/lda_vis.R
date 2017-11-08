@@ -74,7 +74,7 @@ for (i in seq_along(unique_V)) {
 
 ## ---- betacontours1 ----
 p[[1]] <- p[[1]] +
-  scale_x_continuous(breaks = c(0, 0.05)) +
+  scale_x_continuous(breaks = c(0, 0.05, 0.1)) +
   labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
   theme(panel.border = element_rect(fill = "transparent", size = 0.7)) +
   facet_grid(method ~ D + N)
@@ -98,7 +98,7 @@ ggsave(
   p[[2]],
   width = 5.2,
   height = 3.1,
-  dpi = 450
+  dpi make sure variable names = 450
 )
 
 ## ---- relative-errors ----
