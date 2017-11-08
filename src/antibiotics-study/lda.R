@@ -403,7 +403,8 @@ p <- ggplot(uneven_probs) +
       y = ave_prob,
       col = topic,
       size = n_prob
-    )
+    ),
+    alpha = 0.6
   ) +
   labs(x = "Family", y = "Average Topic Probability", size = "n[taxa]") +
   theme(
