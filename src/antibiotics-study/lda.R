@@ -206,7 +206,7 @@ p <- ggplot(theta_hat) +
     notchwidth = 0.1,
     position = position_dodge(width = 0)
   ) +
-  scale_y_continuous(breaks = scales::pretty_breaks(3)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(2)) +
   min_theme(list(border_size = 0.7, text_size = 10, subtitle_size = 11)) +
   facet_grid(topic ~ condition, scales = "free_x", space = "free_x") +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
