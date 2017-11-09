@@ -517,12 +517,13 @@ The results in Figure \ref{fig:beta_errors_nmf} are more problematic than those
 in Figure \ref{fig:beta_errors_lda}. First, the standard errors are no longer
 comparable across methods, with those for the MCMC sampling procedure appearing
 much larger across many simulation configurations. Second, the error rates are
-substantially larger than those in LDA. Examining Supplementary Figure
-\ref{fig:beta_contours_nmf}, it appears that lack of identifiability in the NMF
-model may be affecting our ability to evaluate the resulting fits. The only way
-to distinguish between models $\left(c\Theta\right)\left(\frac{1}{c}
-B\right)^{T}$ and $\Theta B^{T}$ is through the prior, and the prior may not be
-strong enough to guide inference to the right scaling.
+substantially larger than those in LDA. Examining Supplementary Figures
+\ref{fig:beta_contours_nmf_d20} and \ref{Fig:beta_contours_nmf_d100}, it appears
+that lack of identifiability in the NMF model may be affecting our ability to
+evaluate the resulting fits. The only way to distinguish between models
+$\left(c\Theta\right)\left(\frac{1}{c} B\right)^{T}$ and $\Theta B^{T}$ is
+through the prior, and the prior may not be strong enough to guide inference to
+the right scaling.
 
 Further, examining Supplementary Figure \ref{fig:beta_contours_nmf_d20}, we note
 many cases where estimation fails to converge or concentrates around the
@@ -541,10 +542,11 @@ In the NMF and LDA experiments, we could visualize fitted posteriors over
 $\theta_i$ and $\beta_j$ as two-dimensional smoothed scatterplots, since we set
 $K = 2$. In contrast, this unigram experiment involves a $V$-dimensional
 parameter $\mu_t$ evolving over time -- this precludes any direct analog to
-Figures \ref{fig:beta_contours_v650} or \ref{fig:beta_contours_nmf}. Instead, in
-Figure \ref{fig:mu_intervals}, we visualize the true $\mu_{tv}$ against
-posterior intervals for the one-dimensional $p\left(\mu_{tv} \vert x\right)$,
-across all configurations of simulation parameters.
+Figure \ref{fig:beta_contours_v650} or Supplemental Figure
+\ref{fig:beta_contours_nmf_d20}. Instead, in Figure \ref{fig:mu_intervals}, we
+visualize the true $\mu_{tv}$ against posterior intervals for the
+one-dimensional $p\left(\mu_{tv} \vert x\right)$, across all configurations of
+simulation parameters.
 
 Evidently, MCMC provides accurate posterior estimates, while VB and the
 bootstrap estimates deviate from the true $\mu_{tv}$. First, when the true
@@ -559,7 +561,7 @@ effect of the prior, as such a strong bias is not present among the MCMC-sampled
 posteriors.
 
 To simplify the comparison between methods, we can also display the unigram
-analog of Figure \ref{fig:beta_errors_analog} -- this is given in Supplementary
+analog of Figure \ref{fig:beta_errors_lda} -- this is given in Supplementary
 Figure \ref{fig:mu_errors_unigram}. This display confirms our earlier
 observation, that posterior MCMC samples seem more reliable than either those
 from VB or the bootstrap, when using generic probabilistic programming for the
