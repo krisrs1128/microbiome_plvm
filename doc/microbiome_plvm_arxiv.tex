@@ -439,7 +439,7 @@ and so forth. Judging from the aligned densities in Figure
 sufficient.
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/beta_contours_v650}
+  \centering\includegraphics[width=\textwidth]{beta_contours_v650}
   \caption{Different inference algorithms for LDA provide comparable posterior
     estimates under the simulation configurations we have considered. Within
     each panel, we display the true pairs $\left(\sqrt{\beta_{v1}},
@@ -489,7 +489,7 @@ line, where the error equals one standard deviation.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/beta_errors_lda}
+  \includegraphics[width=\textwidth]{beta_errors_lda}
   \caption{A summary of the errors and uncertainty across models and regimes for
     the $\beta_{vk}$ in Figure \ref{fig:beta_contours_v650} and Supplementary
     Figure \ref{fig:beta_contours_v325}. On the $x$-axis, we plot the difference
@@ -513,7 +513,7 @@ individual $\beta_{vk}$, this is not surprising.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/beta_errors_nmf}
+  \includegraphics[width=\textwidth]{beta_errors_nmf}
   \caption{A version of Figure \ref{fig:beta_errors_lda} for the NMF simulation
     experiment. The figures are read similarly, except there are a larger number
     of experimental configurations -- rows now distinguish the assumed model and
@@ -550,12 +550,13 @@ The results in Figure \ref{fig:beta_errors_nmf} are more problematic than those
 in Figure \ref{fig:beta_errors_lda}. First, the standard errors are no longer
 comparable across methods, with those for the MCMC sampling procedure appearing
 much larger across many simulation configurations. Second, the error rates are
-substantially larger than those in LDA. Examining Supplementary Figure
-\ref{fig:beta_contours_nmf}, it appears that lack of identifiability in the NMF
-model may be affecting our ability to evaluate the resulting fits. The only way
-to distinguish between models $\left(c\Theta\right)\left(\frac{1}{c}
-B\right)^{T}$ and $\Theta B^{T}$ is through the prior, and the prior may not be
-strong enough to guide inference to the right scaling.
+substantially larger than those in LDA. Examining Supplementary Figures
+\ref{fig:beta_contours_nmf_d20} and \ref{fig:beta_contours_nmf_d100}, it appears
+that lack of identifiability in the NMF model may be affecting our ability to
+evaluate the resulting fits. The only way to distinguish between models
+$\left(c\Theta\right)\left(\frac{1}{c} B\right)^{T}$ and $\Theta B^{T}$ is
+through the prior, and the prior may not be strong enough to guide inference to
+the right scaling.
 
 Further, examining Supplementary Figure \ref{fig:beta_contours_nmf_d20}, we note
 many cases where estimation fails to converge or concentrates around the
@@ -574,10 +575,11 @@ In the NMF and LDA experiments, we could visualize fitted posteriors over
 $\theta_i$ and $\beta_j$ as two-dimensional smoothed scatterplots, since we set
 $K = 2$. In contrast, this unigram experiment involves a $V$-dimensional
 parameter $\mu_t$ evolving over time -- this precludes any direct analog to
-Figures \ref{fig:beta_contours_v650} or \ref{fig:beta_contours_nmf}. Instead, in
-Figure \ref{fig:mu_intervals}, we visualize the true $\mu_{tv}$ against
-posterior intervals for the one-dimensional $p\left(\mu_{tv} \vert x\right)$,
-across all configurations of simulation parameters.
+Figure \ref{fig:beta_contours_v650} or Supplemental Figure
+\ref{fig:beta_contours_nmf_d20}. Instead, in Figure \ref{fig:mu_intervals}, we
+visualize the true $\mu_{tv}$ against posterior intervals for the
+one-dimensional $p\left(\mu_{tv} \vert x\right)$, across all configurations of
+simulation parameters.
 
 Evidently, MCMC provides accurate posterior estimates, while VB and the
 bootstrap estimates deviate from the true $\mu_{tv}$. First, when the true
@@ -592,7 +594,7 @@ effect of the prior, as such a strong bias is not present among the MCMC-sampled
 posteriors.
 
 To simplify the comparison between methods, we can also display the unigram
-analog of Figure \ref{fig:beta_errors_analog} -- this is given in Supplementary
+analog of Figure \ref{fig:beta_errors_lda} -- this is given in Supplementary
 Figure \ref{fig:mu_errors_unigram}. This display confirms our earlier
 observation, that posterior MCMC samples seem more reliable than either those
 from VB or the bootstrap, when using generic probabilistic programming for the
@@ -699,7 +701,7 @@ represents time, and the $y$-axis gives the boxplots of posterior quantiles for
 each $\theta_{dk}$.
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-F}
+  \centering\includegraphics[width=\textwidth]{visualize_lda_theta_boxplot-F}
   \caption{Boxplots represent approximate posteriors for estimated mixture
     memberships $\theta_{d}$, and their evolution over time. That is, each row
     of panels provides a different sequence of $\theta_{dk}$ for a single $k$,
@@ -713,7 +715,7 @@ each $\theta_{dk}$.
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-F}
+  \centering\includegraphics[width=\textwidth]{visualize_lda_beta-F}
   \caption{Each credible interval describes an approximate posterior for one
     $\beta_{vk}$. Coupled with Figure \ref{fig:antibiotics_lda_theta}, this
     guides the interpretation of which bacterial taxa are more or less prevalent
@@ -783,7 +785,7 @@ Specifically, representatives of the $k^{th}$ topic were found by choosing the
 \beta_{k^{\prime} v}$.
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/topic_prototypes}
+  \centering\includegraphics[width=\textwidth]{topic_prototypes}
   \caption{Individual species that have been identified as prototypical of
     single topics are highlighted here, to provide a characterization of topics
     linked to the original bacterial abundance data. Rows and columns of panels
@@ -825,7 +827,7 @@ seek latent mixture structure. Our primary results are displayed in Figure
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/antibiotics_unigram_mu-F}
+  \includegraphics[width=\textwidth]{antibiotics_unigram_mu-F}
   \caption{Each posterior credible interval refers to one $\mu_{vt}$. The rows
     are a subset of times $t$ around the first antibiotic time course. The first
     row corresponds to a timepoint from before the treatment, the middle two
@@ -883,7 +885,7 @@ where the random subset $\mathcal{V}$ indexes the displayed species.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/posterior_check_ts-F}
+  \includegraphics[width=\textwidth]{posterior_check_ts-F}
   \caption{We can visualize the simulated time series for a subset of species
     and compare them with the observed ones, as a posterior check. Each panel
     represents one species. The black lines represent the observed
@@ -929,7 +931,7 @@ eigenvalues, and right singular vectors of $x$, respectively.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/posterior_check_evals-F}
+  \includegraphics[width=\textwidth]{posterior_check_evals-F}
   \caption{As a posterior predictive check, we compute eigenvalues of data
     simulated from the fitted LDA model. The clouds of points summarize the
     posterior predictive distribution, while the black circles represent
@@ -1068,14 +1070,14 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/beta_contours_v325}
+  \includegraphics[width=\textwidth]{beta_contours_v325}
   \caption{The analog of Figure \ref{fig:beta_contours_v650} in the case that $V
     = 325$. \label{fig:beta_contours_v325}}
 \end{figure}
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/beta_contours_nmf_d20}
+  \includegraphics[width=\textwidth]{beta_contours_nmf_d20}
   \caption{The results of the NMF experiment with $D = 20$ Within each panel, we
     display the true value of $\sqrt{\beta_{v}}$ as black points, while linked
     orange points give associated posterior medians. Note that the axes are
@@ -1088,14 +1090,14 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/beta_contours_nmf_d100}
+  \includegraphics[width=\textwidth]{beta_contours_nmf_d100}
   \caption{The analog of Figure \ref{fig:beta_contours_nmf_d20} when $D = 100$.
   \label{fig:beta_contours_nmf_d100}}
 \end{figure}
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=\textwidth]{figure/mu_intervals}
+  \includegraphics[width=\textwidth]{mu_intervals}
   \caption{
     A comparison of the posterior $p\left(\mu_{tv} \vert x\right)$ to the known
     underlying $\mu_{tv}$, in the unigram simulation experiment. The $x$-axis
@@ -1111,7 +1113,7 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=\textwidth]{figure/mu_errors_unigram}
+  \includegraphics[width=\textwidth]{mu_errors_unigram}
   \caption{A simplification of Figure \ref{fig:mu_intervals}, displaying RMSE when
     using posterior medians to estimate simulation $\mu_{tv}$s ($x$-axis) and
     the standard deviations of posterior marginals ($y$-axis), across
@@ -1123,7 +1125,7 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[scale=0.2]{figure/posterior_check_quantiles-F}
+  \includegraphics[scale=0.2]{posterior_check_quantiles-F}
   \caption{As a posterior check, we compare the observed with simulated
     data quantiles, using a qq-plot. To reduce overlap, we have introduced a
     uniform $\left[0, 0.2\right]$ jitter on both axes. Further, the points are
@@ -1136,7 +1138,7 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/posterior_check_scores-loadings-F}
+  \includegraphics[width=\textwidth]{posterior_check_scores-loadings-F}
   \caption{The eigenvalues displayed in Figure
     \ref{fig:antibiotics_posterior_evals} correspond to PCA results computed on
     posterior predictive samples, which are aligned and overlaid here. The left
@@ -1148,29 +1150,29 @@ Institute of Health TR01 grant AI112401.
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-D}
+  \centering\includegraphics[width=\textwidth]{visualize_lda_theta_boxplot-D}
   \caption{The analog of Figure \ref{fig:antibiotics_lda_theta} for Subject
     D. \label{fig:antibiotics_lda_theta_D}}
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-D}
+  \centering\includegraphics[width=\textwidth]{visualize_lda_beta-D}
   \caption{The analog of Figure \ref{fig:antibiotics_lda_beta} for Subject D.}
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-E}
+  \centering\includegraphics[width=\textwidth]{visualize_lda_theta_boxplot-E}
   \caption{The analog of Figure \ref{fig:antibiotics_lda_theta} for Subject E.}
 \end{figure}
 
 \begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-E}
+  \centering\includegraphics[width=\textwidth]{visualize_lda_beta-E}
   \caption{The analog of Figure \ref{fig:antibiotics_lda_beta} for Subject E. \label{fig:antibiotics_lda_beta_E}}
 \end{figure}
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/species_prototypes_1}
+  \includegraphics[width=\textwidth]{species_prototypes_1}
   \caption{Rather than displaying all representative species together, as in
     Figure \ref{fig:topic_prototypes}, we can sort species according to how
     representative they are of an individual topic. Here, the 15 species most
@@ -1182,28 +1184,28 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/species_prototypes_2}
+  \includegraphics[width=\textwidth]{species_prototypes_2}
   \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
     2.\label{fig:species_prototypes_2}. }
 \end{figure}
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/species_prototypes_3}
+  \includegraphics[width=\textwidth]{species_prototypes_3}
   \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
     3. \label{fig:species_prototypes_3} }
 \end{figure}
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/species_prototypes_4}
+  \includegraphics[width=\textwidth]{species_prototypes_4}
   \caption{The analog of Figure \ref{fig:species_prototypes_1} for Topic
     4. \label{fig:species_prototypes_4} }
 \end{figure}
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=0.8\textwidth]{figure/uneven_taxa_ordered}
+  \includegraphics[width=0.8\textwidth]{uneven_taxa_ordered}
   \caption{We can search for entire taxonomic families that seem associated with
     individual topics. Here we calculate the average of the topic
     representativeness statistic $\beta_{kv} - \sum_{k^{\prime} \neq k}
@@ -1217,7 +1219,7 @@ Institute of Health TR01 grant AI112401.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/uneven_taxa_facet}
+  \includegraphics[width=\textwidth]{uneven_taxa_facet}
   \caption{All species within the families screened out from Figure
     \ref{fig:uneven_taxa_ordered} are displayed here. Species among the
     representatives displayed in Figure \ref{fig:topic_prototypes} are colored
