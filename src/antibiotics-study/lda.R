@@ -215,7 +215,7 @@ p <- ggplot(theta_hat) +
   scale_x_discrete(breaks = seq(1, 60, by = 10) - 1)
 ggsave(
   sprintf("../../doc/figure/visualize_lda_theta_boxplot-%s.png", argv$subject),
-  p, width = 6, height = 2.9
+  p, width = 6, height = 3.3
 )
 
 ## ---- visualize_lda_beta ----
@@ -403,7 +403,8 @@ p <- ggplot(uneven_probs) +
       y = ave_prob,
       col = topic,
       size = n_prob
-    )
+    ),
+    alpha = 0.6
   ) +
   labs(x = "Family", y = "Average Topic Probability", size = "n[taxa]") +
   theme(

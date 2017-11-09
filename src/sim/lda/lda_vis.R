@@ -74,11 +74,13 @@ for (i in seq_along(unique_V)) {
 
 ## ---- betacontours1 ----
 p[[1]] <- p[[1]] +
+  scale_x_continuous(breaks = c(0, 0.05, 0.1)) +
   labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
   theme(panel.border = element_rect(fill = "transparent", size = 0.7)) +
   facet_grid(method ~ D + N)
 
 p[[2]] <- p[[2]] +
+  scale_x_continuous(breaks = c(0, 0.05)) +
   labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
   theme(panel.border = element_rect(fill = "transparent", size = 0.7)) +
   facet_grid(method ~ D + N)
@@ -113,6 +115,7 @@ method_cols <- c("#ae7664", "#64ae76", "#7664ae")
 p <- ggplot(perf) +
   geom_abline(slope = 1, alpha = 0.6, size = 0.3) +
   geom_point(aes(x = error, y = error_bar, col = method), size = 0.7, alpha = 0.6) +
+  scale_x_continuous(breaks = c(0, 0.01, 0.02)) +
   scale_color_manual(values = method_cols) +
   guides(color = guide_legend(override.aes = list(alpha = 1, size = 2))) +
   labs(x = "Root Mean Squared Error", y = "Standard Deviation (k = 1)", col = "Inference") +

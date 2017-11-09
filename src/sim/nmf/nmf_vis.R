@@ -47,8 +47,8 @@ plot_contours <- function(combined, plot_opts, ymax = 12, xmax = 12) {
       col = "#fc8d62"
     ) +
     coord_fixed() +
-    scale_x_continuous(limits = c(0, 12), expand = c(0, 0)) +
-    scale_y_continuous(limits = c(0, 12), expand = c(0, 0)) +
+    scale_x_continuous(limits = c(0, 12), expand = c(0, 0), breaks = c(0, 3, 6, 9)) +
+    scale_y_continuous(limits = c(0, 12), expand = c(0, 0), breaks = c(0, 3, 6, 9)) +
     facet_grid(method + inference ~ EN + zero_inf_prob) +
     labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2])))
 }

@@ -350,7 +350,7 @@ posterior_checks_plots <- function(input_data) {
       data = input_data$evals_data %>%
         filter(type == "true"),
       aes(x = as.factor(row_ix), y = log(value, 10)),
-      col = "#000000", size = 0.9
+      col = "#000000", size = 0.9, alpha = 0.4
     ) +
     scale_color_manual(values = c("#86B8B1", "#b186b8")) +
     scale_y_continuous(breaks = c(-0.5, 0, 0.5, 1), limits = c(log(0.25, 10), log(11, 10))) +
