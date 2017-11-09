@@ -80,7 +80,7 @@ p[[1]] <- p[[1]] +
   facet_grid(method ~ D + N)
 
 p[[2]] <- p[[2]] +
-  scale_x_continuous(breaks = c(0, 0.1)) +
+  scale_x_continuous(breaks = c(0, 0.05)) +
   labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2]))) +
   theme(panel.border = element_rect(fill = "transparent", size = 0.7)) +
   facet_grid(method ~ D + N)
