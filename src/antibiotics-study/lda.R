@@ -206,7 +206,7 @@ p <- ggplot(theta_hat) +
     notchwidth = 0.1,
     position = position_dodge(width = 0)
   ) +
-  scale_y_continuous(breaks = scales::pretty_breaks(2)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(3)) +
   min_theme(list(border_size = 0.7, text_size = 10, subtitle_size = 11)) +
   facet_grid(topic ~ condition, scales = "free_x", space = "free_x") +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
@@ -215,7 +215,7 @@ p <- ggplot(theta_hat) +
   scale_x_discrete(breaks = seq(1, 60, by = 10) - 1)
 ggsave(
   sprintf("../../doc/figure/visualize_lda_theta_boxplot-%s.png", argv$subject),
-  p, width = 6, height = 2.9
+  p, width = 6, height = 3.3
 )
 
 ## ---- visualize_lda_beta ----
