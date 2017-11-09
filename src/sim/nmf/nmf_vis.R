@@ -47,8 +47,8 @@ plot_contours <- function(combined, plot_opts, ymax = 12, xmax = 12) {
       col = "#fc8d62"
     ) +
     coord_fixed() +
-    scale_x_continuous(limits = c(0, 12), expand = c(0, 0)) +
-    scale_y_continuous(limits = c(0, 12), expand = c(0, 0)) +
+    scale_x_continuous(limits = c(0, 12), expand = c(0, 0), breaks = c(0, 3, 6, 9)) +
+    scale_y_continuous(limits = c(0, 12), expand = c(0, 0), breaks = c(0, 3, 6, 9)) +
     facet_grid(method + inference ~ EN + zero_inf_prob) +
     labs(x = expression(sqrt(hat(beta)[1])), y = expression(sqrt(hat(beta)[2])))
 }
@@ -200,9 +200,7 @@ plot_opts <- list(x = "sqrt(value_1)", y = "sqrt(value_2)",
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_contours_nmf_d20.png"),
-  plot_contours(combined, plot_opts) +
-    scale_x_continuous(breaks = c(0, 3, 6, 9)) +
-    scale_y_continuous(breaks = c(0, 3, 6, 9)),
+  plot_contours(combined, plot_opts),
   width = 5.3,
   height = 6
 )
@@ -219,9 +217,7 @@ combined$D <- droplevels(combined$D)
 
 ggsave(
   file.path(base_dir, "doc", "figure/beta_contours_nmf_d100.png"),
-  plot_contours(combined, plot_opts, 30, 30) +
-    scale_x_continuous(breaks = c(0, 3, 6, 9)) +
-    scale_y_continuous(breaks = c(0, 3, 6, 9)),
+  plot_contours(combined, plot_opts, 30, 30),
   width = 5.3,
   height = 6
 )
