@@ -67,10 +67,10 @@ accepted for publication XXXXXX}
 \section{Introduction}
 
 Microbiome studies attempt to characterize variation in bacterial abundance
-profiles across different experimental conditions \citep{human2012structure,
-  gilbert2014earth}. For example, a study may attempt to describe differences in
-bacterial communities between diseased and healthy states or after deliberately
-induced perturbations \citep{dethlefsen2011incomplete, fukuyama2017multidomain}.
+profiles across different experimental conditions \citep{gilbert2014earth}. For
+example, a study may attempt to describe differences in bacterial communities
+between diseased and healthy states or after deliberately induced perturbations
+\citep{dethlefsen2011incomplete, fukuyama2017multidomain}.
 
 In the process, two complementary difficulties arise. First, the data are often
 high-dimensional, measured over several hundreds or thousands types of bacteria.
@@ -246,11 +246,10 @@ of low rank matrices, $X \approx \Theta B^{T}$, where now the only constraints
 on $\Theta$ and $B$ are that $\Theta \in \reals_{+}^{D \times K}$ and $B \in
 \reals_{+}^{V \times K}$. This is the point of departure for a variety of algorithms
 in the Nonnegative Matrix Factorization (NMF) literature
-\citep{wang2013nonnegative, berry2007algorithms, lee2001algorithms}
+\citep{wang2013nonnegative}
 
-We focus on the Gamma-Poisson factorization model (GaP)
-\citep{kucukelbir2015automatic, carpenter2016stan, zhou2015negative,
-  canny2004gap} which posits the hierarchical model
+We focus on the Gamma-Poisson factorization model (GaP) \citep{canny2004gap}
+which posits the hierarchical model
 \begin{align*}
 X &\sim \Poi\left(\Theta B^{T}\right) \\
 \Theta &\sim \Gam\left(a_{0} 1_{D \times K}, b_{0} 1_{D \times K}\right) \\
@@ -260,17 +259,17 @@ where our notation means that each entry in these matrices is sampled
 independently, with parameters given by the corresponding entry in the parameter
 matrix. As a consequence of the representation of the negative binomial
 distribution as a Gamma mixture of Poissons, this is a natural model of
-overdispersed counts, which arise frequently in genomic and microbiome settings
-\citep{love2014moderated, mcmurdie2014waste}. In practice, the hyperparameters
-$a_{0}, b_{0}, c_{0}$, and $d_{0}$ are unknown. In all of our experiments, we
-optimize over them, though it would also be possible to add a level to the
-hierarchy and place vague nonnegative priors on these parameters.
+overdispersed counts, which arise frequently in genomic and microbiome settings.
+In practice, the hyperparameters $a_{0}, b_{0}, c_{0}$, and $d_{0}$ are unknown.
+In all of our experiments, we optimize over them, though it would also be
+possible to add a level to the hierarchy and place vague nonnegative priors on
+these parameters.
 
 In our simulation studies, we also consider a slight variant of this model,
-similar to the proposal of \citep{romero2014composition}, which independently sends
-entries of $X$ to zero with probability $p_{0}$. In our experiments, we assume
-that this zero-inflation probability is known. This procedure is denoted by
-Z-NMF.
+similar to the proposal of \citep{romero2014composition}, which independently
+sends entries of $X$ to zero with probability $p_{0}$. In our experiments, we
+assume that this zero-inflation probability is known. This procedure is denoted
+by Z-NMF.
 
 \subsection{Posterior Predictive Checks}
 \label{sec:ppc_overview}
@@ -279,14 +278,13 @@ Model assessment is important for qualifying interpretations, and can further
 guide refinements in subsequent analyses. Indeed, part of the appeal of
 probabilistic modeling is the ease with which models can be adapted to better
 describe the data of interest. We briefly review model assessment via posterior
-predictive checks \citep{rubin1984bayesianly, gelman2013philosophy}, as they are
-applied in Section \ref{sec:antibiotics_ppc}. In this approach, some statistics
-$T_{k}\left(x\right)$ of the data are defined which, in some sense,
-``characterize'' the data. If the data $x^{\ast}$ simulated from the fitted
-model have statistics $T_{k}\left(x^{\ast}\right)$ with values similar to those
-in the observed data $T_{k}\left(x\right)$, then we have evidence that the
-proposed model approximates the data well, at least in the sense defined by
-$T_{k}$.
+predictive checks, as they are applied in Section \ref{sec:antibiotics_ppc}. In
+this approach, some statistics $T_{k}\left(x\right)$ of the data are defined
+which, in some sense, ``characterize'' the data. If the data $x^{\ast}$
+simulated from the fitted model have statistics $T_{k}\left(x^{\ast}\right)$
+with values similar to those in the observed data $T_{k}\left(x\right)$, then we
+have evidence that the proposed model approximates the data well, at least in
+the sense defined by $T_{k}$.
 
 More precisely, simulate data $x_{1}^{\ast}, \dots, x_{S}^{\ast}$ from the
 posterior predictive probability distribution $p\left(x^{\ast}\vert x\right)
@@ -349,7 +347,7 @@ between the most common field-specific terms as follows,
   \item \textbf{Corpus} $\iff$ \textbf{Environment}: Sometimes a grouping
     structure is known apriori among sampling units. In this case, it can be
     informative to describe whether topics are or are not shared across these
-    groups \citep{teh2004sharing}. In the text analysis literature, a known group
+    groups \citep{teh2005sharing}. In the text analysis literature, a known group
     of documents -- for example, all articles coming from one newspaper -- is
     called a corpus. In the microbiome literature, the associated concept is the
     environment -- for example, skin, ocean, or soil -- from which a sample was
@@ -385,21 +383,20 @@ but only hundreds to thousands of words within any article. This means that
 techniques that rely on the representation of documents as sequences of
 individual words, rather than vectors of word counts, require too much memory to
 be practical. This makes many useful text analysis techniques -- for example,
-some methods for model inference \citep{griffiths2004finding} and evaluation
-\citep{wallach2009evaluation} -- out of reach for standard microbiome problems.
-This does, however, suggest potential opportunities for future research.
+some methods for model inference and evaluation \citep{wallach2009evaluation} --
+out of reach for standard microbiome problems. This does, however, suggest
+potential opportunities for future research.
 
 Lastly, we compare the prevailing analytical goals within text and microbiome
 analysis. In both fields, data reduction can be informative for developing
 models of system behavior. However, an essential difference is that even
 unsupervised text analysis techniques are often embedded within automatic
-systems, for text classification \citep{blei2003latent} or information retrieval
-\citep{krestel2009latent} for example, which do not require the intervention of
-a scientific investigator. In contrast, in microbiome studies, researchers often
-have control over specific experimental design structure, and collect and
-analyze data on a per-study basis. In this setting, success is defined somewhat
-amorphously as an ability to describe the structure and function underlying a
-biological system of interest.
+systems, for text classification or information retrieval for example, which do
+not require the intervention of a scientific investigator. In contrast, in
+microbiome studies, researchers often have control over specific experimental
+design structure, and collect and analyze data on a per-study basis. In this
+setting, success is defined somewhat amorphously as an ability to describe the
+structure and function underlying a biological system of interest.
 
 \section{Simulation Study}
 
@@ -593,15 +590,14 @@ case study is to compare these conclusions with those obtained through
 probabilistic latent variable models.
 
 Variation in bacterial signatures tends to be dominated by strong inter-subject
-effects \citep{eckburg2005diversity}, and with only three subjects, there is
-little reason for a model which clusters across subjects. Hence, we choose to
-study one individual at a time. In this section, we focus on Subject F, who had
-been reported to exhibit incomplete recovery of the pre-antibiotic treatment
-bacterial community. However, analogous figures for the other two subjects are
-available as Supplementary Figures \ref{fig:antibiotics_lda_theta_D} through
-\ref{fig:antibiotics_lda_beta_E}. There are 2582 distinct species across these
-samples, and we perform no pre-filtering, though most species are present in
-very low numbers.
+effects, and with only three subjects, there is little reason for a model which
+clusters across subjects. Hence, we choose to study one individual at a time. In
+this section, we focus on Subject F, who had been reported to exhibit incomplete
+recovery of the pre-antibiotic treatment bacterial community. However, analogous
+figures for the other two subjects are available as Supplementary Figures
+\ref{fig:antibiotics_lda_theta_D} through \ref{fig:antibiotics_lda_beta_E}.
+There are 2582 distinct species across these samples, and we perform no
+pre-filtering, though most species are present in very low numbers.
 
 It is possible that future studies may consider a similar design, but involve
 many more subjects. In this case, it would be possible to do better than model
@@ -617,7 +613,7 @@ samples within a subject -- that subject may never have samples drawn from a
 particular topic. It is possible to directly incorporate this behavior, in which
 some but not all topics are shared across subjects, into the model form by
 considering a hierarchical Dirichlet prior, rather than a standard one
-\citep{wallach2006topic, teh2005sharing}.
+\citep{teh2005sharing}.
 
 In this case study, we focus on LDA and the Dynamic Unigram model. A similar
 study using GaP and Z-GaP is omitted, in light of the difficulties in estimation
@@ -632,12 +628,11 @@ $\hat{\theta}_{i}$ for the hold-out samples \citep{blei2003latent}. Indeed, this
 process reflects an advantage of probabilistic modeling: the Bayesian Occam's
 razor ensures that the posterior probability of a model won't always go up as
 $K$ increases -- contrast this with ordinary $K$-means, where tailored methods
-like the Gap or Silhouette statistics must be studied
-\citep{rasmussen2001occam, tibshirani2001estimating, kaufman2009finding}.
-Alternatively, the proposals of \citep{wallach2009evaluation} could be carried
-out. However, in this study, we guide the choice of $K$ based on what we find
-most useful for scientific interpretation, rather than that which necessarily
-gives the best fit over the entire population.
+like the Gap or Silhouette statistics must be studied. Alternatively, the
+proposals of \citep{wallach2009evaluation} could be carried out. However, in
+this study, we guide the choice of $K$ based on what we find most useful for
+scientific interpretation, rather than that which necessarily gives the best fit
+over the entire population.
 
 Note that we plot the fitted probabilities on a logit scale -- for a raw vector
 of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right) \in
@@ -655,8 +650,7 @@ both be compiled and run on a standard laptop\footnote{1.4GHz Intel Core i5
 runtime of the Dynamic Unigram model is due to its larger number of parameters.
 Further, both approaches can be scaled to much larger datasets without requiring
 substantially more memory (but requiring somewhat longer training time) by
-applying stochastic variational inference \citep{hoffman2013stochastic,
-  kucukelbir2015automatic}.
+applying stochastic variational inference \citep{hoffman2013stochastic}.
 
 \subsection{Latent Dirichlet Allocation}
 \label{sec:antibiotics_lda}
@@ -867,11 +861,10 @@ probabilistic approach. For example, the availability of topics with mixed
 memberships strikes a balance between the continuous gradient representation of
 principal coordinate analysis of \citep{dethlefsen2011incomplete} and the
 discrete clusters provided by standard clustering techniques, which appear
-elsewhere in the microbiome literature \citep{digiulio2015temporal,
-  mcmurdie2014waste}. This simplifies the taxonomic characterization of
-different communities -- with principal coordinates, it would be necessary to
-find species correlated with the principal coordinate axes, and indeed no visual
-representations of taxa ever appear in the figures of
+elsewhere in the microbiome literature. This simplifies the taxonomic
+characterization of different communities -- with principal coordinates, it
+would be necessary to find species correlated with the principal coordinate
+axes, and indeed no visual representations of taxa ever appear in the figures of
 \cite{dethlefsen2011incomplete}. Similarly, by studying individual topics, we
 find there is more variation within taxonomic families than is ever discussed in
 the original refernece. Further, through posterior predictive checks, we can
@@ -923,12 +916,12 @@ zero-inflated counts, time series with changepoints, and apriori known
 phylogenetic relationships between features. It is anticipated that future
 microbiome studies will collect an increasing number of samples as well as more
 data sources per sample -- spectral and genomic, in addition bacterial
-abundance, for example \citep{jansson2016multi}. Further, the investigations
-often revolve around a combination of ecological community characterization and
-medically-relevant identification of treatment effects. We believe we have only
-begun to see the potential for probabilistic methods to guide careful scientific
-reasoning -- which emphasizes both insights and the degree of uncertainty about
-them -- in these complex scenarios.
+abundance, for example. Further, the investigations often revolve around a
+combination of ecological community characterization and medically-relevant
+identification of treatment effects. We believe we have only begun to see the
+potential for probabilistic methods to guide careful scientific reasoning --
+which emphasizes both insights and the degree of uncertainty about them -- in
+these complex scenarios.
 
 \section{Supplementary Material}
 
@@ -938,12 +931,11 @@ Supplementary material is available online at
 \section{Reproducibility}
 
 Code for all simulations, data analysis, and figures is available at
-\url{https://github.com/xxxxx} (Code shared privately with reviewers, will be
-made visible upon acceptance). Detailed instructions are available in the
-repository README.md. Further, a docker image with all software requirements
-preinstalled is available from \url{https://hub.docker.com/xxxxx} (image shared
-privately), and the corresponding Dockerfile is provided in the github
-repository.
+\url{https://github.com/xxxxx} (link blinded for review) . Detailed instructions
+are available in the repository README.md. Further, a docker image with all
+software requirements preinstalled is available from
+\url{https://hub.docker.com/xxxxx} (link blinded), and the corresponding
+Dockerfile is provided in the github repository.
 
 \section*{Acknowledgments}
 
