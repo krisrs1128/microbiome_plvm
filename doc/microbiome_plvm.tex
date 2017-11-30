@@ -67,10 +67,10 @@ accepted for publication XXXXXX}
 \section{Introduction}
 
 Microbiome studies attempt to characterize variation in bacterial abundance
-profiles across different experimental conditions \citep{human2012structure,
-  gilbert2014earth}. For example, a study may attempt to describe differences in
-bacterial communities between diseased and healthy states or after deliberately
-induced perturbations \citep{dethlefsen2011incomplete, fukuyama2017multidomain}.
+profiles across different experimental conditions \citep{gilbert2014earth}. For
+example, a study may attempt to describe differences in bacterial communities
+between diseased and healthy states or after deliberately induced perturbations
+\citep{dethlefsen2011incomplete, fukuyama2017multidomain}.
 
 In the process, two complementary difficulties arise. First, the data are often
 high-dimensional, measured over several hundreds or thousands types of bacteria.
@@ -84,14 +84,13 @@ phylogenetically-informed techniques for dimensionality-reduction and
 high-dimensional regression.
 
 Towards phylogenetically-informed dimensionality reduction,
-\cite{chen2013structure}, who applied a structured regularization penalty in
-sparse CCA to incorporate phylogenetic information, encouraging scores for
-similar species to be placed close to one another. A similar effect can be
-obtained by placing an appropriate prior in a Bayesian model, an approach
-explored in \cite{fukuyama2017adaptive}. By varying the strength of the prior,
-it is possible to encourage different degrees of smoothness with respect to
-phylogeny, and Empirical Bayes estimation allows for a certain type of
-adaptivity.
+\cite{chen2013structure} applied a structured regularization penalty in sparse
+CCA to incorporate phylogenetic information, encouraging scores for similar
+species to be placed close to one another. A similar effect was obtained by
+placing an appropriate prior in a Bayesian model, as explored in
+\cite{fukuyama2017adaptive}. By varying the strength of the prior, it is
+possible to encourage different degrees of smoothness with respect to phylogeny,
+and Empirical Bayes estimation allows for a certain type of adaptivity.
 
 In addition to dimensionality reduction, high-dimensional classification is
 popular in the microbiome literature. Often interesting species can be
@@ -103,10 +102,8 @@ independent biological interest. Alternatively, \cite{chen2013variable} applied
 a Dirichlet Multinomial regression model to study the relationship between
 bacterial counts and sample characteristics in a fully generative fashion, and
 then added an $\ell^{1}$-penalty to induce sparsity and facilitate
-interpretability. \cite{shafiei2015biomico} designed a different generative
-supervised model, based on ideas from mixed-membership modeling
-\citep{blei2003latent}. The development of structured modeling techniques
-tailored to the microbiome remains an active area of current research.
+interpretability. The development of structured modeling techniques tailored to
+the microbiome remains an active area of current research.
 
 \section{Methods}
 
@@ -116,8 +113,8 @@ thinking of the bacterial counts matrix as a biological analog of the
 document-term matrix. The idea of transferring these techniques to the
 microbiome is not new, though its appropriateness and usefulness has only been
 explored in relatively limited settings \citep{schloss2007last,
-  holmes2012dirichlet, chen2012estimating, chen2013variable,
-  shafiei2015biomico, jiang2017microbiome}.
+  holmes2012dirichlet, chen2012estimating, chen2013variable, shafiei2015biomico,
+  jiang2017microbiome}.
 
 \subsection{Dirichlet Multinomial Mixture Model}
 
@@ -246,11 +243,10 @@ of low rank matrices, $X \approx \Theta B^{T}$, where now the only constraints
 on $\Theta$ and $B$ are that $\Theta \in \reals_{+}^{D \times K}$ and $B \in
 \reals_{+}^{V \times K}$. This is the point of departure for a variety of algorithms
 in the Nonnegative Matrix Factorization (NMF) literature
-\citep{wang2013nonnegative, berry2007algorithms, lee2001algorithms}
+\citep{wang2013nonnegative}
 
-We focus on the Gamma-Poisson factorization model (GaP)
-\citep{kucukelbir2015automatic, carpenter2016stan, zhou2015negative,
-  canny2004gap} which posits the hierarchical model
+We focus on the Gamma-Poisson factorization model (GaP) \citep{canny2004gap}
+which posits the hierarchical model
 \begin{align*}
 X &\sim \Poi\left(\Theta B^{T}\right) \\
 \Theta &\sim \Gam\left(a_{0} 1_{D \times K}, b_{0} 1_{D \times K}\right) \\
@@ -260,55 +256,18 @@ where our notation means that each entry in these matrices is sampled
 independently, with parameters given by the corresponding entry in the parameter
 matrix. As a consequence of the representation of the negative binomial
 distribution as a Gamma mixture of Poissons, this is a natural model of
-overdispersed counts, which arise frequently in genomic and microbiome settings
-\citep{love2014moderated, mcmurdie2014waste}. In practice, the hyperparameters
-$a_{0}, b_{0}, c_{0}$, and $d_{0}$ are unknown. In all of our experiments, we
-optimize over them, though it would also be possible to add a level to the
-hierarchy and place vague nonnegative priors on these parameters.
+overdispersed counts, which arise frequently in genomic and microbiome settings.
+In practice, the hyperparameters $a_{0}, b_{0}, c_{0}$, and $d_{0}$ are unknown.
+In all of our experiments, we optimize over them, though it would also be
+possible to add a level to the hierarchy and place vague nonnegative priors on
+these parameters.
 
 In our simulation studies, we also consider a slight variant of this model,
-similar to the proposal of \citep{romero2014composition}, which independently sends
-entries of $X$ to zero with probability $p_{0}$. In our experiments, we assume
-that this zero-inflation probability is known. This procedure is denoted by
-Z-NMF.
-
-\subsection{Posterior Predictive Checks}
-\label{sec:ppc_overview}
-
-Model assessment is important for qualifying interpretations, and can further
-guide refinements in subsequent analyses. Indeed, part of the appeal of
-probabilistic modeling is the ease with which models can be adapted to better
-describe the data of interest. We briefly review model assessment via posterior
-predictive checks \citep{rubin1984bayesianly, gelman2013philosophy}, as they are
-applied in Section \ref{sec:antibiotics_ppc}. In this approach, some statistics
-$T_{k}\left(x\right)$ of the data are defined which, in some sense,
-``characterize'' the data. If the data $x^{\ast}$ simulated from the fitted
-model have statistics $T_{k}\left(x^{\ast}\right)$ with values similar to those
-in the observed data $T_{k}\left(x\right)$, then we have evidence that the
-proposed model approximates the data well, at least in the sense defined by
-$T_{k}$.
-
-More precisely, simulate data $x_{1}^{\ast}, \dots, x_{S}^{\ast}$ from the
-posterior predictive probability distribution $p\left(x^{\ast}\vert x\right)
-\approx \int p\left(x^{\ast} \vert \theta\right) \hat{p}\left(\theta \vert x
-\right)d\theta$, where $x$ is the original data and $\hat{p}\left(\theta \vert
-x\right)$ is an estimate of the posterior. For each of these simulated data
-sets, the characterizing statistics $T_{k}\left(x_{s}\right)$ are computed.
-Graphically comparing the $T_{k}\left(x\right)$ calculated on the true data with
-the histogram of model-fit simulated $T_{k}\left(x_{s}^{\ast}\right)$ suggests
-ways in which the posited model fits -- the case where the observed
-$T_{k}\left(x\right)$ lie in the bulk of the $T_{k}\left(x^{\ast}_{s}\right)$ --
-or fails to fit -- the case where $T_{k}\left(x\right)$ lie far from the bulk of
-$T_{k}\left(x^{\ast}_{s}\right)$ -- the data well.
-
-For example, it is common to set $T_{k}\left(x\right) = \overline{x}_d$ or
-$\frac{1}{n}\sum_{i} \left(x_{id} - \overline{x}_d\right)^{2}$ to see whether
-simulated samples approximately match the moments of the $d^{th}$ dimension in
-the observed data. Alternatively, histograms of raw data or raw data subsetted
-to certain groups can guide evaluation. This corresponds to setting a
-multidimensional $T_{k}\left(x\right)$. For example, $T_k\left(x_{s}^\ast\right)
-= \left(n_{s1}, \dots, n_{sB}\right)$ could count the number of observations in
-the $s^{th}$ simulated data set falling into histogram bins $b = 1, \dots, B$.
+similar to the proposal of \citep{romero2014composition}, which independently
+sends entries of $X$ to zero with probability $p_{0}$. In our experiments, we
+assume that this zero-inflation probability is known. This procedure is denoted
+by Z-NMF. Throughout, we use the probabilsitic programming language STAN
+\citep{carpenter2016stan}.
 
 \subsection{Microbiome vs. Text Analysis}
 \label{sec:microbiome_vs_text_analysis}
@@ -349,7 +308,7 @@ between the most common field-specific terms as follows,
   \item \textbf{Corpus} $\iff$ \textbf{Environment}: Sometimes a grouping
     structure is known apriori among sampling units. In this case, it can be
     informative to describe whether topics are or are not shared across these
-    groups \citep{teh2004sharing}. In the text analysis literature, a known group
+    groups \citep{teh2005sharing}. In the text analysis literature, a known group
     of documents -- for example, all articles coming from one newspaper -- is
     called a corpus. In the microbiome literature, the associated concept is the
     environment -- for example, skin, ocean, or soil -- from which a sample was
@@ -358,17 +317,17 @@ between the most common field-specific terms as follows,
 
 Now that we have established the semantic connections between text and
 microbiome analysis, we compare the types of data and analysis goals that are
-typical within the respective fields. In both, a central element of study is
-the sample-by-feature (either document-by-term or biological sample-by-bacteria)
-matrix. Besides count structure, the most striking similarity between these data
-matrices is sparsity: most entries are zero. Further, observed counts tend to be
+typical within the respective fields. In both, a central element of study is the
+sample-by-feature (either document-by-term or sample-by-bacteria) matrix.
+Besides count structure, a striking similarity between these data matrices is
+sparsity: most entries are zero. Further, observed counts tend to be
 highly-skewed -- some terms are far more common than others, and in the same
 way, some microbes are much more abundant than others. Finally, in both fields,
 contextual information beyond the raw sample-by-feature matrix is typically
 available. For example, timestamps are often available in both domains,
-$n$-grams have a natural analog in terms of small subnetworks of co-occurring
-bacteria, and phylogenetic similarity between species parallels apriori known
-linguistic characteristics of terms.
+$n$-grams have an analog in terms of small subnetworks of co-occurring bacteria,
+and phylogenetic similarity between species parallels known linguistic
+characteristics of terms.
 
 Nonetheless, in practice, the structure of these data can be quite different.
 First, text data can be on a much larger scale. For example, the Wikipedia
@@ -385,21 +344,20 @@ but only hundreds to thousands of words within any article. This means that
 techniques that rely on the representation of documents as sequences of
 individual words, rather than vectors of word counts, require too much memory to
 be practical. This makes many useful text analysis techniques -- for example,
-some methods for model inference \citep{griffiths2004finding} and evaluation
-\citep{wallach2009evaluation} -- out of reach for standard microbiome problems.
-This does, however, suggest potential opportunities for future research.
+some methods for model inference and evaluation \citep{wallach2009evaluation} --
+out of reach for standard microbiome problems. This does, however, suggest
+potential opportunities for future research.
 
 Lastly, we compare the prevailing analytical goals within text and microbiome
 analysis. In both fields, data reduction can be informative for developing
 models of system behavior. However, an essential difference is that even
 unsupervised text analysis techniques are often embedded within automatic
-systems, for text classification \citep{blei2003latent} or information retrieval
-\citep{krestel2009latent} for example, which do not require the intervention of
-a scientific investigator. In contrast, in microbiome studies, researchers often
-have control over specific experimental design structure, and collect and
-analyze data on a per-study basis. In this setting, success is defined somewhat
-amorphously as an ability to describe the structure and function underlying a
-biological system of interest.
+systems, for text classification or information retrieval for example, which do
+not require the intervention of a scientific investigator. In contrast, in
+microbiome studies, researchers often have control over specific experimental
+design structure, and collect and analyze data on a per-study basis. In this
+setting, success is defined somewhat amorphously as an ability to describe the
+structure and function underlying a biological system of interest.
 
 \section{Simulation Study}
 
@@ -420,7 +378,9 @@ bootstrap. The only misspecification we consider is a failure to account for
 zero inflation when the true data were generated according to the Z-NMF model --
 though not pursued here, it could be interesting to study robustness of study
 conclusions to misspecification in the number of topics or deliberate
-contamination.
+contamination. Due to space constraints, we relegate a discussion of the unigram
+simulation experiment to Supplementary Section
+\ref{subsec:dynamic_unigram_simulation}.
 
 For the LDA experiment, we vary the number of samples $D \in \{20, 100\}$, the
 number of features $V \in \{325, 650\}$, and the total count per sample $N \in
@@ -499,7 +459,7 @@ the expected total count per sample $\Earg{N}$, rather than $N$. When $p_{0} >
 is (incorrectly) assumed to be zero. To modulate $\Earg{N}$, we vary $a_{0}$ and
 $b_{0}$ so that $\Earg{N} = \frac{b_{0}}{a_{0}}KV \in \{1625, 3250, 6500\}$,
 matching the LDA experiment. As before, we vary the number of samples $D \in
-\{20, 100\}$ but fix the number of latent factors $K$ at 2. Figure
+\{20, 100\}$ but fix the number of latent factors $K$ at 2. Supplementary Figure
 \ref{fig:beta_errors_nmf} summarizes the estimation error across regimes, and is
 read in the same way as Figure \ref{fig:beta_errors_lda}, with two exceptions,
 \begin{enumerate}
@@ -513,60 +473,23 @@ read in the same way as Figure \ref{fig:beta_errors_lda}, with two exceptions,
 The associated posterior density display is given in Supplementary Figures
 \ref{fig:beta_contours_nmf_d20} and \ref{fig:beta_contours_nmf_d100}.
 
-The results in Figure \ref{fig:beta_errors_nmf} are more problematic than those
-in Figure \ref{fig:beta_errors_lda}. First, the standard errors are no longer
-comparable across methods, with those for the MCMC sampling procedure appearing
-much larger across many simulation configurations. Second, the error rates are
-substantially larger than those in LDA. Examining Supplementary Figures
-\ref{fig:beta_contours_nmf_d20} and \ref{Fig:beta_contours_nmf_d100}, it appears
-that lack of identifiability in the NMF model may be affecting our ability to
-evaluate the resulting fits. The only way to distinguish between models
-$\left(c\Theta\right)\left(\frac{1}{c} B\right)^{T}$ and $\Theta B^{T}$ is
-through the prior, and the prior may not be strong enough to guide inference to
-the right scaling.
+The results in Supplementary Figure \ref{fig:beta_errors_nmf} are more
+problematic than those in Figure \ref{fig:beta_errors_lda}. First, the standard
+errors are no longer comparable across methods, with those for the MCMC sampling
+procedure appearing much larger across many simulation configurations. Second,
+the error rates are substantially larger than those in LDA. Examining
+Supplementary Figures \ref{fig:beta_contours_nmf_d20} and
+\ref{Fig:beta_contours_nmf_d100}, it appears that lack of identifiability in the
+NMF model may be affecting our ability to evaluate the resulting fits. The only
+way to distinguish between models $\left(c\Theta\right)\left(\frac{1}{c}
+B\right)^{T}$ and $\Theta B^{T}$ is through the prior, and the prior may not be
+strong enough to guide inference to the right scaling.
 
 Further, examining Supplementary Figure \ref{fig:beta_contours_nmf_d20}, we note
 many cases where estimation fails to converge or concentrates around the
 incorrect value, though this may be related to rescaling. Generally, we do not
 find a direct probabilistic-programming implementation of the GaP or Z-GaP
 models reliable in the regimes under consideration, even when $p_{0}$ is known.
-
-Next we consider a simulation experiment involving the unigram model. We use the
-same configurations of $D$, $V$, and $N$ as in the LDA and NMF experiments
-above. The parameter controlling the rate of evolution on the simplex,
-$\sigma_{0}^2$, is set to 1 throughout. During inference, $\sigma_0^2$ is not
-assumed known, and is instead modeled as an $\text{InvGamma}\left(1, 1\right)$
-across all simulation settings.
-
-In the NMF and LDA experiments, we could visualize fitted posteriors over
-$\theta_i$ and $\beta_j$ as two-dimensional smoothed scatterplots, since we set
-$K = 2$. In contrast, this unigram experiment involves a $V$-dimensional
-parameter $\mu_t$ evolving over time -- this precludes any direct analog to
-Figure \ref{fig:beta_contours_v650} or Supplemental Figure
-\ref{fig:beta_contours_nmf_d20}. Instead, in Figure \ref{fig:mu_intervals}, we
-visualize the true $\mu_{tv}$ against posterior intervals for the
-one-dimensional $p\left(\mu_{tv} \vert x\right)$, across all configurations of
-simulation parameters.
-
-Evidently, MCMC provides accurate posterior estimates, while VB and the
-bootstrap estimates deviate from the true $\mu_{tv}$. First, when the true
-$\mu_{tv}$ is small small, the posterior estimates from VB and the bootstrap are
-too large. This is not as much a reason for concern as it might appear at first,
-however, as the parameters $\mu_t$ are passed through a softmax before being
-mapped to probabilities. After this transformation, the difference between, say,
-$\mu_{tv} = 10^{-2}$ and $\mu_{tv} = 10^{-5}$ is relatively unimportant. Second,
-posterior estimates for $\mu_{tv}$ for large positive values of the parameter
-tend to be biased downards, to a degree that can't be simply explained as an
-effect of the prior, as such a strong bias is not present among the MCMC-sampled
-posteriors.
-
-To simplify the comparison between methods, we can also display the unigram
-analog of Figure \ref{fig:beta_errors_lda} -- this is given in Supplementary
-Figure \ref{fig:mu_errors_unigram}. This display confirms our earlier
-observation, that posterior MCMC samples seem more reliable than either those
-from VB or the bootstrap, when using generic probabilistic programming for the
-Dynamic Unigram model, at least in problems with the dimensions we have
-considered.
 
 \section{Data Analysis}
 \label{sec:data_analysis}
@@ -593,15 +516,14 @@ case study is to compare these conclusions with those obtained through
 probabilistic latent variable models.
 
 Variation in bacterial signatures tends to be dominated by strong inter-subject
-effects \citep{eckburg2005diversity}, and with only three subjects, there is
-little reason for a model which clusters across subjects. Hence, we choose to
-study one individual at a time. In this section, we focus on Subject F, who had
-been reported to exhibit incomplete recovery of the pre-antibiotic treatment
-bacterial community. However, analogous figures for the other two subjects are
-available as Supplementary Figures \ref{fig:antibiotics_lda_theta_D} through
-\ref{fig:antibiotics_lda_beta_E}. There are 2582 distinct species across these
-samples, and we perform no pre-filtering, though most species are present in
-very low numbers.
+effects, and with only three subjects, there is little reason for a model which
+clusters across subjects. Hence, we choose to study one individual at a time. In
+this section, we focus on Subject F, who had been reported to exhibit incomplete
+recovery of the pre-antibiotic treatment bacterial community. However, analogous
+figures for the other two subjects are available as Supplementary Figures
+\ref{fig:antibiotics_lda_theta_D} through \ref{fig:antibiotics_lda_beta_E}.
+There are 2582 distinct species across these samples, and we perform no
+pre-filtering, though most species are present in very low numbers.
 
 It is possible that future studies may consider a similar design, but involve
 many more subjects. In this case, it would be possible to do better than model
@@ -617,7 +539,7 @@ samples within a subject -- that subject may never have samples drawn from a
 particular topic. It is possible to directly incorporate this behavior, in which
 some but not all topics are shared across subjects, into the model form by
 considering a hierarchical Dirichlet prior, rather than a standard one
-\citep{wallach2006topic, teh2005sharing}.
+\citep{teh2005sharing}.
 
 In this case study, we focus on LDA and the Dynamic Unigram model. A similar
 study using GaP and Z-GaP is omitted, in light of the difficulties in estimation
@@ -632,12 +554,11 @@ $\hat{\theta}_{i}$ for the hold-out samples \citep{blei2003latent}. Indeed, this
 process reflects an advantage of probabilistic modeling: the Bayesian Occam's
 razor ensures that the posterior probability of a model won't always go up as
 $K$ increases -- contrast this with ordinary $K$-means, where tailored methods
-like the Gap or Silhouette statistics must be studied
-\citep{rasmussen2001occam, tibshirani2001estimating, kaufman2009finding}.
-Alternatively, the proposals of \citep{wallach2009evaluation} could be carried
-out. However, in this study, we guide the choice of $K$ based on what we find
-most useful for scientific interpretation, rather than that which necessarily
-gives the best fit over the entire population.
+like the Gap or Silhouette statistics must be studied. Alternatively, the
+proposals of \citep{wallach2009evaluation} could be carried out. However, in
+this study, we guide the choice of $K$ based on what we find most useful for
+scientific interpretation, rather than that which necessarily gives the best fit
+over the entire population.
 
 Note that we plot the fitted probabilities on a logit scale -- for a raw vector
 of probabilities $\mathbf{p} = \left(p_{1}, \dots, p_{D}\right) \in
@@ -655,17 +576,18 @@ both be compiled and run on a standard laptop\footnote{1.4GHz Intel Core i5
 runtime of the Dynamic Unigram model is due to its larger number of parameters.
 Further, both approaches can be scaled to much larger datasets without requiring
 substantially more memory (but requiring somewhat longer training time) by
-applying stochastic variational inference \citep{hoffman2013stochastic,
-  kucukelbir2015automatic}.
+applying stochastic variational inference \citep{hoffman2013stochastic}. For a
+comparison with the standard principal coordinates approach, see Supplementary
+Section \ref{subsec:comparison_with_pcoa}.
 
 \subsection{Latent Dirichlet Allocation}
 \label{sec:antibiotics_lda}
 
-The fitted parameter values are summarized in Figures
-\ref{fig:antibiotics_lda_theta} and \ref{fig:antibiotics_lda_beta}.
-In Figure \ref{fig:antibiotics_lda_theta}, rows represent topics, the $x$-axis
-represents time, and the $y$-axis gives the boxplots of posterior quantiles for
-each $\theta_{dk}$.
+The fitted parameter values are summarized in Figure
+\ref{fig:antibiotics_lda_theta} and Supplementary Figure
+\ref{fig:antibiotics_lda_beta}. In Figure \ref{fig:antibiotics_lda_theta}, rows
+represent topics, the $x$-axis represents time, and the $y$-axis gives the
+boxplots of posterior quantiles for each $\theta_{dk}$.
 
 This figure draws attention to the two antibiotic time courses, which took place
 between days 12-23 and 41-51. Topic 1 seems to become prominent during the
@@ -686,26 +608,27 @@ structure on the samples suggests that under an antibiotic perturbation, the
 system exhibits differential recovery.
 
 To interpret these topics in terms of their bacterial community fingerprint, we
-study the estimated topic distributions $\beta_{k}$. This is displayed in Figure
-\ref{fig:antibiotics_lda_beta}. The four rows correspond to the $K = 4$
-estimated topics. Within a row, we show 95\% credible intervals associated with
-the posterior samples for each bacterium. Different colors identify different
-taxonomic families, and bacteria are sorted according to evolutionary
-relatedness. For clarity, we have displayed only the 750 most abundant bacteria.
+study the estimated topic distributions $\beta_{k}$. This is displayed in
+Supplementary Figure \ref{fig:antibiotics_lda_beta}. The four rows correspond to
+the $K = 4$ estimated topics. Within a row, we show 95\% credible intervals
+associated with the posterior samples for each bacterium. Different colors
+identify different taxonomic families, and bacteria are sorted according to
+evolutionary relatedness. For clarity, we have displayed only the 750 most
+abundant bacteria.
 
 Considering the mixture probabilities in Figure \ref{fig:antibiotics_lda_theta},
-those bacteria with large probabilities in the second and fourth rows of Figure
-\ref{fig:antibiotics_lda_beta} constitute a large fraction of the samples taken
-during antibiotics time courses, reflecting those whose abundances increase
-rapidly (Topic 2) or are initially drop but then increase gradually (Topic 4)
-during the antibiotics time courses. These distributions are relatively more
-concentrated on a small subset of bacteria with high probabilities, reflected by
-the drop in logitted probabilities far below zero. This corresponds to a
-decrease in community diversity during antibiotic time courses. We also note
-groups of neighboring bacteria with similarly elevated topic probabilities. It
-is encouraging that, even without specifying smoothness along the phylogenetic
-tree in the prior for the $\beta_{k}$s, such smoothness emerges in the fitted
-model.
+those bacteria with large probabilities in the second and fourth rows of
+Supplementary Figure \ref{fig:antibiotics_lda_beta} constitute a large fraction
+of the samples taken during antibiotics time courses, reflecting those whose
+abundances increase rapidly (Topic 2) or are initially drop but then increase
+gradually (Topic 4) during the antibiotics time courses. These distributions are
+relatively more concentrated on a small subset of bacteria with high
+probabilities, reflected by the drop in logitted probabilities far below zero.
+This corresponds to a decrease in community diversity during antibiotic time
+courses. We also note groups of neighboring bacteria with similarly elevated
+topic probabilities. It is encouraging that, even without specifying smoothness
+along the phylogenetic tree in the prior for the $\beta_{k}$s, such smoothness
+emerges in the fitted model.
 
 One disadvantage of plotting the posteriors for the $\beta_{k}$ in this way is
 that it is difficult to determine the identify of any particular bacterial
@@ -725,13 +648,14 @@ Specifically, representatives of the $k^{th}$ topic were found by choosing the
 \beta_{k^{\prime} v}$.
 
 This allows an interpretation of the topics in terms of the raw data, and the
-display reinforces the findings of Figures \ref{fig:antibiotics_lda_theta} and
-\ref{fig:antibiotics_lda_beta}. In particular, this view makes clear how much
-variation there is in species abundances within taxonomic families -- compare
-Topics 1 and 2 among representative Lachnospiraceae and Bacteroides, for
-example. Instead of displaying all species together, Supplementary Figures
-\ref{fig:species_prototypes_1} through \ref{fig:species_prototypes_4} sort
-individual species by the topic representativeness measure.
+display reinforces the findings of Figure \ref{fig:antibiotics_lda_theta} and
+Supplementary Figure \ref{fig:antibiotics_lda_beta}. In particular, this view
+makes clear how much variation there is in species abundances within taxonomic
+families -- compare Topics 1 and 2 among representative Lachnospiraceae and
+Bacteroides, for example. Instead of displaying all species together,
+Supplementary Figures \ref{fig:species_prototypes_1} through
+\ref{fig:species_prototypes_4} sort individual species by the topic
+representativeness measure.
 
 Similar approaches can be employed to identify taxa that disproportionately
 contain species with high membership in particular topics. For example, we can
@@ -750,13 +674,13 @@ explicitly models temporal evolution. Unlike LDA, however, this model does not
 seek latent mixture structure. Our primary results are displayed in Figure
 \ref{fig:antibiotics_unigram_theta}.
 
-Each row in this figure is interpreted similarly to a row in Figure
-\ref{fig:antibiotics_lda_beta}, except now they correspond to estimated
+Each row in this figure is interpreted similarly to a row in Supplementary
+Figure \ref{fig:antibiotics_lda_beta}, except now they correspond to estimated
 proportions over time $g\left(\mu_{t}\right)$ rather than transformed topics
-$g\left(\beta_{k}\right)$. Only four of the 54 total timepoints
-is displayed, highlighting a time window around the first antibiotic time
-course. Such a display implicitly assumes a relatively smooth interpolation
-between timepoints, which is enforced by the form of the Dynamic Unigram model.
+$g\left(\beta_{k}\right)$. Only four of the 54 total timepoints is displayed,
+highlighting a time window around the first antibiotic time course. Such a
+display implicitly assumes a relatively smooth interpolation between timepoints,
+which is enforced by the form of the Dynamic Unigram model.
 
 This analysis yields conclusions similar to those obtained through LDA, though
 reaching them requires somewhat more effort. For example, on day 10, most
@@ -781,8 +705,8 @@ have low values of $\mu_{tv}$.
 
 While we have found both LDA and the Dynamic Unigram model qualitatively useful,
 it is still important to seek more formal diagnostics of model fit. Here, we
-consider several posterior predictive checks, as explained in Section
-\ref{sec:ppc_overview}.
+consider several posterior predictive checks, as reviewed in Supplementary
+Section \ref{sec:ppc_overview}.
 
 To this end, in Figure \ref{fig:antibiotics_posterior_ts}, we plot observed time
 series for a random subset of the 350 most abundant bacteria and contrast them
@@ -829,8 +753,8 @@ produced by PCA. Formally, we construct $T\left(x\right) = \left(u_{1}, u_{2},
 $\left(\lambda_{i}\right)$ and $\left(v_{j}\right)$ are left singular vectors,
 eigenvalues, and right singular vectors of $x$, respectively.
 
-Figure \ref{fig:antibiotics_posterior_evals} gives the PCA eigenvalues between
-the true and posterior predictive samples, after applying an
+Supplementary Figure \ref{fig:antibiotics_posterior_evals} gives the PCA
+eigenvalues between the true and posterior predictive samples, after applying an
 $\asinh$-transformation and filtering to the 1000 highest-variance bacteria. The
 associated scores and loadings figures are available as Supplementary Figure
 \ref{fig:antibiotics_posterior_pca}. In Figure
@@ -849,57 +773,7 @@ the eigenvalues for the Dynamic Unigram model closely match those in the
 observed data -- even overestimating the size of small eigenvalues -- lending
 further evidence to the claim that this model is over-parameterized.
 
-\subsection{Comparison with principal coordinates}
-\label{subsec:comparison_with_pcoa}
-
-There is value in comparing this text-modeling based approach to the data from
-\citep{dethlefsen2011incomplete} with the analysis carried out in the original
-publication, based on principal coordinates analysis (PCoA) using a UniFrac
-distance. Both approaches accentuate the dramatic change in microbiome
-composition immediately following the administration of antibiotics, and both
-suggest the overall resilience of the microbiome, in the sense that the
-community returns to the preantibiotic state after several days. Further, both
-distinguish subject F as only making an incomplete recovery after the first
-antibiotic treatment.
-
-On the other hand, some findings are more easily accessible when using the
-probabilistic approach. For example, the availability of topics with mixed
-memberships strikes a balance between the continuous gradient representation of
-principal coordinate analysis of \citep{dethlefsen2011incomplete} and the
-discrete clusters provided by standard clustering techniques, which appear
-elsewhere in the microbiome literature \citep{digiulio2015temporal,
-  mcmurdie2014waste}. This simplifies the taxonomic characterization of
-different communities -- with principal coordinates, it would be necessary to
-find species correlated with the principal coordinate axes, and indeed no visual
-representations of taxa ever appear in the figures of
-\cite{dethlefsen2011incomplete}. Similarly, by studying individual topics, we
-find there is more variation within taxonomic families than is ever discussed in
-the original refernece. Further, through posterior predictive checks, we can
-perform model assessment in a way that is not so straightforwards with PCoA, and
-more broadly speaking, we by adopting probabilistic methods, we are able to
-describe the uncertainty associated with mixed membership and topic estimate.
-
-That said, PCoA enjoys certain advantages over the probabilistic approaches that
-have been the focus of this work. Perhaps most importantly, PCoA can be run in
-seconds, which makes it much more useful for interactive analysis. Second, by
-using the UniFrac distance, PCoA is able to account for the phylogenetic
-relatedness between taxa, encouraging phylogenetically similar taxa to play
-similar roles in the resulting ordination. Finally, the visual representation of
-samples provided by PCoA -- simply a two-dimensional scatter of the samples --
-is more easily digestible than the simultaneous display of all parameters in
-probability models.
-
-Broadly speaking, it seems valuable to have both types of tools available for
-practical scientific work. Ordination techniques like PCoA are useful for
-describing the relationship between sets of samples, in a way that requires
-little effort in either estimation or display. However, for more richly
-structured summaries, which are amenable to uncertainty quantification and model
-evaluation, probabilistic methods are ideal. We imagine a workflow in which
-researchers quickly develop a sense of their data using ordination, and then
-refine and critique their analysis using latent variables models.
-
 \section{Discussion}
-
 We have described the utility of taking a probabilistic modeling perspective in
 the analysis of microbiome data. We have provided a detailed implementation of
 benchmark analysis approaches, along with exploratory visualization of fitted
@@ -920,15 +794,14 @@ Microbiome studies are a source of richly structured, high-dimensional data,
 coupled with novel scientific problem setups. For example, in the antibiotics
 data set described here, we have already encountered structure in the form of
 zero-inflated counts, time series with changepoints, and apriori known
-phylogenetic relationships between features. It is anticipated that future
-microbiome studies will collect an increasing number of samples as well as more
-data sources per sample -- spectral and genomic, in addition bacterial
-abundance, for example \citep{jansson2016multi}. Further, the investigations
-often revolve around a combination of ecological community characterization and
-medically-relevant identification of treatment effects. We believe we have only
-begun to see the potential for probabilistic methods to guide careful scientific
-reasoning -- which emphasizes both insights and the degree of uncertainty about
-them -- in these complex scenarios.
+phylogenetic relationships between features. Future microbiome studies will
+likely collect an increasing number of samples as well as more data sources per
+sample -- metabolomic and genomic, in addition bacterial abundance, for example.
+Further, the investigations often revolve around a combination of ecological
+community characterization and medically-relevant identification of treatment
+effects. We believe we have only begun to see the potential for probabilistic
+methods to guide careful scientific reasoning -- which emphasizes both insights
+and the degree of uncertainty about them -- in these complex scenarios.
 
 \section{Supplementary Material}
 
@@ -938,12 +811,11 @@ Supplementary material is available online at
 \section{Reproducibility}
 
 Code for all simulations, data analysis, and figures is available at
-\url{https://github.com/xxxxx} (Code shared privately with reviewers, will be
-made visible upon acceptance). Detailed instructions are available in the
-repository README.md. Further, a docker image with all software requirements
-preinstalled is available from \url{https://hub.docker.com/xxxxx} (image shared
-privately), and the corresponding Dockerfile is provided in the github
-repository.
+\url{https://github.com/xxxxx} (link blinded for review) . Detailed instructions
+are available in the repository README.md. Further, a docker image with all
+software requirements preinstalled is available from
+\url{https://hub.docker.com/xxxxx} (link blinded), and the corresponding
+Dockerfile is provided in the github repository.
 
 \section*{Acknowledgments}
 
@@ -957,7 +829,6 @@ repository.
 \bibliography{refs}
 
 \section{Figures}
-
 \begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/beta_contours_v650}
   \caption{Different inference algorithms for LDA provide comparable posterior
@@ -988,20 +859,6 @@ repository.
 \end{figure}
 
 \begin{figure}[!p]
-  \centering
-  \includegraphics[width=\textwidth]{figure/beta_errors_nmf}
-  \caption{A version of Figure \ref{fig:beta_errors_lda} for the NMF simulation
-    experiment. The figures are read similarly, except there are a larger number
-    of experimental configurations -- rows now distinguish the assumed model and
-    shapes represent the true value of $p_{0}$. Further, while the first row of
-    column labels still gives $D$, the second row gives $\Earg{N}$ instead of
-    $N$. Note that we also now truncate the $x$ and $y$ axes, and not all points
-    are visible. For example, most MCMC samples in the last panel in the second
-    row have errors and SDs larger than what is displayed, and so are
-    missing. \label{fig:beta_errors_nmf}}
-\end{figure}
-
-\begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/visualize_lda_theta_boxplot-F}
   \caption{Boxplots represent approximate posteriors for estimated mixture
     memberships $\theta_{d}$, and their evolution over time. That is, each row
@@ -1013,19 +870,6 @@ repository.
     and second antibiotic time courses result in meaningful shifts in these
     sequences, and that there appear to be long-term effects of treatment among
     bacteria in Topic 3. \label{fig:antibiotics_lda_theta}}
-\end{figure}
-
-\begin{figure}[!p]
-  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-F}
-  \caption{Each credible interval describes an approximate posterior for one
-    $\beta_{vk}$. Coupled with Figure \ref{fig:antibiotics_lda_theta}, this
-    guides the interpretation of which bacterial taxa are more or less prevalent
-    during antibiotic treatments. Each row of panels corresponds to one of the
-    four topics, the $x$-axis indexes species, sorted according to phylogenetic
-    relatedness, and the $y$-axis give transformed values of the species probability
-    under that topic. Only the 750 most abundant species are shown. Note the
-    disappearance of otherwise abundant species within Topics 2, 4, and to some
-    extent, 1.} \label{fig:antibiotics_lda_beta}
 \end{figure}
 
 \begin{figure}[!p]
@@ -1045,19 +889,6 @@ repository.
 
 \begin{figure}[!p]
   \centering
-  \includegraphics[width=\textwidth]{figure/antibiotics_unigram_mu-F}
-  \caption{Each posterior credible interval refers to one $\mu_{vt}$. The rows
-    are a subset of times $t$ around the first antibiotic time course. The first
-    row corresponds to a timepoint from before the treatment, the middle two
-    from during the antibiotics time course, and the bottom from after the time
-    course was stopped. Otherwise, this display is read in the same way as
-    Figure \ref{fig:antibiotics_lda_beta}. This view provides one way of
-    smoothing abundance time series, to see how different species respond to
-    antibiotic treatment. \label{fig:antibiotics_unigram_theta} }
-\end{figure}
-
-\begin{figure}[!p]
-  \centering
   \includegraphics[width=\textwidth]{figure/posterior_check_ts-F}
   \caption{We can visualize the simulated time series for a subset of species
     and compare them with the observed ones, as a posterior check. Each panel
@@ -1068,18 +899,134 @@ repository.
     \label{fig:antibiotics_posterior_ts}}
 \end{figure}
 
-\begin{figure}[!p]
-  \centering
-  \includegraphics[width=\textwidth]{figure/posterior_check_evals-F}
-  \caption{As a posterior predictive check, we compute eigenvalues of data
-    simulated from the fitted LDA model. The clouds of points summarize the
-    posterior predictive distribution, while the black circles represent
-    observed data eigenvalues. Note that the $y$-axis are logged eigenvalues.
-    Evidently, the four-topic model effectively creates a rank-four
-    approximation of the original data. \label{fig:antibiotics_posterior_evals}}
-\end{figure}
+\section{Supplementary Material}
 
-\section{Supplementary Figures}
+\subsection{Dynamic unigram simulation experiment}
+\label{subsec:dynamic_unigram_simulation}
+
+Next we consider a simulation experiment involving the unigram model. We use the
+same configurations of $D$, $V$, and $N$ as in the LDA and NMF experiments
+above. The parameter controlling the rate of evolution on the simplex,
+$\sigma_{0}^2$, is set to 1 throughout. During inference, $\sigma_0^2$ is not
+assumed known, and is instead modeled as an $\text{InvGamma}\left(1, 1\right)$
+across all simulation settings.
+
+In the NMF and LDA experiments, we could visualize fitted posteriors over
+$\theta_i$ and $\beta_j$ as two-dimensional smoothed scatterplots, since we set
+$K = 2$. In contrast, this unigram experiment involves a $V$-dimensional
+parameter $\mu_t$ evolving over time -- this precludes any direct analog to
+Figure \ref{fig:beta_contours_v650} or Supplemental Figure
+\ref{fig:beta_contours_nmf_d20}. Instead, in Figure \ref{fig:mu_intervals}, we
+visualize the true $\mu_{tv}$ against posterior intervals for the
+one-dimensional $p\left(\mu_{tv} \vert x\right)$, across all configurations of
+simulation parameters.
+
+Evidently, MCMC provides accurate posterior estimates, while VB and the
+bootstrap estimates deviate from the true $\mu_{tv}$. First, when the true
+$\mu_{tv}$ is small small, the posterior estimates from VB and the bootstrap are
+too large. This is not as much a reason for concern as it might appear at first,
+however, as the parameters $\mu_t$ are passed through a softmax before being
+mapped to probabilities. After this transformation, the difference between, say,
+$\mu_{tv} = 10^{-2}$ and $\mu_{tv} = 10^{-5}$ is relatively unimportant. Second,
+posterior estimates for $\mu_{tv}$ for large positive values of the parameter
+tend to be biased downards, to a degree that can't be simply explained as an
+effect of the prior, as such a strong bias is not present among the MCMC-sampled
+posteriors.
+
+To simplify the comparison between methods, we can also display the unigram
+analog of Figure \ref{fig:beta_errors_lda} -- this is given in Supplementary
+Figure \ref{fig:mu_errors_unigram}. This display confirms our earlier
+observation, that posterior MCMC samples seem more reliable than either those
+from VB or the bootstrap, when using generic probabilistic programming for the
+Dynamic Unigram model, at least in problems with the dimensions we have
+considered.
+
+\subsection{Posterior Predictive Checks}
+\label{sec:ppc_overview}
+
+Model assessment is important for qualifying interpretations, and can further
+guide refinements in subsequent analyses. Indeed, part of the appeal of
+probabilistic modeling is the ease with which models can be adapted to better
+describe the data of interest. We briefly review model assessment via posterior
+predictive checks, as they are applied in Section \ref{sec:antibiotics_ppc}. In
+this approach, some statistics $T_{k}\left(x\right)$ of the data are defined
+which, in some sense, ``characterize'' the data. If the data $x^{\ast}$
+simulated from the fitted model have statistics $T_{k}\left(x^{\ast}\right)$
+with values similar to those in the observed data $T_{k}\left(x\right)$, then we
+have evidence that the proposed model approximates the data well, at least in
+the sense defined by $T_{k}$.
+
+More precisely, simulate data $x_{1}^{\ast}, \dots, x_{S}^{\ast}$ from the
+posterior predictive probability distribution $p\left(x^{\ast}\vert x\right)
+\approx \int p\left(x^{\ast} \vert \theta\right) \hat{p}\left(\theta \vert x
+\right)d\theta$, where $x$ is the original data and $\hat{p}\left(\theta \vert
+x\right)$ is an estimate of the posterior. For each of these simulated data
+sets, the characterizing statistics $T_{k}\left(x_{s}\right)$ are computed.
+Graphically comparing the $T_{k}\left(x\right)$ calculated on the true data with
+the histogram of model-fit simulated $T_{k}\left(x_{s}^{\ast}\right)$ suggests
+ways in which the posited model fits -- the case where the observed
+$T_{k}\left(x\right)$ lie in the bulk of the $T_{k}\left(x^{\ast}_{s}\right)$ --
+or fails to fit -- the case where $T_{k}\left(x\right)$ lie far from the bulk of
+$T_{k}\left(x^{\ast}_{s}\right)$ -- the data well.
+
+For example, it is common to set $T_{k}\left(x\right) = \overline{x}_d$ or
+$\frac{1}{n}\sum_{i} \left(x_{id} - \overline{x}_d\right)^{2}$ to see whether
+simulated samples approximately match the moments of the $d^{th}$ dimension in
+the observed data. Alternatively, histograms of raw data or raw data subsetted
+to certain groups can guide evaluation. This corresponds to setting a
+multidimensional $T_{k}\left(x\right)$. For example, $T_k\left(x_{s}^\ast\right)
+= \left(n_{s1}, \dots, n_{sB}\right)$ could count the number of observations in
+the $s^{th}$ simulated data set falling into histogram bins $b = 1, \dots, B$.
+
+\subsection{Comparison with principal coordinates}
+\label{subsec:comparison_with_pcoa}
+
+There is value in comparing this text-modeling based approach to the data from
+\citep{dethlefsen2011incomplete} with the analysis carried out in the original
+publication, based on principal coordinates analysis (PCoA) using a UniFrac
+distance. Both approaches accentuate the dramatic change in microbiome
+composition immediately following the administration of antibiotics, and both
+suggest the overall resilience of the microbiome, in the sense that the
+community returns to the preantibiotic state after several days. Further, both
+distinguish subject F as only making an incomplete recovery after the first
+antibiotic treatment.
+
+On the other hand, some findings are more easily accessible when using the
+probabilistic approach. For example, the availability of topics with mixed
+memberships strikes a balance between the continuous gradient representation of
+principal coordinate analysis of \citep{dethlefsen2011incomplete} and the
+discrete clusters provided by standard clustering techniques, which appear
+elsewhere in the microbiome literature. This simplifies the taxonomic
+characterization of different communities -- with principal coordinates, it
+would be necessary to find species correlated with the principal coordinate
+axes, and indeed no visual representations of taxa ever appear in the figures of
+\cite{dethlefsen2011incomplete}. Similarly, by studying individual topics, we
+find there is more variation within taxonomic families than is ever discussed in
+the original refernece. Further, through posterior predictive checks, we can
+perform model assessment in a way that is not so straightforwards with PCoA, and
+more broadly speaking, we by adopting probabilistic methods, we are able to
+describe the uncertainty associated with mixed membership and topic estimate.
+
+That said, PCoA enjoys certain advantages over the probabilistic approaches that
+have been the focus of this work. Perhaps most importantly, PCoA can be run in
+seconds, which makes it much more useful for interactive analysis. Second, by
+using the UniFrac distance, PCoA is able to account for the phylogenetic
+relatedness between taxa, encouraging phylogenetically similar taxa to play
+similar roles in the resulting ordination. Finally, the visual representation of
+samples provided by PCoA -- simply a two-dimensional scatter of the samples --
+is more easily digestible than the simultaneous display of all parameters in
+probability models.
+
+Broadly speaking, it seems valuable to have both types of tools available for
+practical scientific work. Ordination techniques like PCoA are useful for
+describing the relationship between sets of samples, in a way that requires
+little effort in either estimation or display. However, for more richly
+structured summaries, which are amenable to uncertainty quantification and model
+evaluation, probabilistic methods are ideal. We imagine a workflow in which
+researchers quickly develop a sense of their data using ordination, and then
+refine and critique their analysis using latent variables models.
+
+\subsection{Supplementary Figures}
 
 \begin{figure}[!p]
   \centering
@@ -1106,6 +1053,20 @@ repository.
   \includegraphics[width=\textwidth]{figure/beta_contours_nmf_d100}
   \caption{The analog of Figure \ref{fig:beta_contours_nmf_d20} when $D = 100$.
   \label{fig:beta_contours_nmf_d100}}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/beta_errors_nmf}
+  \caption{A version of Figure \ref{fig:beta_errors_lda} for the NMF simulation
+    experiment. The figures are read similarly, except there are a larger number
+    of experimental configurations -- rows now distinguish the assumed model and
+    shapes represent the true value of $p_{0}$. Further, while the first row of
+    column labels still gives $D$, the second row gives $\Earg{N}$ instead of
+    $N$. Note that we also now truncate the $x$ and $y$ axes, and not all points
+    are visible. For example, most MCMC samples in the last panel in the second
+    row have errors and SDs larger than what is displayed, and so are
+    missing. \label{fig:beta_errors_nmf}}
 \end{figure}
 
 \begin{figure}[ht]
@@ -1137,6 +1098,33 @@ repository.
 \end{figure}
 
 \begin{figure}[!p]
+  \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-F}
+  \caption{Each credible interval describes an approximate posterior for one
+    $\beta_{vk}$. Coupled with Figure \ref{fig:antibiotics_lda_theta}, this
+    guides the interpretation of which bacterial taxa are more or less prevalent
+    during antibiotic treatments. Each row of panels corresponds to one of the
+    four topics, the $x$-axis indexes species, sorted according to phylogenetic
+    relatedness, and the $y$-axis give transformed values of the species probability
+    under that topic. Only the 750 most abundant species are shown. Note the
+    disappearance of otherwise abundant species within Topics 2, 4, and to some
+    extent, 1.}
+  \label{fig:antibiotics_lda_beta}
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/antibiotics_unigram_mu-F}
+  \caption{Each posterior credible interval refers to one $\mu_{vt}$. The rows
+    are a subset of times $t$ around the first antibiotic time course. The first
+    row corresponds to a timepoint from before the treatment, the middle two
+    from during the antibiotics time course, and the bottom from after the time
+    course was stopped. Otherwise, this display is read in the same way as
+    Supplementary Figure \ref{fig:antibiotics_lda_beta}. This view provides one
+    way of smoothing abundance time series, to see how different species respond
+    to antibiotic treatment. \label{fig:antibiotics_unigram_theta} }
+\end{figure}
+
+\begin{figure}[!p]
   \centering
   \includegraphics[scale=0.2]{figure/posterior_check_quantiles-F}
   \caption{As a posterior check, we compare the observed with simulated
@@ -1147,6 +1135,18 @@ repository.
     see that the LDA model tends to underestimate the overall number of zeros in
     the data, while the Dynamic Unigram model matches the observed quantiles
     almost exactly. \label{fig:antibiotics_posterior_quantiles} }
+\end{figure}
+
+\begin{figure}[!p]
+  \centering
+  \includegraphics[width=\textwidth]{figure/posterior_check_evals-F}
+  \caption{As a posterior predictive check, we compute eigenvalues of data
+    simulated from the fitted LDA model. The clouds of points summarize the
+    posterior predictive distribution, while the black circles represent
+    observed data eigenvalues. Note that the $y$-axis are logged eigenvalues.
+    Evidently, the four-topic model effectively creates a rank-four
+    approximation of the original data.
+    \label{fig:antibiotics_posterior_evals}}
 \end{figure}
 
 \begin{figure}[!p]
@@ -1170,7 +1170,8 @@ repository.
 
 \begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-D}
-  \caption{The analog of Figure \ref{fig:antibiotics_lda_beta} for Subject D.}
+  \caption{The analog of Supplementary Figure \ref{fig:antibiotics_lda_beta} for
+    Subject D.}
 \end{figure}
 
 \begin{figure}[!p]
@@ -1180,7 +1181,8 @@ repository.
 
 \begin{figure}[!p]
   \centering\includegraphics[width=\textwidth]{figure/visualize_lda_beta-E}
-  \caption{The analog of Figure \ref{fig:antibiotics_lda_beta} for Subject E. \label{fig:antibiotics_lda_beta_E}}
+  \caption{The analog of Supplementary Figure \ref{fig:antibiotics_lda_beta} for
+    Subject E. \label{fig:antibiotics_lda_beta_E}}
 \end{figure}
 
 \begin{figure}[!p]
