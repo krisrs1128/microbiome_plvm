@@ -9,6 +9,7 @@
 library("argparser")
 parser <- arg_parser("Perform LDA on the antibiotics dataset")
 parser <- add_argument(parser, "--subject", help = "Subject on which to perform analysis", default = "F")
+parser <- add_argument(parser, "--K", help = "Number of LDA topics", default = 4)
 argv <- parse_args(parser)
 
 ## ---- setup ----
@@ -17,9 +18,8 @@ library("reshape2")
 library("tidyverse")
 library("stringr")
 library("phyloseq")
-library("ggscaffold")
 library("feather")
-theme_set(min_theme(list(text_size = 7, subtitle_size = 9)))
+theme_set(theme_bw(base_size = 7))
 source("./posterior_check_funs.R")
 dir.create("../../data/fits/", recursive = TRUE)
 dir.create("../../data/figure-input/", recursive = TRUE)
@@ -60,45 +60,27 @@ transformed_counts <- data_frame(
 
 p <- ggplot(transformed_counts) +
   geom_histogram(aes(x = count)) +
-  facet_grid(. ~ transformation, scale = "free_x") +
-  min_theme(list(text_size = 8, subtitle_size = 12))
+  facet_grid(. ~ transformation, scale = "free_x")
 ggsave("../../doc/figure/histograms-1.png", p)
 
 ## ---- heatmaps ----
 x_order <- names(sort(taxa_sums(abt)))
 y_order <- names(sort(sample_sums(abt)))
-ordered_map <- function(x) {
-  ggheatmap(
-    x %>%
-    as.data.frame() %>%
-    rownames_to_column("x") %>%
-    gather(y, fill, -x),
-    list("x_order" = x_order, "y_order" = y_order)
-  ) +
-    min_theme(list(text_size = 0)) +
-    labs(x = "Sample", y = "Microbe")
-}
-
-p <- ordered_map(get_taxa(abt)) + ggtitle("Raw")
-ggsave("../../doc/figure/heatmaps-1.png", p)
-
-p <- ordered_map(asinh(get_taxa(abt))) + ggtitle("asinh")
-ggsave("../../doc/figure/heatmaps-2.png", p)
 
 ## ---- lda ----
 x <- t(get_taxa(abt))
 dimnames(x) <- NULL
 stan_data <- list(
-  K = 4,
+  K = argv$K,
   V = ncol(x),
   D = nrow(x),
   n = x,
-  alpha = rep(1, 4),
+  alpha = rep(1, argv$K),
   gamma = rep(0.5, ncol(x))
 )
 
 start_fit <- Sys.time()
-f <- stan_model(file = "../stan/lda_counts.stan")
+f <- stan_model(file = sprintf("../stan/lda_counts.stan", argv$K))
 stan_fit <- vb(
   f,
   data = stan_data,
@@ -113,7 +95,12 @@ cat(sprintf(
 
 save(
   stan_fit,
-  file = sprintf("../../data/fits/lda-%s-%s.rda", argv$subject, gsub("[:|| ||-]", "", Sys.time()))
+  file = sprintf(
+      "../../data/fits/lda-%s-%s-%s.rda",
+      argv$subject,
+      argv$K,
+      gsub("[:|| ||-]", "", Sys.time())
+  )
 )
 samples <- rstan::extract(stan_fit)
 rm(stan_fit)
@@ -168,7 +155,7 @@ theta_hat <- theta_logit %>%
   )
 
 theta_hat$sample <- sample_names(abt)[theta_hat$sample]
-sample_info <- sample_data(abt)
+sample_info <- data.frame(sample_data(abt))
 sample_info$sample <- rownames(sample_info)
 theta_hat$topic <- paste("Topic", theta_hat$topic)
 
@@ -183,19 +170,6 @@ plot_opts <- list(
   "y_order" = paste("Topic", stan_data$K:1)
 )
 
-p <- ggheatmap(
-  theta_hat %>%
-  group_by(topic, time) %>%
-  summarise(mean_theta = mean(theta_logit, na.rm = TRUE)) %>%
-  as.data.frame(),
-  plot_opts
-) +
-  labs(fill = "g(theta)")
-ggsave(
-  sprintf("../../doc/figure/visualize_lda_theta_heatmap-%s.png", argv$subject),
-  p, width = 7, height = 0.9
-)
-
 ## ---- visualize_lda_theta_boxplot ----
 p <- ggplot(theta_hat) +
   geom_boxplot(
@@ -207,14 +181,13 @@ p <- ggplot(theta_hat) +
     position = position_dodge(width = 0)
   ) +
   scale_y_continuous(breaks = scales::pretty_breaks(3)) +
-  min_theme(list(border_size = 0.7, text_size = 10, subtitle_size = 11)) +
   facet_grid(topic ~ condition, scales = "free_x", space = "free_x") +
   geom_hline(yintercept = 0, alpha = 0.4, size = 0.5, col = "#999999") +
   labs(x = "Time", y = expression(paste("g(", theta[k], ")"))) +
   theme(legend.position = "none") +
   scale_x_discrete(breaks = seq(1, 60, by = 10) - 1)
 ggsave(
-  sprintf("../../doc/figure/visualize_lda_theta_boxplot-%s.png", argv$subject),
+  sprintf("../../doc/figure/visualize_lda_theta_boxplot-%s-%s.png", argv$subject, argv$K),
   p, width = 6, height = 3.3
 )
 
@@ -257,7 +230,7 @@ p <- ggplot(beta_subset) +
     legend.position = "bottom"
   )
 ggsave(
-  sprintf("../../doc/figure/visualize_lda_beta-%s.png", argv$subject),
+  sprintf("../../doc/figure/visualize_lda_beta-%s-%s.png", argv$subject, argv$K),
   p, width = 6, height = 3.5
 )
 
@@ -332,7 +305,7 @@ p <- ggplot(mabt %>% filter(!is.na(prototypical))) +
     legend.position = "bottom"
   )
 ggsave(
-  "../../doc/figure/topic_prototypes.png",
+  sprintf("../../doc/figure/topic_prototypes-%K.png", argv$K)
   p, width = 4.5, height = 2.8
 )
 
@@ -357,7 +330,7 @@ for (k in seq_len(stan_data$K)) {
       legend.position = "bottom"
     )
   ggsave(
-    sprintf("../../doc/figure/species_prototypes_%s.png", k),
+    sprintf("../../doc/figure/species_prototypes-%s-%s.png", k, argv$K),
     p, width = 6.5, height = 3.5
   )
 }
@@ -412,7 +385,7 @@ p <- ggplot(uneven_probs) +
     panel.border = element_rect(size = 1, fill = "transparent")
   )
 ggsave(
-  "../../doc/figure/uneven_taxa_ordered.png",
+  sprintf("../../doc/figure/uneven_taxa_ordered-%s.png", argv$K),
   p, width = 5, height = 5
 )
 
@@ -433,7 +406,7 @@ p <- ggplot(mbt_uneven_taxa) +
     panel.border = element_rect(fill = "transparent", size = 0.75)
   )
 ggsave(
-  "../../doc/figure/uneven_taxa_facet.png",
+  sprintf("../../doc/figure/uneven_taxa_facet.png", argv$K),
   p, width = 6, height = 3.5
 )
 
@@ -441,12 +414,5 @@ ggsave(
 checks_data <- posterior_checks_input(
   x,
   samples$x_sim,
-  sprintf("../../data/figure-input/lda-%s", argv$subject)
-)
-
-## ---- js-input ----
-colnames(beta_summary) <- c("ix", "topic", "label", "median", "fill", "upper", "lower")
-cat(
-  sprintf("var beta = %s", jsonlite::toJSON(beta_summary, auto_unbox = TRUE)),
-  file = sprintf("vis/lda_beta-%s.js", argv$subject)
+  sprintf("../../data/figure-input/lda-%s-%s", argv$subject, argv$K)
 )
